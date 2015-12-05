@@ -1,0 +1,118 @@
+<RCC>
+    <qresource prefix="/Decorations">
+        <file>Content/Decorations/Explosion1.png</file>
+        <file>Content/Decorations/Explosion2.png</file>
+        <file>Content/Decorations/Explosion3.png</file>
+        <file>Content/Decorations/SmallExplosion.png</file>
+        <file>Content/Decorations/OceanBlur.jpg</file>
+        <file>Content/Decorations/MillSelection.png</file>
+        <file>Content/Decorations/Burn.png</file>
+        <file>Content/Decorations/DayTimeSelection.png</file>
+        <file>Content/Decorations/BlueWayEnd.png</file>
+        <file>Content/Decorations/BlueWayStart.png</file>
+        <file>Content/Decorations/RedWayEnd.png</file>
+        <file>Content/Decorations/RedWayStart.png</file>
+        <file>Content/Decorations/Way.png</file>
+        <file>Content/Decorations/BlueWay.png</file>
+        <file>Content/Decorations/RedWay.png</file>
+    </qresource>
+    <qresource prefix="/Interface">
+        <file>Content/ProgrammInterface/System/ButtonLayer.png</file>
+        <file>Content/ProgrammInterface/System/CloseButton.png</file>
+        <file>Content/ProgrammInterface/System/MainWindow.png</file>
+        <file>Content/ProgrammInterface/System/MaximizeButton.png</file>
+        <file>Content/ProgrammInterface/System/MinimizeButton.png</file>
+        <file>Content/ProgrammInterface/System/BluePlayerPanel.png</file>
+        <file>Content/ProgrammInterface/System/RedPlayerPanel.png</file>
+        <file>Content/ProgrammInterface/System/MainWindowFrame.png</file>
+        <file>Content/ProgrammInterface/System/WhiteDialogWindow.png</file>
+    </qresource>
+    <qresource prefix="/GameElements">
+        <file>Content/GameElements/Fort.png</file>
+        <file>Content/GameElements/Mill.png</file>
+        <file>Content/GameElements/Mountain.png</file>
+        <file>Content/GameElements/BlueUnitHome.png</file>
+        <file>Content/GameElements/RedUnitHome.png</file>
+    </qresource>
+    <qresource prefix="/Field">
+        <file>Content/ProgrammInterface/Field/GreenHexFrame.png</file>
+        <file>Content/ProgrammInterface/Field/PurpleHexFrame.png</file>
+        <file>Content/ProgrammInterface/Field/RedHexFrame.png</file>
+        <file>Content/ProgrammInterface/Field/YellowHexFrame.png</file>
+        <file>Content/ProgrammInterface/Field/BlueHex.png</file>
+        <file>Content/ProgrammInterface/Field/DarkYellowHex.png</file>
+        <file>Content/ProgrammInterface/Field/NeutralHex.png</file>
+        <file>Content/ProgrammInterface/Field/LightGreenHex.png</file>
+        <file>Content/ProgrammInterface/Field/RedHex.png</file>
+        <file>Content/ProgrammInterface/Field/YellowLightedGreyHexFrame.png</file>
+        <file>Content/ProgrammInterface/Field/BrightYellowHex.png</file>
+        <file>Content/ProgrammInterface/Field/GoldenHex.png</file>
+        <file>Content/ProgrammInterface/Field/BluePhantomHex.png</file>
+        <file>Content/ProgrammInterface/Field/GoldenHexFrame.png</file>
+        <file>Content/ProgrammInterface/Field/RedPhantomHex.png</file>
+    </qresource>
+    <qresource prefix="/Orders">
+        <file>Content/GameElements/Orders/Attack.png</file>
+        <file>Content/GameElements/Orders/Capture.png</file>
+        <file>Content/GameElements/Orders/Cure.png</file>
+        <file>Content/GameElements/Orders/Fire.png</file>
+        <file>Content/GameElements/Orders/Go.png</file>
+        <file>Content/GameElements/Orders/Gather.png</file>
+        <file>Content/GameElements/Orders/Fortify.png</file>
+        <file>Content/GameElements/Orders/Siege.png</file>
+        <file>Content/GameElements/Orders/Unknown.png</file>
+        <file>Content/GameElements/Orders/Wait.png</file>
+    </qresource>
+    <qresource prefix="/Units">
+        <file>Content/GameElements/Units/BlueHippo.png</file>
+        <file>Content/GameElements/Units/BlueKarkun.png</file>
+        <file>Content/GameElements/Units/BluePig.png</file>
+        <file>Content/GameElements/Units/BlueScrat.png</file>
+        <file>Content/GameElements/Units/RedHippo.png</file>
+        <file>Content/GameElements/Units/RedKarkun.png</file>
+        <file>Content/GameElements/Units/RedPig.png</file>
+        <file>Content/GameElements/Units/RedScrat.png</file>
+        <file>Content/GameElements/Units/Scrat.png</file>
+    </qresource>
+    <qresource prefix="/UnitElements">
+        <file>Content/GameElements/UnitsElements/BlueUnitFrame.png</file>
+        <file>Content/GameElements/UnitsElements/BlueUnitHealth.png</file>
+        <file>Content/GameElements/UnitsElements/BlueUnitSelectionLayer.png</file>
+        <file>Content/GameElements/UnitsElements/RedUnitFrame.png</file>
+        <file>Content/GameElements/UnitsElements/RedUnitHealth.png</file>
+        <file>Content/GameElements/UnitsElements/RedUnitSelectionLayer.png</file>
+    </qresource>
+    <qresource prefix="/InterfaceElements">
+        <file>Content/ProgrammInterface/InterfaceElements/down.png</file>
+        <file>Content/ProgrammInterface/InterfaceElements/left.png</file>
+        <file>Content/ProgrammInterface/InterfaceElements/right.png</file>
+        <file>Content/ProgrammInterface/InterfaceElements/SimpleLayer.png</file>
+        <file>Content/ProgrammInterface/InterfaceElements/up.png</file>
+    </qresource>
+    <qresource prefix="/Buttons">
+        <file>Content/ProgrammInterface/Buttons/BlueButton.png</file>
+        <file>Content/ProgrammInterface/Buttons/BlueButtonClicked.png</file>
+        <file>Content/ProgrammInterface/Buttons/NeutralButton.png</file>
+        <file>Content/ProgrammInterface/Buttons/NeutralButtonClicked.png</file>
+        <file>Content/ProgrammInterface/Buttons/RedButton.png</file>
+        <file>Content/ProgrammInterface/Buttons/RedButtonClicked.png</file>
+        <file>Content/ProgrammInterface/Buttons/GoButton.png</file>
+        <file>Content/ProgrammInterface/Buttons/PressedGoButton.png</file>
+        <file>Content/ProgrammInterface/Buttons/DisabledGoButton.png</file>
+    </qresource>
+    <qresource lang="English" prefix="/Text">
+        <file>Content/ProgrammInterface/AdditionalLabels/GatherLabel.png</file>
+        <file>Content/ProgrammInterface/AdditionalLabels/StartLabel.png</file>
+    </qresource>
+    <qresource prefix="/Icons">
+        <file>Content/ProgrammInterface/Icons/SandClock.png</file>
+    </qresource>
+    <qresource prefix="/Panels">
+        <file>Content/ProgrammInterface/Panels/UnitPanel.png</file>
+    </qresource>
+    <qresource prefix="/DayTime">
+        <file>Content/GameElements/DayTime/Breakfast.png</file>
+        <file>Content/GameElements/DayTime/Dinner.png</file>
+        <file>Content/GameElements/DayTime/Supper.png</file>
+    </qresource>
+</RCC>
