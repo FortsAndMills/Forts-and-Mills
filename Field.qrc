@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Content/Field/BlueHex.png</file>
+        <file>Content/Field/BluePhantomHex.png</file>
+        <file>Content/Field/BrightYellowHex.png</file>
+        <file>Content/Field/DarkYellowHex.png</file>
+        <file>Content/Field/GoldenHex.png</file>
+        <file>Content/Field/GoldenHexFrame.png</file>
+        <file>Content/Field/GreenHexFrame.png</file>
+        <file>Content/Field/LightGreenHex.png</file>
+        <file>Content/Field/NeutralHex.png</file>
+        <file>Content/Field/PurpleHexFrame.png</file>
+        <file>Content/Field/RedHex.png</file>
+        <file>Content/Field/RedHexFrame.png</file>
+        <file>Content/Field/RedPhantomHex.png</file>
+        <file>Content/Field/YellowHexFrame.png</file>
+        <file>Content/Field/YellowLightedGreyHexFrame.png</file>
+        <file>Content/Field/GreenHex.png</file>
+        <file>Content/Field/StrangePurpleHex.png</file>
+        <file>Content/Field/YellowHex.png</file>
+    </qresource>
+</RCC>

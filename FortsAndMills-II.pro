@@ -14,30 +14,45 @@ QMAKE_CXXFLAGS += -std=c++11 -g -Wall
 TARGET = FortsAndMills-II
 TEMPLATE = app
 
+RC_FILE = icon.rc
+
 
 SOURCES += main.cpp \
-    Game/gamehex.cpp \
-    Game/gameplayer.cpp \
-    Game/gamerules.cpp \
-    Game/gameunit.cpp \
     Technical/headers.cpp \
     GameElements/field.cpp \
     GameElements/hex.cpp \
-    Game/gameInit.cpp \
     BasicElements/graphicobject.cpp \
     BasicElements/object.cpp \
     BasicElements/spriteobject.cpp \
     Technical/pictures.cpp \
     GameElements/unit.cpp \
-    Game/gameorder.cpp \
     BasicElements/animation.cpp \
-    Interface/GameLogic/gamewindowInit.cpp \
-    Interface/GameLogic/interaction.cpp \
-    Game/gamePhases.cpp \
-    Game/gameEvents.cpp \
-    Interface/GameLogic/graphicLogic.cpp \
-    Interface/GameLogic/graphicHelpFunctions.cpp \
-    Interface/GameLogic/gameEventsProcessed.cpp
+    GameElements/hexPoints.cpp \
+    Game/gameUnits.cpp \
+    Game/gameOrder.cpp \
+    Game/gameRules.cpp \
+    GameExecution/gameEvents.cpp \
+    GameExecution/gameHelp.cpp \
+    Game/gameHex.cpp \
+    GameExecution/game.cpp \
+    GameExecution/gameTurns.cpp \
+    GameExecution/gameBase.cpp \
+    GameExecution/gameSteps.cpp \
+    GameExecution/gameFight.cpp \
+    GameExecution/gameOrderExecution.cpp \
+    GameExecution/gameUnitsMoving.cpp \
+    GameExecution/gameField.cpp \
+    GameWindow/eventsRealization.cpp \
+    GameWindow/gameLog.cpp \
+    GameWindow/interaction.cpp \
+    GameWindow/interfaceOrganization.cpp \
+    GameWindow/statesControl.cpp \
+    GameWindow/events.cpp \
+    GameWindow/gameWindow.cpp \
+    GameWindow/gameElementsOrganization.cpp \
+    Technical/elementary.cpp \
+    Technical/constants.cpp \
+    Technical/Help.cpp
 
 HEADERS  += mainwindow.h \
     Programm/Basic/headers.h \
@@ -67,7 +82,6 @@ HEADERS  += mainwindow.h \
     Technical/Application.h \
     GameElements/Order.h \
     Interface/GraphicObject.h \
-    Interface/ArtificialGameControl.h \
     Interface/Object.h \
     BasicElements/GraphicObject.h \
     BasicElements/Object.h \
@@ -78,7 +92,6 @@ HEADERS  += mainwindow.h \
     Interface/Dialog.h \
     Interface/MenuWindow.h \
     Technical/Client.h \
-    Technical/Random.h \
     Interface/GoButton.h \
     BasicElements/StateObject.h \
     Game/GameOrder.h \
@@ -87,7 +100,56 @@ HEADERS  += mainwindow.h \
     GameElements/DayTimeButton.h \
     GameElements/UnitWay.h \
     BasicElements/Animation.h \
-    Interface/GameLogic/GameWindow.h
+    Interface/GameLogic/GameWindow.h \
+    GameElements/Rocket.h \
+    GameElements/Shield.h \
+    BasicElements/MergingObject.h \
+    GameElements/CureIcon.h \
+    Technical/Elementary.h \
+    Game/GameAction.h \
+    GameExecution/Game.h \
+    GameExecution/GameTurns.h \
+    GameExecution/GameBase.h \
+    GameExecution/GameSteps.h \
+    Game/GameMessages.h \
+    GameExecution/GameFight.h \
+    GameExecution/GameEvents.h \
+    GameExecution/GameOrderExecution.h \
+    GameExecution/GameUnitsMoving.h \
+    GameExecution/GameField.h \
+    GameExecution/GameHelp.h \
+    GameExecution/GameMessages.h \
+    GameWindow/GameWindow.h \
+    GameWindow/GameElementsOrganization.h \
+    GameWindow/InterfaceOrganization.h \
+    GameWindow/Interaction.h \
+    GameWindow/StatesControl.h \
+    GameWindow/GameLog.h \
+    GameWindow/EventsRealization.h \
+    GameWindow/Events.h \
+    Interface/LeftPanelsSwitch.h \
+    Interface/CreatingGameWindow.h \
+    Interface/Tunes.h \
+    BasicElements/DigitObject.h \
+    Interface/GameLabel.h \
+    Interface/SpecialButton.h \
+    Interface/HowToPlayWindow.h \
+    Learning/LessonGameWindow.h \
+    Learning/LessonGame.h \
+    Learning/LessonMessages.h \
+    Technical/HelpManager.h
 
 RESOURCES += \
-    Images.qrc
+    Decorations.qrc \
+    Orders.qrc \
+    Buttons.qrc \
+    Field.qrc \
+    Icons.qrc \
+    InterfaceElements.qrc \
+    MainGameElements.qrc \
+    Panels.qrc \
+    Units.qrc \
+    UnitElements.qrc \
+    Fonts.qrc \
+    ColoredDecorations.qrc \
+    Numbers.qrc

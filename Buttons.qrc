@@ -1,0 +1,42 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Content/Buttons/DisabledGoButton.png</file>
+        <file>Content/Buttons/PressedGoButton.png</file>
+        <file>Content/Buttons/BlueGoButton.png</file>
+        <file>Content/Buttons/GreenGoButton.png</file>
+        <file>Content/Buttons/RedGoButton.png</file>
+        <file>Content/Buttons/YellowGoButton.png</file>
+        <file>Content/Buttons/WhiteFlag.png</file>
+        <file>Content/Buttons/CreateNewGame.png</file>
+        <file>Content/Buttons/CreateButton.png</file>
+        <file>Content/Buttons/JoinButton.png</file>
+        <file>Content/Buttons/LeaveButton.png</file>
+        <file>Content/Buttons/HomeButton.png</file>
+        <file>Content/Buttons/HowToPlayButton.png</file>
+        <file>Content/Buttons/Lesson1.png</file>
+        <file>Content/Buttons/Lesson2.png</file>
+        <file>Content/Buttons/Lesson3.png</file>
+        <file>Content/Buttons/Lesson4.png</file>
+        <file>Content/Buttons/Lesson5.png</file>
+        <file>Content/Buttons/BlueCancelButton.png</file>
+        <file>Content/Buttons/BlueOkButton.png</file>
+        <file>Content/Buttons/GreenCancelButton.png</file>
+        <file>Content/Buttons/GreenOkButton.png</file>
+        <file>Content/Buttons/RedCancelButton.png</file>
+        <file>Content/Buttons/RedOkButton.png</file>
+        <file>Content/Buttons/YellowCancelButton.png</file>
+        <file>Content/Buttons/YellowOkButton.png</file>
+        <file>Content/Buttons/FireButtonFrame.png</file>
+        <file>Content/Buttons/BlueBackButton.png</file>
+        <file>Content/Buttons/GreenBackButton.png</file>
+        <file>Content/Buttons/RedBackButton.png</file>
+        <file>Content/Buttons/YellowBackButton.png</file>
+        <file>Content/Buttons/NeutralBackButton.png</file>
+        <file>Content/Buttons/NeutralCancelButton.png</file>
+        <file>Content/Buttons/NeutralOkButton.png</file>
+        <file>Content/Buttons/BlueNext.png</file>
+        <file>Content/Buttons/GreenNext.png</file>
+        <file>Content/Buttons/RedNext.png</file>
+        <file>Content/Buttons/YellowNext.png</file>
+    </qresource>
+</RCC>

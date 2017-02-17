@@ -1,0 +1,29 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Content/MainGameElements/BlueUnitHome.png</file>
+        <file>Content/MainGameElements/Fort.png</file>
+        <file>Content/MainGameElements/Mill.png</file>
+        <file>Content/MainGameElements/Mountain.png</file>
+        <file>Content/MainGameElements/RedUnitHome.png</file>
+        <file>Content/MainGameElements/BlueShield.png</file>
+        <file>Content/MainGameElements/RedShield.png</file>
+        <file>Content/MainGameElements/BlueFortification.png</file>
+        <file>Content/MainGameElements/RedFortification.png</file>
+        <file>Content/MainGameElements/NotBlueUnitHome.png</file>
+        <file>Content/MainGameElements/NotRedUnitHome.png</file>
+        <file>Content/MainGameElements/CureIcon.png</file>
+        <file>Content/MainGameElements/GreenFortification.png</file>
+        <file>Content/MainGameElements/GreenUnitHome.png</file>
+        <file>Content/MainGameElements/NotGreenUnitHome.png</file>
+        <file>Content/MainGameElements/NotYellowUnitHome.png</file>
+        <file>Content/MainGameElements/YellowFortification.png</file>
+        <file>Content/MainGameElements/YellowShield.png</file>
+        <file>Content/MainGameElements/YellowUnitHome.png</file>
+        <file>Content/MainGameElements/GreenShield.png</file>
+        <file>Content/MainGameElements/BlueRocket.png</file>
+        <file>Content/MainGameElements/GreenRocket.png</file>
+        <file>Content/MainGameElements/RedRocket.png</file>
+        <file>Content/MainGameElements/YellowRocket.png</file>
+        <file>Content/MainGameElements/NeutralShield.png</file>
+    </qresource>
+</RCC>

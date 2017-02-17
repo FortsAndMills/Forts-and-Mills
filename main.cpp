@@ -1,5 +1,5 @@
-#include "Technical\Application.h"
-#include "Interface\MainWindow.h"
+#include "Technical/Application.h"
+#include "Interface/MainWindow.h"
 
 int main(int argc, char *argv[])
 {

@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Content/ColoredDecorations/BlueLight.png</file>
+        <file>Content/ColoredDecorations/BlueWay.png</file>
+        <file>Content/ColoredDecorations/GreenLight.png</file>
+        <file>Content/ColoredDecorations/GreenWay.png</file>
+        <file>Content/ColoredDecorations/RedLight.png</file>
+        <file>Content/ColoredDecorations/RedWay.png</file>
+        <file>Content/ColoredDecorations/YellowLight.png</file>
+        <file>Content/ColoredDecorations/YellowWay.png</file>
+    </qresource>
+</RCC>

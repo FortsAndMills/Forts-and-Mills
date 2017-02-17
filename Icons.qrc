@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Content/Icons/Breakfast.png</file>
+        <file>Content/Icons/Dinner.png</file>
+        <file>Content/Icons/SandClock.png</file>
+        <file>Content/Icons/Supper.png</file>
+        <file>Content/Icons/Night.png</file>
+        <file>Content/Icons/Sleep.png</file>
+    </qresource>
+</RCC>
