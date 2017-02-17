@@ -2,26 +2,26 @@
 #define DAYTIMEPANEL_H
 
 #include "Technical/Headers.h"
+#include "GameExecution/Game.h"
 #include "Technical/Constants.h"
-#include "Game/Game.h"
 #include "GameElements/DayTimeButton.h"
 
 class DayTimePanel : public GraphicObject
 {
     Q_OBJECT
-
-    Game * game;
-
-    QMap <DayTime, DayTimeButton *> DayTimePictures;
-    friend GameWindow;  // FAIL сигнальчики, блин
-
 public:
-    explicit DayTimePanel(GraphicObject * parent, Game * game) : GraphicObject(parent)
+    QMap <DayTime, DayTimeButton *> DayTimePictures;
+
+    enum DayTimePanelState {FREEZE, BUTTON, GAME_STATE};
+    explicit DayTimePanel(GraphicObject * parent, int dt, DayTimePanelState state = GAME_STATE, bool MaximizeDayTimes = false) :
+        GraphicObject(parent, (state == BUTTON) * (CLICKABLE | CHILD) | (state == FREEZE) * CHILD, "", "", "SimpleLayer")
     {
-        this->game = game;
-        for (int time = 0; time < game->rules->dayTimes.size(); ++time)
+        this->MaximizeDayTimes = MaximizeDayTimes;
+        QList <QString> DayTimeNames = {"Breakfast", "Dinner", "Supper", "Night", "Sleep"};
+
+        for (int time = 0; time < dt; ++time)
         {
-            DayTimePictures[time] = new DayTimeButton(this, time, game->rules->dayTimes[time]);
+            DayTimePictures[time] = new DayTimeButton(this, time, DayTimeNames[time], state == GAME_STATE);
         }
     }
     virtual void Delete()
@@ -31,28 +31,54 @@ public:
         GraphicObject::Delete();
     }
 
+    bool MaximizeDayTimes;
     void resizeChildren(qreal W, qreal H)
     {
-        qreal size = W / (DayTimePictures.size() +
-                          (DayTimePictures.size() - 1) * constants->dayTimeTableMargin);
+        int n = MaximizeDayTimes ? 5 : DayTimePictures.size();
+        qreal size = W / (n + (n - 1) * constants->dayTimeTableMargin);
+        size = qMin(size, H);
 
-        qreal X = 0;
-        for (int i = 0; i < game->rules->dayTimes.size(); ++i)
+        qreal X = (W - (DayTimePictures.size() + (DayTimePictures.size() - 1) * constants->dayTimeTableMargin) * size) / 2;
+        for (int i = 0; i < DayTimePictures.size(); ++i)
         {
-            DayTimePictures[i]->setGeometry(X, 0, size, H);
+            DayTimePictures[i]->setGeometry(X, (H - size) / 2, size, size);
             X += size * (1 + constants->dayTimeTableMargin);
         }
+    }
+
+    QRectF boundingRect() const
+    {
+        return QRectF(0, 0, width(), height());
+    }
+    QPainterPath shape() const
+    {
+        QPainterPath qp;
+        qp.addRect(boundingRect());
+        return qp;
+    }
+    bool contains(const QPointF &point) const
+    {
+        return boundingRect().contains(point);
     }
 
     void appear()
     {
         this->setVisible(true);
         this->setOpacity(0);
-        this->AnimationStart(OPACITY, 1, constants->dayTimePanelAppearTime);
+        this->AnimationStart(OPACITY, 1, constants->gameMainPhaseStartPanelsAppearTime);
+    }
+    void disappear()
+    {
+        GraphicObject::disappear(constants->gameMainPhaseStartPanelsAppearTime);
     }
     void select(DayTime time, bool enable)
     {
         DayTimePictures[time]->select(enable);
+    }
+    void deselectAll()
+    {
+        foreach (DayTimeButton * dtb, DayTimePictures)
+            dtb->select(false);
     }
 };
 

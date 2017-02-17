@@ -5,6 +5,7 @@
 #include "ProgrammSettings.h"
 #include "Pictures.h"
 #include "AnimationManager.h"
+#include "HelpManager.h"
 #include "Client.h"
 #include "Headers.h"
 
@@ -17,9 +18,14 @@ public:
 
         constants = new Constants();  // инициализируем ключевые классы
         settings = new Settings(this);
-        pictures = new Pictures();
+        images = new Images();
         animations = new AnimationManager();
+        help = new HelpManager();
         client = new Client();
+
+        logFile = new QFile(settings->Debug_File_Name);
+        logFile->open(QIODevice::Text | QIODevice::WriteOnly);
+        debug.setDevice(logFile);
     }
 
     // TODO сохранение приложения при внезапном выключении компа

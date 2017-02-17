@@ -5,26 +5,25 @@
 #include "BasicElements/StateObject.h"
 #include "Order.h"
 
-// TODO unitPanel и StateObject
 class UnitPanel : public StateObject
 {
     Q_OBJECT
     Game * game;
 
-    QList <SpecialButton *> variants;
-    friend Unit;  //  FAIL
+    QList <OrderVariant *> variants;
+    friend Unit;  //  FAIL доступ к variants ради соединений
 
 public:
     explicit UnitPanel(GraphicObject *parent, Game * game) :
-        StateObject(parent, "default", 0, "UnitPanel", "", "", constants->unitPanelAppearTime)
+        StateObject(parent, "default", "UnitPanel", 0, "", "", constants->unitPanelAppearTime)
     {
         this->game = game;
         this->setOpacity(0);
         this->setZValue(constants->unitPanelZPos);
 
-        geometries["hidden"] = QRectF(constants->unitPanelShiftX,
-                                                            constants->unitPanelShiftY, 1, 1);
-        setState("hidden", true);
+        addGeometry("hidden", QRectF(constants->unitPanelShiftX,
+                                                             constants->unitPanelShiftY, 1, 1));
+        setGeometryState("hidden", true);
     }
 
 public:
@@ -69,13 +68,13 @@ public:
 
     void setVariants(QList <QString> variants_names)
     {
-        foreach (SpecialButton * var, variants)
+        foreach (OrderVariant * var, variants)
             var->Delete();
         variants.clear();
 
         foreach (QString var, variants_names)
         {
-            variants << new SpecialButton(this->cur_object(), var);
+            variants << new OrderVariant(this->cur_object(), var);
         }
 
         reconfigure();
@@ -85,13 +84,13 @@ public:
     {
         this->setEnabled(true);
         this->AnimationStart(OPACITY, 1, constants->unitPanelAppearTime);
-        this->setState("default");
+        this->setGeometryState("default");
     }
     void disappear()
     {
         this->setEnabled(false);
         this->AnimationStart(OPACITY, 0, constants->unitPanelAppearTime);
-        this->setState("hidden");
+        this->setGeometryState("hidden");
     }
 };
 

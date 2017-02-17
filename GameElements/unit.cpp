@@ -1,25 +1,20 @@
 #include "Unit.h"
 #include "BasicElements/SpriteObject.h"
-#include "Game/Game.h"
-#include "Game/GameUnit.h"
+#include "GameExecution/Game.h"
 #include "Technical/Constants.h"
 #include "Technical/ProgrammSettings.h"
 #include "Field.h"
 #include "Hex.h"
 #include "UnitPanel.h"
 
-Unit::Unit(GameUnit *prototype, Game *game, GraphicObject *parent, Field *field, bool isMain) :
-    GraphicObject(parent, (settings->PROGRAMM_VERSION == POWER_POINT_VERSION) *
-                  (DRAGABLE | RIGHT_CLICKABLE | WHEEL) +
-                   (settings->PROGRAMM_VERSION == REAL_CLIENT) *
-                  (CLICKABLE))
+Unit::Unit(GameUnit *prototype, Game *game, GraphicObject *parent, bool isMain) :
+    GraphicObject(parent, CLICKABLE | HOVER | RIGHT_CLICKABLE)
 {
     this->setZValue(constants->unitZPos);
 
     this->prototype = prototype;
     this->game = game;
     this->isMain = isMain;
-    this->field = field;
 
     picture = new GraphicObject(this, CHILD, prototype->color + prototype->type);
 
@@ -30,21 +25,59 @@ Unit::Unit(GameUnit *prototype, Game *game, GraphicObject *parent, Field *field,
         health.append(new SpriteObject(this, 0, prototype->color + "UnitHealth"));
     }
 
-    explosion = NULL;
+    for (int i = 0; i < prototype->defenceBonus; ++i)
+    {
+        shields << new Shield(this, prototype->color);
+    }
 
+    explosion = NULL;
     selection = NULL;
+    mainOrder = NULL;
+    bigSelection = NULL;
+    lighting = NULL;
 
     ordersPanel = new UnitPanel(parent, game);
     ordersPanel->anchorTo(this);
     unitTypePanel = new UnitPanel(parent, game);
     unitTypePanel->anchorTo(this);
 }
+Unit::Unit(GraphicObject *parent, QString color, QString type) :
+    GraphicObject(parent, CHILD)
+{
+    GameUnitParameters prototype(settings->rules, type);
+
+    picture = new GraphicObject(this, CHILD, color + type);
+
+    unitFrame = new Object(this, color + "UnitFrame");
+
+    for (int i = 0; i < prototype.init_health; ++i)
+    {
+        health.append(new SpriteObject(this, 0, color + "UnitHealth"));
+    }
+
+    for (int i = 0; i < prototype.max_defenceBonus; ++i)
+    {
+        shields << new Shield(this, color);
+    }
+
+    explosion = NULL;
+    selection = NULL;
+    mainOrder = NULL;
+    bigSelection = NULL;
+    lighting = NULL;
+
+    ordersPanel = NULL;
+    unitTypePanel = NULL;
+}
 Unit::Unit(Unit *another) :
-    Unit(another->prototype, another->game, dynamic_cast<GraphicObject *>(another->parentItem()), another->field, another->isMain)
+    Unit(another->prototype, another->game, dynamic_cast<GraphicObject *>(another->parentItem()), another->isMain)
 {
     this->setX(another->x());
     this->setY(another->y());
     this->resize(another->width(), another->height());
+
+    if (another->brokenGlass != NULL)
+        broke();
 
     this->setEnabled(false);
 }
@@ -58,8 +91,20 @@ void Unit::Delete()
         explosion->Delete();
     if (selection != NULL)
         selection->Delete();
-    ordersPanel->Delete();
-    unitTypePanel->Delete();
+    if (bigSelection != NULL)
+        bigSelection->Delete();
+    if (lighting != NULL)
+        lighting->Delete();
+    if (ordersPanel != NULL)
+        ordersPanel->Delete();
+    if (unitTypePanel != NULL)
+        unitTypePanel->Delete();
+    if (mainOrder != NULL)
+        mainOrder->Delete();
+    if (brokenGlass != NULL)
+        brokenGlass->Delete();
+    foreach (Shield * s, shields)
+        s->Delete();
 
     GraphicObject::Delete();
 }
@@ -79,6 +124,21 @@ void Unit::turnFrame()
     connect(a, SIGNAL(finished()), SLOT(turnFrame()));
 }
 
+void Unit::recountShieldGeometry()
+{
+    for (int i = 0; i < shields.size(); ++i)
+    {
+        shieldGeometry[shields[i]] = QRectF(
+                    width() * (1 / 2.0 + (i - shields.size() / 2.0) * constants->unitShieldsWidth +
+                         (i - (shields.size() - 1) / 2.0) * constants->unitShieldsMergeX),
+                    height() * constants->unitShieldsLineY,
+                    constants->unitShieldsWidth * width(), constants->unitShieldsHeight * height());
+    }
+}
+QPointF Unit::shieldPoint()
+{
+    return QPointF(width() / 2, height() * (constants->unitShieldsLineY + constants->unitShieldsHeight / 2));
+}
 void Unit::recountOrderGeometry()
 {
     qreal X = x() + constants->unitsSize * constants->unitOrderPointX;
@@ -94,35 +154,54 @@ void Unit::recountOrderGeometry()
         Y += constants->orderStackShiftY * constants->unitsSize * constants->unitOrderHeight;
     }
 }
+QRectF Unit::mainOrderGeometry()
+{
+    return QRectF(width() * constants->mainOrderX,
+                             height() * constants->mainOrderY,
+                             width() * constants->mainOrderWidth,
+                  height() * constants->mainOrderHeight);
+}
+QPointF Unit::mainOrderCenter(Object *obj)
+{
+    return mapToItem(obj, mainOrderGeometry().center());
+}
+
+QPair<QRectF, qreal> Unit::healthGeometry(int i)
+{
+    qreal HealthIconWidth = constants->healthIconWidth * width();  // "входные данные"
+    qreal HealthIconHeight = constants->healthIconHeight * height();
+    QPointF rotation_center = QPointF(width() / 2, height() / 2);
+    qreal rotation = (i - (health.size() - 1) / 2.0) * constants->degreeBetweenUnitHealth;
+
+    // ЛИНЕЙНАЯ АЛГЕБРА!
+    QPointF start = QPointF(width() / 2 - HealthIconWidth / 2,
+                            -constants->healthPictureOffset * height());
+    start = turn(start, rotation_center, rotation);
+
+    QPointF center = QPointF(width() / 2,
+                             -constants->healthPictureOffset * height() + HealthIconHeight / 2);
+    center = turn(center, rotation_center, rotation);
+
+    start = turn(start, center, -rotation);
+
+    return QPair<QRectF, qreal> (QRectF(start.x(), start.y(),
+                                        HealthIconWidth, HealthIconHeight),
+                                                       rotation);
+}
 QPointF Unit::turn(QPointF start, QPointF axis, qreal degree)
 {
     degree *=  3.1415 / 180;
     return QPointF((start.x() - axis.x()) * cos(degree) - (start.y() - axis.y()) * sin(degree) + axis.x(),
                    (start.x() - axis.x()) * sin(degree) + (start.y() - axis.y()) * cos(degree) + axis.y());
 }
-void Unit::resizeHealth(qreal W, qreal H)
+void Unit::resizeHealth()
 {
-    int N = health.size();  // TODO возможно, тут теперь не нужна адская геометрия
-    for (int i = 0; i < N; ++i)
+    for (int i = 0; i < health.size(); ++i)
     {
-        qreal HealthIconWidth = constants->healthIconWidth * W;  // "входные данные"
-        qreal HealthIconHeight = constants->healthIconHeight * H;
-        QPointF rotation_center = QPointF(W / 2, H / 2);
-        qreal rotation = (i - (N - 1) / 2.0) * constants->degreeBetweenUnitHealth;
-
-        // ЛИНЕЙНАЯ АЛГЕБРА!
-        QPointF start = QPointF(W / 2 - HealthIconWidth / 2,
-                                -constants->healthPictureOffset * H);
-        start = turn(start, rotation_center, rotation);
-
-        QPointF center = QPointF(W / 2,
-                                 -constants->healthPictureOffset * H + HealthIconHeight / 2);
-        center = turn(center, rotation_center, rotation);
-
-        start = turn(start, center, -rotation);
-
-        health[i]->setGeometry(start.x(), start.y(), HealthIconWidth, HealthIconHeight);
-        health[i]->setRotation(rotation);
+        QPair <QRectF, qreal> geom = healthGeometry(i);
+        health[i]->setGeometry(geom.first);
+        health[i]->setRotation(geom.second);
+        health[i]->setVisible(true);
     }
 }
 void Unit::resizeOrders()
@@ -130,6 +209,14 @@ void Unit::resizeOrders()
     recountOrderGeometry();
     foreach (Order * order, orders_stack)
         order->setGeometry(orderGeometry[order]);
+}
+void Unit::resizeShields()
+{
+    recountShieldGeometry();
+    for (int i = 0; i < shields.size(); ++i)
+    {
+        shields[i]->setGeometry(shieldGeometry[shields[i]]);
+    }
 }
 void Unit::resizeChildren(qreal W, qreal H)
 {
@@ -143,15 +230,43 @@ void Unit::resizeChildren(qreal W, qreal H)
                                                   W * constants->unitSelectionWidth,
                                                   H * constants->unitSelectionHeight);
     }
+    if (bigSelection != NULL)
+    {
+        bigSelection->setGeometry(W * constants->unitBigSelectionPointX,
+                                                  H * constants->unitBigSelectionPointY,
+                                                  W * constants->unitBigSelectionWidth,
+                                                  H * constants->unitBigSelectionHeight);
+    }
+    if (lighting != NULL)
+    {
+        lighting->setGeometry(W * constants->unitLightingPointX,
+                                                  H * constants->unitLightingPointY,
+                                                  W * constants->unitLightingWidth,
+                                                  H * constants->unitLightingHeight);
+    }
+    if (brokenGlass != NULL)
+    {
+        brokenGlass->setGeometry(0, 0, W, H);
+    }
 
     // панель ресайзится по своим правилам!
-    ordersPanel->setPos(x() + W * constants->unitPanelPointX, y() + H * constants->unitPanelPointY);
-    ordersPanel->reconfigure();
-    unitTypePanel->setPos(x() + W * constants->unitPanelPointX, y() + H * constants->unitPanelPointY);
-    unitTypePanel->reconfigure();
+    if (ordersPanel != NULL)
+    {
+        ordersPanel->setPos(x() + W * constants->unitPanelPointX, y() + H * constants->unitPanelPointY);
+        ordersPanel->reconfigure();
+    }
+    if (unitTypePanel != NULL)
+    {
+        unitTypePanel->setPos(x() + W * constants->unitPanelPointX, y() + H * constants->unitPanelPointY);
+        unitTypePanel->reconfigure();
+    }
 
-    resizeHealth(W, H);
+    if (mainOrder != NULL)
+        mainOrder->setGeometry(mainOrderGeometry());
+
+    resizeHealth();
     resizeOrders();
+    resizeShields();
 }
 
 void Unit::reconfigureOrders()
@@ -160,19 +275,23 @@ void Unit::reconfigureOrders()
     foreach (Order * order, orders_stack)
         order->AnimationStart(orderGeometry[order], constants->unitReconfigureTime);
 }
-
+void Unit::reconfigureHealth()
+{
+    for (int i = 0; i < health.size(); ++i)
+    {
+        QPair <QRectF, qreal> geom = healthGeometry(i);
+        health[i]->AnimationStart(geom.first, constants->unitReconfigureTime);
+        health[i]->AnimationStart(ROTATION, geom.second, constants->unitReconfigureTime);
+        health[i]->setVisible(true);
+    }
+}
 
 // ИГРОВЫЕ ДЕЙСТВИЯ------------------------------------------------------------------------
 void Unit::blow()
 {
     this->setEnabled(false);
-    if (prototype->x != UNDEFINED)  // спасаем гексы от заваливания программы
-        qDebug() << "ERROR: not undefined unit is blown";
 
-    this->AnimationStart(WIDTH, 0, constants->unitDisappearTime, true);
-    this->AnimationStart(HEIGHT, 0, constants->unitDisappearTime, true);
-    this->AnimationStart(X_POS,   x() + width() / 2, constants->unitDisappearTime, true);
-    this->AnimationStart(Y_POS, y() + height() / 2, constants->unitDisappearTime, true);
+    this->AnimationStart(QRectF(x() + width() / 2, y() + height() / 2, 0, 0), constants->unitDisappearTime);
 
     // FAIL rand() % 3 и по-другому никак
     explosion = new SpriteObject(dynamic_cast<GraphicObject *>(this->parentItem()), 0, "Explosion" + QString::number(rand() % 3 + 1));
@@ -182,30 +301,80 @@ void Unit::blow()
                                               constants->unitExplosionHeight * height());
     connect(explosion, SIGNAL(looped()), this, SLOT(Delete()));
 }
-
-void Unit::healthChanged()
+void Unit::broke()
 {
-    foreach (SpriteObject * heal, health)  // TODO лишние удаления здоровья юнитов
-    {
-        heal->Delete();
-    }
-    health.clear();
+    brokenGlass = new Object(this, "BrokenGlass");
+    brokenGlass->setGeometry(0, 0, width(), height());
 
-    for (int i = 0; i < prototype->health; ++i)
-    {
-        health.append(new SpriteObject(this, 0, prototype->color + "UnitHealth"));
-    }
-    resizeHealth(width(), height());
+    brokenGlass->setOpacity(0);
+    brokenGlass->AnimationStart(OPACITY, 1);
 }
 
-void Unit::dragFinish()
+void Unit::mainOrderAppear(OrderType prototype)
 {
-    Hex * hex = field->HexAt(field->mapFromItem(parentItem(),
-                                                x() + width() / 2, y() + height() / 2));
-    if (hex == NULL)
-        emit dragFinished(this->prototype, NULL);
-    else
-        emit dragFinished(this->prototype, hex->prototype);
+    mainOrder = new MainOrder(this, prototype, isMain);
+
+    mainOrder->setGeometry(width() * constants->mainOrderX + width() * constants->mainOrderWidth / 2,
+                           height() * constants->mainOrderY + height() * constants->mainOrderHeight / 2,
+                                               0, 0);
+    mainOrder->AnimationStart(mainOrderGeometry(), constants->mainOrderAppearTime);
+}
+void Unit::mainOrderDisappear()
+{
+    if (mainOrder == NULL)
+    {
+        debug << "FATAL ERROR: main order (for disappearing) is not found\n";
+        return;
+    }
+
+    mainOrder->AnimationStart(QRectF(width() * constants->mainOrderX + width() * constants->mainOrderWidth / 2,
+                           height() * constants->mainOrderY + height() * constants->mainOrderHeight / 2,
+                                               0, 0), constants->mainOrderAppearTime);
+    connect(mainOrder, SIGNAL(movieFinished()), mainOrder, SLOT(Delete()));
+
+    mainOrder = NULL;
+}
+bool Unit::isMainOrderOpenned()
+{
+    return mainOrder == NULL || mainOrder->opened;
+}
+void Unit::openMainOrder()
+{
+    mainOrder->open();
+
+    bigSelection = new SpriteObject(this, 0, prototype->color + "UnitSelectionLayer", -1, true);
+    bigSelection->setZValue(constants->selectionZpos);
+    resizeChildren(width(), height());
+    connect(bigSelection, SIGNAL(looped()), bigSelection, SLOT(Delete()));
+    bigSelection = NULL;
+}
+void Unit::mainOrderBurn()
+{
+    if (mainOrder == NULL)
+    {
+        debug << "ERROR: burned null order\n";
+        return;
+    }
+
+    mainOrder->burn();
+    mainOrder = NULL;
+}
+
+void Unit::healthChanged(int change)
+{
+    while (change < 0)
+    {
+        health[health.size() - 1]->disappear(constants->unitDisappearTime);
+        health.removeLast();
+        ++change;
+    }
+    while (change > 0)
+    {
+        health.append(new SpriteObject(this, 0, prototype->color + "UnitHealth"));
+        --change;
+    }
+
+    reconfigureHealth();
 }
 
 void Unit::select()
@@ -214,6 +383,8 @@ void Unit::select()
     {
         selection = new SpriteObject(this, 0, prototype->color + "UnitSelectionLayer");
         selection->setZValue(constants->selectionZpos);
+        isSelected = true;
+        recheckZPos();
         resize(width(), height());
     }
     this->setZValue(constants->selectedUnitZPos);
@@ -225,14 +396,40 @@ void Unit::deselect()
         selection->Delete();
         selection = NULL;
     }
-    this->setZValue(constants->unitZPos);
+    isSelected = false;
+    recheckZPos();
+}
+void Unit::light(bool on)
+{
+    if (on)
+    {
+        if (lighting == NULL)
+        {
+            lighting = new SpriteObject(this, 0, prototype->color + "Light");
+            lighting->setZValue(constants->selectionZpos);
+            isLighten = true;
+            recheckZPos();
+            resize(width(), height());
+        }
+    }
+    else
+    {
+        if (lighting != NULL)
+        {
+            lighting->Delete();
+            lighting = NULL;
+        }
+
+        isLighten = false;
+        recheckZPos();
+    }
 }
 void Unit::showOrdersPanel(QList<OrderType> orders)
 {
     ordersPanel->setVariants(orders);
     ordersPanel->appear();
 
-    foreach (SpecialButton * var, ordersPanel->variants)
+    foreach (OrderVariant * var, ordersPanel->variants)
         connect(var, SIGNAL(leftClicked(QString)), this, SIGNAL(orderVariantChosen(QString)));
 }
 void Unit::hidePanel()
@@ -244,12 +441,17 @@ void Unit::showUnitTypePanel(QList<UnitType> types)
     unitTypePanel->setVariants(types);
     unitTypePanel->appear();
 
-    foreach (SpecialButton * var, unitTypePanel->variants)
+    foreach (OrderVariant * var, unitTypePanel->variants)
         connect(var, SIGNAL(leftClicked(QString)), this, SIGNAL(unitTypeChosen(QString)));
 }
 void Unit::hideUnitTypePanel()
 {
     unitTypePanel->disappear();
+}
+
+void Unit::bigSelect()
+{
+
 }
 
 void Unit::locateOrderLikeOnPanel(Order * order)
@@ -260,5 +462,29 @@ void Unit::locateOrderLikeOnPanel(Order * order)
     order->resize(constants->orderVariantSize, constants->orderVariantSize);
 
     reconfigureOrders();
+}
+
+void Unit::defenceTurn(int amount, bool on)
+{
+    int i = shields.size() - 1;
+    while (i >= 0 && !shields[i]->isOn)
+        --i;
+
+    if (on)
+    {
+        for (int j = 0; j < amount; ++j)
+        {
+            ++i;
+            shields[i]->turnOn();
+        }
+    }
+    else
+    {
+        for (int j = 0; j < amount; ++j)
+        {
+            shields[i]->turnOn(false);
+            --i;
+        }
+    }
 }
 

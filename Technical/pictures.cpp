@@ -1,66 +1,161 @@
 #include "Pictures.h"
 
-void Pictures::InitPictures()
+void Images::InitPictures()
 {
-    names << PictureNameFolder(
-                 ":/Interface/Content/ProgrammInterface/System/",
-                {"MainWindow",
-                 "MainWindowFrame",
-                 "CloseButton",
-                 "MaximizeButton",
-                 "MinimizeButton",
-                 "ButtonLayer",
-                 "BluePlayerPanel",
-                 "RedPlayerPanel",
-                 "WhiteDialogWindow"},
+    QFontDatabase::addApplicationFont("://Content/Fonts/Rubius.ttf");
+
+    names << PictureNameFolder("Panels",
+                {"NeutralMainWindow",
+                 "BlueMainWindow",
+                 "RedMainWindow",
+                 "GreenMainWindow",
+                 "YellowMainWindow",
+                 "NeutralMainWindowFrame",
+                 "BlueMainWindowFrame",
+                 "GreenMainWindowFrame",
+                 "RedMainWindowFrame",
+                 "YellowMainWindowFrame",
+                 "BlueCloseButton",
+                 "BlueMaximizeButton",
+                 "BlueMinimizeButton",
+                 "RedCloseButton",
+                 "RedMaximizeButton",
+                 "RedMinimizeButton",
+                 "GreenCloseButton",
+                 "GreenMaximizeButton",
+                 "GreenMinimizeButton",
+                 "YellowMaximizeButton",
+                 "YellowMinimizeButton",
+                 "YellowCloseButton",
+                 "NeutralCloseButton",
+                 "NeutralMaximizeButton",
+                 "NeutralMinimizeButton",
+                 "NeutralButtonLayer",
+                 "BlueButtonLayer",
+                 "RedButtonLayer",
+                 "GreenButtonLayer",
+                 "YellowButtonLayer",
+                 "LeftBluePlayerPanel",
+                 "LeftRedPlayerPanel",
+                 "LeftYellowPlayerPanel",
+                 "LeftGreenPlayerPanel",
+                 "RightBluePlayerPanel",
+                 "RightRedPlayerPanel",
+                 "RightYellowPlayerPanel",
+                 "RightGreenPlayerPanel",
+                 "NeutralDialogWindow",
+                 "BlueDialogWindow",
+                 "RedDialogWindow",
+                 "GreenDialogWindow",
+                 "YellowDialogWindow",
+                 "UnitPanel",
+                 "Border",
+                 "GameLabelPanel1",
+                 "GameLabelPanel2",
+                 "ChosenGameLabelPanel",
+                 "ChosenGameLabelLayer",
+                 "LessonFrame",
+                 "LessonFrameSelection",
+                 "CreateGameFrameSelection",
+                 "NewGameFrameSelection"},
                  ".png");
 
-    names << PictureNameFolder(
-                 ":/InterfaceElements/Content/ProgrammInterface/InterfaceElements/",
-                {"up",
-                 "down",
+    names << PictureNameFolder("InterfaceElements",
+               {"up",
+                "down",
                  "right",
                  "left",
-                 "SimpleLayer"},
+                 "SimpleLayer",
+                 "PlayerOnline",
+                 "PlayerOffline",
+                 "PlayersLabel"},
                  ".png");
 
-    names << PictureNameFolder(
-                  ":/Icons/Content/ProgrammInterface/Icons/",
-                 {"SandClock"},
+    names << PictureNameFolder("Numbers",
+               {"MillDigit0",
+                "MillDigit1",
+                "MillDigit2",
+                "MillDigit3",
+                "MillDigit4",
+                "MillDigit5",
+                "MillDigit6",
+                "MillDigit7",
+                "MillDigit8",
+                "MillDigit9",
+                "FortDigit9",
+                "FortDigit8",
+                "FortDigit7",
+                "FortDigit6",
+                "FortDigit5",
+                "FortDigit4",
+                "FortDigit3",
+                "FortDigit2",
+                "FortDigit1",
+                "FortDigit0",
+                "x"},
                  ".png");
 
-    names << PictureNameFolder(
-                 ":/Text/Content/ProgrammInterface/AdditionalLabels/",
-                {"GatherLabel",
-                 "StartLabel"},
+    names << PictureNameFolder("Icons",
+                 {"SandClock",
+                  "Breakfast",
+                  "Dinner",
+                  "Supper",
+                  "Night",
+                  "Sleep"},
                  ".png");
 
-    names << PictureNameFolder(
-                 ":/Buttons/Content/ProgrammInterface/Buttons/",
-                {"BlueButton",
-                 "BlueButtonClicked",
-                 "RedButton",
-                 "RedButtonClicked",
-                 "NeutralButton",
-                 "NeutralButtonClicked",
-                 "GoButton",
+    names << PictureNameFolder("Buttons",
+                {"BlueGoButton",
+                 "RedGoButton",
+                 "YellowGoButton",
+                 "GreenGoButton",
                  "PressedGoButton",
-                 "DisabledGoButton"},
+                 "BlueOkButton",
+                 "RedOkButton",
+                 "GreenOkButton",
+                 "YellowOkButton",
+                 "NeutralOkButton",
+                 "BlueCancelButton",
+                 "RedCancelButton",
+                 "GreenCancelButton",
+                 "YellowCancelButton",
+                 "NeutralCancelButton",
+                 "DisabledGoButton",
+                 "BlueBackButton",
+                 "RedBackButton",
+                 "GreenBackButton",
+                 "YellowBackButton",
+                 "NeutralBackButton",
+                 "FireButtonFrame",
+                 "BlueNext",
+                 "RedNext",
+                 "YellowNext",
+                 "GreenNext",
+                 "WhiteFlag",
+                 "CreateNewGame",
+                 "CreateButton",
+                 "CancelLabelButton",
+                 "JoinButton",
+                 "LeaveButton",
+                 "HomeButton",
+                 "HowToPlayButton",
+                 "Lesson1",
+                 "Lesson2",
+                 "Lesson3",
+                 "Lesson4",
+                 "Lesson5"},
                  ".png");
 
-    names << PictureNameFolder(
-                 ":Panels/Content/ProgrammInterface/Panels/",
-                {"UnitPanel"},
-                 ".png");
-
-    names << PictureNameFolder(
-                 ":/Field/Content/ProgrammInterface/Field/",
+    names << PictureNameFolder("Field",
                 {"DarkYellowHex",
                 "GreenHexFrame",
                 "BlueHex",
                 "NeutralHex",
                 "LightGreenHex",
                 "RedHex",
+                "StrangePurpleHex",
+                "GreenHex",
+                "YellowHex",
                 "PurpleHexFrame",
                 "RedHexFrame",
                 "YellowHexFrame",
@@ -72,22 +167,21 @@ void Pictures::InitPictures()
                  "RedPhantomHex"},
                 ".png");
 
-    names << PictureNameFolder(
-                 ":/Decorations/Content/Decorations/",
-                {"Explosion1",
+    names << PictureNameFolder("Decorations",
+                {"Logo",
+                 "Explosion1",
                  "Explosion2",
                  "Explosion3",
                  "SmallExplosion",
                  "MillSelection",
                  "Burn",
                  "DayTimeSelection",
-                 "BlueWay",
-                 "RedWay"},
+                 "Blast",
+                 "DecorativeShield",
+                 "OrdersFrame",
+                 "OrdersFrameRed",
+                 "BrokenGlass"},
                  ".png");
-    picture_rows["BlueWay"] = 1;
-    picture_columns["BlueWay"] = 8;
-    picture_rows["RedWay"] = 1;
-    picture_columns["RedWay"] = 8;
     picture_rows["DayTimeSelection"] = 6;
     picture_columns["DayTimeSelection"] = 5;
     picture_rows["Explosion1"] = 1;
@@ -95,30 +189,79 @@ void Pictures::InitPictures()
     picture_rows["Explosion2"] = 1;
     picture_columns["Explosion2"] = 64;
     picture_rows["Explosion3"] = 1;
-    picture_columns["Explosion3"] = 48;    
+    picture_columns["Explosion3"] = 48;
+    picture_rows["SmallExplosion"] = 1;
+    picture_columns["SmallExplosion"] = 12;
     picture_rows["MillSelection"] = 4;
-    picture_columns["MillSelection"] = 5;    
+    picture_columns["MillSelection"] = 5;
     picture_rows["Burn"] = 8;
     picture_columns["Burn"] = 8;
+    picture_rows["OrdersFrame"] = 2;
+    picture_columns["OrdersFrame"] = 8;
+    picture_rows["OrdersFrameRed"] = 2;
+    picture_columns["OrdersFrameRed"] = 8;
 
-    names << PictureNameFolder(
-                 ":/Decorations/Content/Decorations/",
-                {"BlueSimpleBlur",
-                 "UnderwaterBlur",
-                 "OceanBlur"},
+    names << PictureNameFolder("ColoredDecorations",
+                {"BlueWay",
+                 "RedWay",
+                 "GreenWay",
+                 "YellowWay",
+                 "BlueLight",
+                 "RedLight",
+                 "YellowLight",
+                 "GreenLight"},
+                 ".png");
+    picture_rows["BlueWay"] = 1;
+    picture_columns["BlueWay"] = 8;
+    picture_rows["RedWay"] = 1;
+    picture_columns["RedWay"] = 8;
+    picture_rows["GreenWay"] = 1;
+    picture_columns["GreenWay"] = 8;
+    picture_rows["YellowWay"] = 1;
+    picture_columns["YellowWay"] = 8;
+    picture_rows["BlueLight"] = 4;
+    picture_columns["BlueLight"] = 5;
+    picture_rows["RedLight"] = 4;
+    picture_columns["RedLight"] = 5;
+    picture_rows["YellowLight"] = 4;
+    picture_columns["YellowLight"] = 5;
+    picture_rows["GreenLight"] = 4;
+    picture_columns["GreenLight"] = 5;
+
+    names << PictureNameFolder("Decorations",
+                {"OceanBlur",
+                 "TextTexture"},
                  ".jpg");
 
-    names << PictureNameFolder(
-                 ":/GameElements/Content/GameElements/",
+    names << PictureNameFolder("MainGameElements",
                 {"Fort",
                  "Mill",
                  "Mountain",
                  "BlueUnitHome",
-                 "RedUnitHome"},
+                 "RedUnitHome",
+                 "GreenUnitHome",
+                 "YellowUnitHome",
+                 "NotBlueUnitHome",
+                 "NotRedUnitHome",
+                 "NotYellowUnitHome",
+                 "NotGreenUnitHome",
+                 "BlueRocket",
+                 "RedRocket",
+                 "GreenRocket",
+                 "YellowRocket",
+                 "NeutralShield",
+                 "BlueShield",
+                 "RedShield",
+                 "GreenShield",
+                 "YellowShield",
+                 "BlueFortification",
+                 "RedFortification",
+                 "GreenFortification",
+                 "YellowFortification",
+                 "CureIcon"},
                  ".png");
 
-    names << PictureNameFolder(
-                 ":/Orders/Content/GameElements/Orders/",
+    names << PictureNameFolder("Orders",
                 {"Attack",
                  "Capture",
                  "Cure",
@@ -126,74 +269,144 @@ void Pictures::InitPictures()
                  "Fortify",
                  "Go",
                  "Siege",
-                 "Gather",
+                 "Recruit",
+                 "Liberate",
+                 "Retreat",
                  "Unknown",
-                 "Wait"},
+                 DefaultOrder,
+                 "AttackTurn",
+                 "CureTurn",
+                 "CaptureTurn",
+                 "FireTurn",
+                 "FortifyTurn",
+                 "GoTurn",
+                 "SiegeTurn",
+                 "RecruitTurn",
+                 "LiberateTurn",
+                 "RetreatTurn",
+                 DefaultOrder + QString("Turn")},
                  ".png");
+    picture_rows["AttackTurn"] = 3;
+    picture_columns["AttackTurn"] = 7;    
+    picture_rows["CureTurn"] = 3;
+    picture_columns["CureTurn"] = 7;
+    picture_rows["CaptureTurn"] = 3;
+    picture_columns["CaptureTurn"] = 7;
+    picture_rows["FireTurn"] = 3;
+    picture_columns["FireTurn"] = 7;
+    picture_rows["FortifyTurn"] = 3;
+    picture_columns["FortifyTurn"] = 7;
+    picture_rows["GoTurn"] = 3;
+    picture_columns["GoTurn"] = 7;
+    picture_rows["SiegeTurn"] = 3;
+    picture_columns["SiegeTurn"] = 7;
+    picture_rows["RecruitTurn"] = 3;
+    picture_columns["RecruitTurn"] = 7;
+    picture_rows["LiberateTurn"] = 3;
+    picture_columns["LiberateTurn"] = 7;
+    picture_rows["RetreatTurn"] = 3;
+    picture_columns["RetreatTurn"] = 7;
+    picture_rows[DefaultOrder + QString("Turn")] = 3;
+    picture_columns[DefaultOrder + QString("Turn")] = 7;
 
-    names << PictureNameFolder(
-                 ":/Units/Content/GameElements/Units/",
+    names << PictureNameFolder("Units",
                 {"BlueKarkun",
                  "BlueScrat",
                  "BluePig",
                  "BlueHippo",
+                 "BlueBruter",
+                 "BlueMumusha",
                  "RedKarkun",
                  "RedScrat",
                  "RedPig",
                  "RedHippo",
+                 "RedBruter",
+                 "RedMumusha",
+                 "GreenKarkun",
+                 "GreenScrat",
+                 "GreenPig",
+                 "GreenHippo",
+                 "GreenBruter",
+                 "GreenMumusha",
+                 "YellowKarkun",
+                 "YellowScrat",
+                 "YellowPig",
+                 "YellowHippo",
+                 "YellowBruter",
+                 "YellowMumusha",
+                 "NeutralKarkun",
+                 "NeutralScrat",
+                 "NeutralPig",
+                 "NeutralHippo",
+                 "NeutralBruter",
+                 "NeutralMumusha",
                  "Scrat",
                  "Pig",
                  "Hippo",
-                 "Karkun"},
+                 "Karkun",
+                 "Bruter",
+                 "Mumusha"},
                  ".png");
 
-    names << PictureNameFolder(
-                 ":/UnitElements/Content/GameElements/UnitsElements/",
+    names << PictureNameFolder("UnitElements",
                 {"BlueUnitFrame",
                  "BlueUnitHealth",
                  "BlueUnitSelectionLayer",
                  "RedUnitFrame",
                  "RedUnitHealth",
-                 "RedUnitSelectionLayer"},
+                 "RedUnitSelectionLayer",
+                 "YellowUnitFrame",
+                 "YellowUnitHealth",
+                 "YellowUnitSelectionLayer",
+                 "GreenUnitFrame",
+                 "GreenUnitHealth",
+                 "GreenUnitSelectionLayer"
+                 "NeutralUnitFrame",
+                 "NeutralUnitHealth",},
                  ".png");
     picture_rows["BlueUnitSelectionLayer"] = 4;
     picture_columns["BlueUnitSelectionLayer"] = 5;
     picture_rows["RedUnitSelectionLayer"] = 4;
     picture_columns["RedUnitSelectionLayer"] = 5;
+    picture_rows["GreenUnitSelectionLayer"] = 4;
+    picture_columns["GreenUnitSelectionLayer"] = 5;
+    picture_rows["YellowUnitSelectionLayer"] = 4;
+    picture_columns["YellowUnitSelectionLayer"] = 5;
     picture_rows["RedUnitHealth"] = 1;
     picture_columns["RedUnitHealth"] = 16;
     picture_rows["BlueUnitHealth"] = 1;
     picture_columns["BlueUnitHealth"] = 16;
-
-    names << PictureNameFolder(
-                 ":/DayTime/Content/GameElements/DayTime/",
-                {"Breakfast",
-                 "Dinner",
-                 "Supper"},
-                 ".png");
+    picture_rows["GreenUnitHealth"] = 1;
+    picture_columns["GreenUnitHealth"] = 16;
+    picture_rows["YellowUnitHealth"] = 1;
+    picture_columns["YellowUnitHealth"] = 16;
+    picture_rows["NeutralUnitHealth"] = 1;
+    picture_columns["NeutralUnitHealth"] = 16;
 }
 
-void Pictures::InitDesignPictures()
+void Images::InitDesignPictures()
 {
-    designPictures[CLASSIC]["DialogWindowFrame"] = "WhiteDialogWindow";
-    designPictures[CLASSIC]["DialogTextGradient"] = "OceanBlur";
+    designPictures["SimpleHex"] = "NeutralHex";
+    designPictures["MillHex"] = "DarkYellowHex";
+    designPictures["FortHex"] = "StrangePurpleHex";
+    designPictures["MountainHex"] = "NeutralHex";
 
-    designPictures[CLASSIC]["SimpleHex"] = "NeutralHex";
-    designPictures[CLASSIC]["MillHex"] = "DarkYellowHex";
-    designPictures[CLASSIC]["FortHex"] = "LightGreenHex";
-    designPictures[CLASSIC]["MountainHex"] = "NeutralHex";
+    designPictures["SimpleHexFrame"] = "GreenHexFrame";
+    designPictures["MillHexFrame"] = "GreenHexFrame";
+    designPictures["FortHexFrame"] = "GreenHexFrame";
+    designPictures["MountainHexFrame"] = "GreenHexFrame";
+    designPictures["ForbiddenSelectionHexFrame"] = "RedHexFrame";
 
-    designPictures[CLASSIC]["SimpleHexFrame"] = "GreenHexFrame";
-    designPictures[CLASSIC]["MillHexFrame"] = "GreenHexFrame";
-    designPictures[CLASSIC]["FortHexFrame"] = "GreenHexFrame";
-    designPictures[CLASSIC]["MountainHexFrame"] = "GreenHexFrame";
-    designPictures[CLASSIC]["ForbiddenSelectionHexFrame"] = "RedHexFrame";
+    designPictures["SimpleHexClickedFrame"] = "RedHexFrame";
+    designPictures["MillHexClickedFrame"] = "RedHexFrame";
+    designPictures["FortHexClickedFrame"] = "RedHexFrame";
+    designPictures["MountainHexClickedFrame"] = "RedHexFrame";
 
-    designPictures[CLASSIC]["SimpleHexClickedFrame"] = "RedHexFrame";
-    designPictures[CLASSIC]["MillHexClickedFrame"] = "RedHexFrame";
-    designPictures[CLASSIC]["FortHexClickedFrame"] = "RedHexFrame";
-    designPictures[CLASSIC]["MountainHexClickedFrame"] = "RedHexFrame";
+    designPictures["SelectedHex"] = "BrightYellowHex";
+    designPictures["LightedHex"] = "GoldenHex";
 
-    designPictures[CLASSIC]["SelectedHex"] = "BrightYellowHex";
-    designPictures[CLASSIC]["LightedHex"] = "GoldenHex";
+    designPictures["BluePanelButton"] = "BlueHex";
+    designPictures["RedPanelButton"] = "RedHex";
+    designPictures["YellowPanelButton"] = "YellowHex";
+    designPictures["GreenPanelButton"] = "GreenHex";
 }

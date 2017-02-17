@@ -28,6 +28,7 @@
 #include <QGraphicsProxyWidget>
 #include <QGraphicsItem>
 #include <QGraphicsObject>
+#include <QGraphicsDropShadowEffect>
 #include <QStyle>
 #include <QTextStream>
 #include <QPainterPath>
@@ -43,22 +44,33 @@
 #include <ctime>
 #include <cstdlib>
 
-#define UNDEFINED -79  // <undone>
+#define UNDEFINED -79
 #define INF 0x7FFFFFFF
+
+#define LESSONS_AMOUNT 5
 
 class Settings;
 class Constants;
-class Pictures;
+class Images;
 class AnimationManager;
+class HelpManager;
 class Client;
 
 #define HexType QString
 #define UnitType QString
 #define OrderType QString
+#define DefaultOrder "Wait"
 #define PlayerColor QString
 #define Resource QString
 #define DayTime int
 #define WAY QString
+#define UP "UP"
+#define DOWN "DOWN"
+#define RIGHT_UP "RIGHT_UP"
+#define LEFT_UP "LEFT_UP"
+#define RIGHT_DOWN "RIGHT_DOWN"
+#define LEFT_DOWN "LEFT_DOWN"
+#define WAYS (QList<QString>() << "UP" << "DOWN" << "RIGHT_UP" << "RIGHT_DOWN" << "LEFT_UP" << "LEFT_DOWN")
 class GameHex;
 class GameOrder;
 class GamePlayer;
@@ -75,16 +87,24 @@ class SpriteObject;
 class Hex;
 class Field;
 class ResourcePic;
-class GameWindow;
+class GameElementsOrganization;
 class Unit;
 class UnitPanel;
+class Shield;
 
 extern Settings * settings;
 extern Constants * constants;
-extern Pictures * pictures;
+extern Images * images;
 extern AnimationManager * animations;
+extern HelpManager * help;
 extern Client * client;
+extern QFile * logFile;
+extern QTextStream debug;
 
-#include "Random.h"
+#include "Elementary.h"
+
+QTextStream &operator << (QTextStream &stream, const QList<QString> list);
+QTextStream &operator >> (QTextStream &stream, QList<QString>& list);
+
 
 #endif

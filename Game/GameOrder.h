@@ -2,30 +2,93 @@
 #define GAMEORDER_H
 
 #include "Technical/Headers.h"
-#include "GameUnit.h"
+#include "GameAction.h"
 
-class GameOrder : public QObject
+class GameOrderParameters
 {
-    Q_OBJECT
-
 public:
-    OrderType type;
+    OrderType type = DefaultOrder;
 
-    int parameter_x, parameter_y;
-    UnitType parameter_unit_type;
+    QList <GameAction> actions;
+    bool canUse = true;
 
-    bool isPeaceful;
-    bool isMovingUnit;
-    enum ORDER_PARAMETER {NONE,
-                                                        ADJACENT_HEX_WHERE_CAN_GO,
-                                                        VISIBLE_HEX_IN_RADIUS_2,
-                                                         TYPE_OF_UNIT} parameterType;
+    int fightInfluence = 0;
+    bool burnsWhenFight = false;
 
-    GameOrder(Game * game, OrderType type) : QObject((QObject *)game)
+    GameOrderParameters(GameRules *rules, UnitType owner, OrderType type);
+
+    GameAction * AddAction()
     {
-        setType(type);
+        return &((actions << GameAction()).last());
     }
-    void setType(OrderType type);
+    bool containsAction(GameAction::GameActionType type)
+    {
+        int i = 0;
+        while (i < actions.size() && actions[i].type != type) { ++i; }
+        return i < actions.size();
+    }
+};
+
+class GameOrder : public GameOrderParameters
+{
+public:
+    qint16 priority;
+
+    bool wasInFight = false;
+    bool realizationStarted = false;
+    bool realizationFinished = false;
+
+    int actionWithNoParameter = UNDEFINED;
+    GameAction::GameActionParameterType nextParameterType()
+    {
+        if (actionWithNoParameter == UNDEFINED)
+            return GameAction::NONE;
+        return actions[actionWithNoParameter].p_type;
+    }
+    void findNextActionWithNoParameter()
+    {
+        if (actionWithNoParameter == UNDEFINED)
+            return;
+
+        do
+        {
+            ++actionWithNoParameter;
+        }
+        while (actionWithNoParameter < actions.size() &&
+               actions[actionWithNoParameter].p_type == GameAction::NONE);
+
+        if (actionWithNoParameter == actions.size())
+            actionWithNoParameter = UNDEFINED;
+    }
+    void setParameter(Coord c)
+    {
+        actions[actionWithNoParameter].target = c;
+    }
+    void setParameter(UnitType ut)
+    {
+        actions[actionWithNoParameter].unitType = ut;
+    }
+
+    GameOrder(GameRules * rules, UnitType owner, OrderType type, int priority) :
+        GameOrderParameters(rules, owner, type)
+    {
+        this->priority = priority;        
+
+        if (actions.size() > 0)
+        {
+            int lp = actions[0].priority;
+            int hp = actions.last().priority;
+            actions.push_front(GameAction());
+            actions[0].StartRealization(lp - 1);
+            AddAction()->FinishRealization(hp + 1);
+        }
+
+        actionWithNoParameter = -1;
+        findNextActionWithNoParameter();
+    }
+
+    friend QTextStream &operator << (QTextStream &stream, const GameOrder *r);
+    friend QTextStream &operator >>(QTextStream &stream, GameOrder *r);
 };
 
 #endif // GAMEORDER_H

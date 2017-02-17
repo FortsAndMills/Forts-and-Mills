@@ -8,14 +8,14 @@
 #include "Hex.h"
 
 Hex::Hex(GraphicObject *parent, Game *game, GameHex *prototype) :
-    StateObject(parent, "Neutral", CLICKABLE, prototype->type + "Hex", prototype->type + "HexFrame", "SimpleLayer")
+    StateObject(parent, "Neutral", prototype->type + "Hex", CLICKABLE | HOVER | RIGHT_CLICKABLE, prototype->type + "HexFrame", "SimpleLayer")
 {
-    addState("Blue", "BlueHex", CLICKABLE, prototype->type + "HexFrame");
-    addState("Red", "RedHex", CLICKABLE, prototype->type + "HexFrame");
-    addState("selected", "SelectedHex", CLICKABLE, prototype->type + "HexFrame");
-    addState("lighted", "LightedHex", CLICKABLE, prototype->type + "HexFrame");
-    frames["forbidden"] = "ForbiddenSelectionHexFrame";
-    properties["forbidden"] = 0;
+    addPicture("Blue", "BlueHex");
+    addPicture("Red", "RedHex");
+    addPicture("Green", "GreenHex");
+    addPicture("Yellow", "YellowHex");
+    addPicture("selected", "SelectedHex");
+    addPicture("lighted", "LightedHex");
 
     this->prototype = prototype;
     this->game = game;
@@ -37,15 +37,37 @@ Hex::Hex(GraphicObject *parent, Game *game, GameHex *prototype) :
 
     UnitHomePicture = new Object(this, "");
     UnitHomePicture->setVisible(false);
+
+    livingNationPicture = new LivingNationPicture(this, prototype->livingNation);
+
+    information = NULL;
 }
-Hex::Hex(Hex *another) : Hex(dynamic_cast<GraphicObject *>(another->parentItem()), another->game, another->prototype)
+Hex::Hex(Hex *another, GraphicObject * newParent) : Hex(newParent, another->game, another->prototype)
 {
     this->setX(another->x());
     this->setY(another->y());
-    this->resize(another->width(), another->height());
-    this->setState(another->cur_picture, true);
 
+    for (int i = 0; i < another->shields.size(); ++i)
+    {
+        shields << new Shield(another->shields[i], this);
+    }
+    if (another->livingNationPicture->opacity() == 0)
+        this->livingNationPicture->setOpacity(0);
+
+    if (another->information != NULL)
+        this->information = new MergingObject(this, another->information->name);
+
+    this->setState(another->cur_picture, true);
+    this->resize(another->width(), another->height());
+
+    this->setProperties(0);
     this->setEnabled(false);
+    foreach (GraphicObject * pic, this->pictures)
+        pic->setEnabled(false);
+}
+Hex::Hex(Hex *another) : Hex(another, dynamic_cast<GraphicObject *>(another->parentItem()))
+{
+
 }
 void Hex::Delete()
 {
@@ -56,6 +78,13 @@ void Hex::Delete()
         HexPicture->Delete();
     foreach (ResourcePic * pic, table)
         pic->Delete();
+    livingNationPicture->Delete();
+    if (information != NULL)
+        information->Delete();
+    foreach (Shield * s, shields)
+        s->Delete();
+    foreach (MergingObject * mo, plannedCapturing)
+        mo->Delete();
 
     StateObject::Delete();
 }
@@ -74,7 +103,7 @@ QList<QPointF> Hex::countTableCoordinates(qreal W, qreal H, int n)
         line += margin;
 
         if (line > H / 2)
-            qDebug() << "ERROR: table of resources overflow";
+            debug << "ERROR: table of resources overflow\n";
 
         // shift - координата по x нашего прямоугольника.
         qreal shift = (H - 2 * line) / H * constants->hexShift * W;
@@ -98,51 +127,6 @@ QList<QPointF> Hex::countTableCoordinates(qreal W, qreal H, int n)
     }
     return answer;
 }
-void Hex::recountPoints()
-{
-    WAY where_entered = "";
-    for (QSet<int>::iterator it = ids.begin(); it != ids.end(); ++it)  // TODO алгоритм вычисления точек
-    {
-        int i = (*it);
-        if (pointPositionState[i] == ENTERING)
-        {
-            points[i] = EnterPoint[pointsWay[i]];
-            where_entered = pointsWay[i];
-        }
-    }
-
-    if (where_entered == "" && ids.size() > 1)
-    {
-        for (QSet<int>::iterator it = ids.begin(); it != ids.end(); ++it)
-        {
-            int i = (*it);
-            if (pointPositionState[i] == STAY && pointsWay[i] != "")
-            {
-                where_entered = pointsWay[i];
-            }
-        }
-    }
-
-    for (QSet<int>::iterator it = ids.begin(); it != ids.end(); ++it)
-    {
-        int i = (*it);
-        if (pointPositionState[i] == STAY)
-        {
-            if (where_entered == "")
-            {
-                points[i] = QPointF(width() / 2, height() / 2);
-            }
-            else if (pointsWay[i] == "")
-            {
-                points[i] = EnterPoint[game->oppositeWay(where_entered)];
-            }
-            else
-            {
-                points[i] = EnterPoint[where_entered];
-            }
-        }
-    }
-}
 void Hex::recountOrdersPosition()
 {
     for (int i = 0; i < orders.size(); ++i)
@@ -154,10 +138,24 @@ void Hex::recountOrdersPosition()
                         center.x() - constants->unitOrderWidth * constants->unitsSize / 2,
                         center.y() - constants->unitOrderHeight * constants->unitsSize / 2);
 
-            center += QPointF(constants->orderStackShiftX * constants->unitOrderWidth * constants->unitsSize,  // <undone>
+            center += QPointF(constants->orderStackShiftX * constants->unitOrderWidth * constants->unitsSize,  // TODO произведения констант сделать константой
                                            constants->orderStackShiftX * constants->unitOrderWidth * constants->unitsSize);
         }
     }
+}
+void Hex::recountShieldsPosition()
+{
+    for (int i = 0; i < shields.size(); ++i)
+    {
+        shield_pos[shields[i]] = QPointF(
+                    width() * (1 / 2.0 + (i - shields.size() / 2.0) * constants->hexShieldsWidth +
+                         (i - (shields.size() - 1) / 2.0) * constants->hexShieldsMergeX),
+                    height() * (constants->hexShieldsLineY + constants->hexShieldsHeight / 2));
+    }
+}
+QPointF Hex::shieldPoint()
+{
+    return QPointF(width() / 2, height() * (constants->hexShieldsLineY + constants->hexShieldsHeight / 2));
 }
 
 void Hex::resizeChildren(qreal W, qreal H)
@@ -176,6 +174,19 @@ void Hex::resizeChildren(qreal W, qreal H)
                                                     H * (1 - 2 * constants->hexPictureOffsetH));
     }
 
+    livingNationPicture->setGeometry(W * constants->livingNationPointX,
+                                                              H * constants->livingNationPointY,
+                                                              W * constants->livingNationWidth,
+                                                              H * constants->livingNationHeight);
+
+    if (information != NULL)
+    {
+        information->setGeometry(W * constants->informationPointX,
+                                                     H * constants->informationPointY,
+                                                     W * constants->informationWidth,
+                                                     H * constants->informationHeight);
+    }
+
     QList <QPointF> table_pos = countTableCoordinates(W, H, table.size());
     for (int i = 0; i < table.size(); ++i)
     {
@@ -184,15 +195,32 @@ void Hex::resizeChildren(qreal W, qreal H)
                                   constants->resourceTablePicSize * W);
     }
 
-    EnterPoint["UP"] = QPointF(W / 2, 3 * H / 4);  // <undone>
-    EnterPoint["DOWN"] = QPointF(W / 2, H / 4);
-    EnterPoint["LEFT_DOWN"] = QPointF(W * (3 - constants->hexShift) / 4, 3 * H / 8);
-    EnterPoint["LEFT_UP"] = QPointF(W * (3 - constants->hexShift) / 4, 5 * H / 8);
-    EnterPoint["RIGHT_DOWN"] = QPointF(W * (1 + constants->hexShift) / 4, 3 * H / 8);
-    EnterPoint["RIGHT_UP"] = QPointF(W * (1 + constants->hexShift) / 4, 5 * H / 8);
+    foreach (MergingObject * mo, plannedCapturing)
+        mo->setGeometry(0, 0, W, H);
+
+    EnterPoint[UP] = QPointF(W / 2, 3 * H / 4);  // TODO придумать что-то более адекватное!
+    EnterPoint[DOWN] = QPointF(W / 2, H / 4);
+    EnterPoint[LEFT_DOWN] = QPointF(W * (3 - constants->hexShift) / 4, 3 * H / 8);
+    EnterPoint[LEFT_UP] = QPointF(W * (3 - constants->hexShift) / 4, 5 * H / 8);
+    EnterPoint[RIGHT_DOWN] = QPointF(W * (1 + constants->hexShift) / 4, 3 * H / 8);
+    EnterPoint[RIGHT_UP] = QPointF(W * (1 + constants->hexShift) / 4, 5 * H / 8);
+
+    LeavePoint[UP] = QPointF(W / 2, H / 4 - H / 8);
+    LeavePoint[DOWN] = QPointF(W / 2, 3 * H / 4 + H / 8);
+    LeavePoint[RIGHT_UP] = QPointF(W * (3 - constants->hexShift) / 4, 3 * H / 8);
+    LeavePoint[RIGHT_DOWN] = QPointF(W * (3 - constants->hexShift) / 4, 5 * H / 8);
+    LeavePoint[LEFT_UP] = QPointF(W * (1 + constants->hexShift) / 4, 3 * H / 8);
+    LeavePoint[LEFT_DOWN] = QPointF(W * (1 + constants->hexShift) / 4, 5 * H / 8);
+
+    ShiftMap.clear();
+    ShiftMap[1] << QPoint(0, 0);
+    ShiftMap[2] << QPoint(W / 6, 0) << QPoint(-W / 6, 0);
+    ShiftMap[3] << QPoint(0, -H / 6) << QPoint(W / 6 / 1.7, H / 6 / 1.7) << QPoint(-W / 6 / 1.7, H / 6 / 1.7);
+    ShiftMap[4] << QPoint(W / 6 / 1.7, -H / 6 / 1.7) << QPoint(W / 6 / 1.7, H / 6 / 1.7) << QPoint(-W / 6 / 1.7, H / 6 / 1.7) << QPoint(-W / 6 / 1.7, -H / 6 / 1.7);
 
     recountPoints();
     resizeOrders();
+    resizeShields();
 }
 void Hex::resizeOrders()
 {
@@ -207,6 +235,16 @@ void Hex::resizeOrders()
         }
     }
 }
+void Hex::resizeShields()
+{
+    recountShieldsPosition();
+    for (int i = 0; i < shields.size(); ++i)
+    {
+        shields[i]->setPos(shield_pos[shields[i]]);
+        shields[i]->resize(constants->hexShieldsWidth * width(),
+                                     constants->hexShieldsHeight * height());
+    }
+}
 
 void Hex::reconfigureOrders()
 {
@@ -217,7 +255,18 @@ void Hex::reconfigureOrders()
         {
             orders[i][j]->AnimationStart(X_POS, orders_pos[orders[i][j]].x(), constants->orderReconfigureTime);
             orders[i][j]->AnimationStart(Y_POS, orders_pos[orders[i][j]].y(), constants->orderReconfigureTime);
+            orders[i][j]->AnimationStart(WIDTH, constants->unitsSize * constants->unitOrderWidth, constants->orderReconfigureTime);
+            orders[i][j]->AnimationStart(HEIGHT, constants->unitsSize * constants->unitOrderHeight, constants->orderReconfigureTime);
         }
+    }
+}
+void Hex::reconfigureShields()
+{
+    recountShieldsPosition();
+    for (int i = 0; i < shields.size(); ++i)
+    {
+        shields[i]->AnimationStart(X_POS, shield_pos[shields[i]].x(), constants->shieldReconfigureTime);
+        shields[i]->AnimationStart(Y_POS, shield_pos[shields[i]].y(), constants->shieldReconfigureTime);
     }
 }
 
@@ -270,12 +319,8 @@ void Hex::setNewResourcesPosition(QList<OrderPic *> resources)
 }
 
 void Hex::setState(QString state, bool isImmediate)
-{    
-    StateObject::setState(state, isImmediate);
-
-    if (state == "forbidden")
-        return;
-
+{
+    setPictureState(state, isImmediate);
     if (state != "selected")
     {
         if (Lighting != NULL)
@@ -294,40 +339,56 @@ void Hex::setState(QString state, bool isImmediate)
         }
     }
 }
-void Hex::select(bool enable)
+void Hex::select(bool enable, bool immediate)
 {
     if (enable)
     {
-        setState("selected");
+        setState("selected", immediate);
     }
     else
     {
-        setState("lighted");
+        setState("lighted", immediate);
     }
 }
-void Hex::light(bool enable)
+void Hex::light(bool enable, bool immediate)
 {
     if (enable)
-        setState("lighted");
+        setState("lighted", immediate);
     else
     {
-        setState(prototype->color);
+        setState(prototype->color, immediate);
     }
 }
 void Hex::forbidToSelect(bool forbid)
 {
     if (forbid)
     {
-        setState("forbidden");
+        setFrame("ForbiddenSelectionHexFrame");
+        setProperties(HOVER | RIGHT_CLICKABLE);
     }
     else
     {
-        setState(cur_picture);
+        setFrame(prototype->type + "HexFrame");
+        setProperties(CLICKABLE | HOVER | RIGHT_CLICKABLE);
     }
 }
-void Hex::changeColor()
+
+void Hex::planCapturing(PlayerColor color)
 {
-    this->setState(prototype->color);
+    if (!plannedCapturing.contains(color))
+    {
+        plannedCapturing[color] = new MergingObject(this, color + "Hex");
+        plannedCapturing[color]->setZValue(-0.1);
+        plannedCapturing[color]->setGeometry(0, 0, width(), height());
+    }
+}
+void Hex::deplanCapturing(PlayerColor color)
+{
+    if (plannedCapturing.contains(color))
+    {
+        plannedCapturing[color]->DeleteOnMerging();
+        plannedCapturing.remove(color);
+    }
 }
 
 void Hex::addOrder(Order *order)
@@ -345,10 +406,122 @@ void Hex::removeOrder(Order *order)
 
 void Hex::showUnitHome(PlayerColor color)
 {
-    UnitHomePicture->setPixmap(pictures->get(color + "UnitHome"));
+    UnitHomePicture->setPixmap(images->get(color + "UnitHome"));
     UnitHomePicture->setVisible(true);
 }
 void Hex::hideUnitHome()
 {
     UnitHomePicture->setVisible(false);
+}
+
+void Hex::hideLivingNation()
+{
+    livingNationPicture->AnimationStart(OPACITY, 0, constants->gameMainPhaseStartPanelsAppearTime);
+}
+void Hex::showInformation(QString pic_name, QString name)
+{
+    if (information != NULL)
+    {
+        debug << "PANIC! information on information!\n";
+        information->Delete();
+    }
+
+    information = new Information(this, pic_name, name);
+    resizeChildren(width(), height());
+}
+void Hex::hideInformation()
+{
+    if (information != NULL)
+    {
+        information->DeleteOnMerging();
+        information = NULL;
+    }
+}
+
+void Hex::highlight(OrderType type, bool light)
+{
+    if (light)
+    {
+        QList <ResourcePic *> to_shift;
+        foreach (ResourcePic * R, table)
+        {
+            if (R->R == type)
+                to_shift.push_back(R);
+            else
+                R->AnimationStart(OPACITY, 0, constants->hexResourcesShiftTime);
+        }
+
+        if (to_shift.size() == 0)
+        {
+            AnimationStart(OPACITY, constants->hexOpaqueState, constants->hexResourcesShiftTime);
+        }
+
+        QList <QPointF> table_pos = countTableCoordinates(width(), height(), to_shift.size());
+        for (int i = 0; i < to_shift.size(); ++i)
+        {
+            to_shift[i]->AnimationStart(X_POS, table_pos[i].x(), constants->hexResourcesShiftTime);
+            to_shift[i]->AnimationStart(Y_POS, table_pos[i].y(), constants->hexResourcesShiftTime);
+        }
+    }
+    else
+    {
+        QList <QPointF> table_pos = countTableCoordinates(width(), height(), table.size());
+        for (int i = 0; i < table.size(); ++i)
+        {
+            table[i]->AnimationStart(X_POS, table_pos[i].x(), constants->hexResourcesShiftTime);
+            table[i]->AnimationStart(Y_POS, table_pos[i].y(), constants->hexResourcesShiftTime);
+            table[i]->AnimationStart(OPACITY, 1, constants->hexResourcesShiftTime);
+        }
+
+        AnimationStart(OPACITY, 1, constants->hexResourcesShiftTime);
+    }
+}
+
+void Hex::defenceAppear(int amount, QString color)
+{
+    for (int i = 0; i < amount; ++i)
+        shields << new Shield(this, color);
+
+    recountShieldsPosition();
+
+    for (int i = 0; i < amount; ++i)
+    {
+        shields[i]->setGeometry(shield_pos[shields[i]].x() + width() * constants->hexShieldsWidth / 2,
+                                                 shield_pos[shields[i]].y() + height() * constants->hexShieldsHeight / 2,
+                                                 0, 0);
+
+        shields[i]->AnimationStart(WIDTH, width() * constants->hexShieldsWidth, constants->shieldReconfigureTime);
+        shields[i]->AnimationStart(HEIGHT, height() * constants->hexShieldsHeight, constants->shieldReconfigureTime);
+    }
+
+    reconfigureShields();
+}
+void Hex::defenceDisappear()
+{
+    for (int i = 0; i < shields.size(); ++i)
+        shields[i]->disappear(constants->shieldReconfigureTime);
+    shields.clear();
+}
+void Hex::defenceTurn(int amount, bool on)
+{
+    int i = shields.size() - 1;
+    while (i >= 0 && !shields[i]->isOn)
+        --i;
+
+    if (on)
+    {
+        for (int j = 0; j < amount; ++j)
+        {
+            ++i;
+            shields[i]->turnOn();
+        }
+    }
+    else
+    {
+        for (int j = 0; j < amount; ++j)
+        {
+            shields[i]->turnOn(false);
+            --i;
+        }
+    }
 }

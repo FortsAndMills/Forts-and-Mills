@@ -1,0 +1,156 @@
+#include "GameWindow.h"
+
+void GameWindow::startMainPhaseGame()  // начать основную фазу игры
+{
+    ArtificialPanel->startGame();
+
+    if (settings->PROGRAMM_VERSION == REAL_CLIENT)
+        DayTimeTable->appear();
+}
+
+void GameWindow::newResources(GameHex * hex, PlayerColor player_id,
+                  QList<Resource> resources, QList<bool> burn)
+{
+    QList<OrderPic *> new_resources;
+    for (int i = 0; i < resources.size(); ++i)
+        new_resources << new OrderPic(this, game, player_id, resources[i]);
+
+    hexes[hex]->setNewResourcesPosition(new_resources);
+
+    player_windows[player_id]->animateNewResources(new_resources, burn);
+}
+
+void GameWindow::disableAllField()
+{
+    foreach (Hex * hex, hexes)
+        hex->forbidToSelect(true);
+}
+
+void GameWindow::orderVariantChosen()
+{
+    GameOrder * order = units[selectedUnit]->prototype->plan[dayTime];
+    orders[order] = new Order(this, order);
+    orders[order]->anchorTo(units[selectedUnit]);
+
+    units[selectedUnit]->locateOrderLikeOnPanel(orders[order]);
+}
+void GameWindow::deletePlannedOrder(GameUnit * unit, GameOrder * order)
+{
+    if (orders[order] == NULL)
+        qDebug() << "FATAL ERROR: deleting UNEXISTED order!!!";
+
+    units[unit]->orders_stack.removeAll(orders[order]);
+    orders[order]->disappear();
+    orders.remove(order);
+}
+void GameWindow::anchorOrderFromUnit(GameUnit * unit, GameOrder * order)
+{
+    orders[order]->deanchorFrom(this);
+    units[unit]->orders_stack.removeAll(orders[order]);
+    units[unit]->reconfigureOrders();
+
+    hex(unit->x, unit->y)->addOrder(orders[order], 0);
+}
+void GameWindow::anchorOrderToUnit(GameUnit *unit, GameOrder *order, GameHex *from)
+{
+    orders[order]->deanchorFrom(this);
+    units[unit]->orders_stack.removeAll(orders[order]);
+    units[unit]->reconfigureOrders();
+
+    hex(unit->x, unit->y)->addOrder(orders[order], 0);
+}
+
+void GameWindow::newUnit(GameUnit * unit)  // создаёт нового юнита
+{
+    units[unit] = new Unit(unit, game, this, field->field, unit->color == mainPlayerColor);
+    resizeUnits();
+}
+void GameWindow::blowUnit(GameUnit * unit)  // взорвать юнит
+{
+    units[unit]->blow();
+    units.remove(unit);
+}
+
+void GameWindow::anchorUnitToField(GameUnit * unit)  // привязаться к гексу под ним
+{
+    /*hex(unit->x, unit->y)->points << QPointF();
+    hex(unit->x, unit->y)->recountPoints();
+    units[unit]->anchorTo(hex(unit->x, unit->y));
+
+    hex(unit->x, unit->y)->reconfigureOrders();
+    reconfigureUnits();
+    reconfigureWays();*/
+}
+
+void GameWindow::planUnitMove(GameUnit * unit, GameHex * from, WAY way)
+{
+    hex(unit->x, unit->y)->pointPositionState[0] = Hex::ENTERING;
+    hex(unit->x, unit->y)->pointsWay[0] = way;
+
+    units[unit]->deanchorFrom(hexes[from]);
+    //hex(unit->x, unit->y)->addUnit();
+
+    createWay(unit, from);
+    reconfigureUnits();
+}
+void GameWindow::createWay(GameUnit *unit, GameHex *from)
+{
+    UnitWay * New = new UnitWay(this, units[unit], from->x, from->y);
+    New->setStartPosition(wayStartCoordinate(New),
+                                           wayEndCoordinate(New));
+    New->anchorTo(hexes[from]);
+    ways[unit] << New;
+
+    reconfigureWays();
+}
+void GameWindow::deleteLastWay(GameUnit *unit)
+{
+    ways[unit].last()->disappear();
+    ways[unit].removeLast();
+}
+void GameWindow::finishEntering(GameUnit * unit, GameHex * hex)
+{
+    if (hexes[hex]->pointPositionState[0] == Hex::ENTERING)
+        hexes[hex]->pointPositionState[0] = Hex::STAY;
+    hexes[hex]->recountPoints();
+
+    reconfigureUnits();
+    reconfigureWays();
+}
+void GameWindow::backEntering(GameUnit * unit, GameHex * hex)
+{
+    if (hexes[hex]->pointPositionState[0] == Hex::STAY)
+        hexes[hex]->pointPositionState[0] = Hex::ENTERING;
+    hexes[hex]->recountPoints();
+
+    reconfigureUnits();
+    reconfigureWays();
+}
+
+void GameWindow::disappearAllTurnedOffOrders()
+{
+    foreach (PlayerColor player, game->rules->players)
+        player_windows[player]->disappearAllTurnedOffOrders();
+}
+void GameWindow::reconfigureResources()
+{
+    foreach (PlayerResources * player, player_windows)
+    {
+        player->reconfigureResources();
+    }
+}
+
+void GameWindow::deleteOrder(GameOrder * order)
+{
+    orders[order]->disappear();
+    orders.remove(order);
+}
+
+void GameWindow::createResource(GameOrder * order)  // создаёт иконку безвольного ресурса
+{
+    orders[order] = new Order(this, order);
+    orders[order]->setGeometry(field->x(), field->y(), constants->unitsSize / 1.5, constants->unitsSize / 1.5);
+}
+void GameWindow::unitGetOutOfField(GameUnit * unit, int x, int y)  // юнит откалывается от поля
+{
+}

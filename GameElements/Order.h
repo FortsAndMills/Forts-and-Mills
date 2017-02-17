@@ -2,11 +2,29 @@
 #define ORDER_H
 
 #include "Technical/Headers.h"
+#include "Technical/HelpManager.h"
 #include "Technical/Constants.h"
 #include "BasicElements/SpriteObject.h"
 #include "BasicElements/StateObject.h"
-#include "Game/Game.h"
-#include "Game/GameOrder.h"
+#include "GameExecution/Game.h"
+
+class Fortification : public GraphicObject
+{
+    Q_OBJECT
+
+public:
+    int point;
+
+public:
+    explicit Fortification(GraphicObject * parent, PlayerColor color, int point) :
+        GraphicObject(parent, RIGHT_CLICKABLE, color + "Fortification")
+    {
+        this->point = point;
+        this->setZValue(constants->fortificationZPos);
+    }
+
+    void rightClick() { emit help->HelpAsked("Fortification"); }
+};
 
 class Order : public GraphicObject  // отображается на поле
 {
@@ -15,39 +33,127 @@ class Order : public GraphicObject  // отображается на поле
 public:
     GameOrder * prototype;
 
-    int anchor_x, anchor_y, anchor_point;
+    Coord anchor;
+    int anchor_point;
 
     explicit Order(GraphicObject * parent, GameOrder * prototype) :
-        GraphicObject(parent, DRAGABLE | RIGHT_CLICKABLE, prototype->type)
+        GraphicObject(parent, RIGHT_CLICKABLE, prototype->type)
     {
         this->prototype = prototype;
         this->setZValue(constants->orderZPos);
     }
 
-public:
-    void rightClick()
-    {
-        emit rightClicked(this->prototype);
-    }
     void disappear()
     {
-        this->setEnabled(false);
-        this->AnimationStart(WIDTH, 0, constants->orderDisappearTime);
-        this->AnimationStart(HEIGHT, 0, constants->orderDisappearTime);
-        this->AnimationStart(X_POS,   x() + width() / 2, constants->orderDisappearTime);
-        this->AnimationStart(Y_POS, y() + height() / 2, constants->orderDisappearTime);
-        connect(this, SIGNAL(movieFinished()), this, SLOT(Delete()));
+        GraphicObject::disappear(constants->orderDisappearTime);
+    }
+
+    void rightClick()
+    {
+        emit help->HelpAsked(this->prototype->type);
     }
 
 signals:
     void rightClicked(GameOrder *);
 };
 
+class MainOrder : public SpriteObject  // отображается на поле при реализации
+{
+    Q_OBJECT
+
+public:
+    bool opened = false;
+
+    OrderType type;
+
+    explicit MainOrder(GraphicObject * parent, OrderType type, bool opened) :
+        SpriteObject(parent, RIGHT_CLICKABLE, type + "Turn", constants->mainOrderOpenTime, true, false)
+    {
+        this->opened = opened;
+        if (opened)
+            setFrame(frames() - 1);
+
+        this->type = type;
+        this->setZValue(constants->orderZPos);
+    }
+    void Delete()
+    {
+        if (burning != NULL)
+            burning->Delete();
+        SpriteObject::Delete();
+    }
+
+    void rightClick()
+    {
+        emit help->HelpAsked(type);
+    }
+
+private:
+    SpriteObject * burning = NULL;
+public:
+    void open()
+    {
+        opened = true;
+        start();
+
+        RealWidth = width();
+        RealHeight = height();
+        this->AnimationStart(WIDTH, width() * constants->mainOrderTurnCoeff, constants->mainOrderOpenTime / 2);
+        this->AnimationStart(HEIGHT, height() * constants->mainOrderTurnCoeff, constants->mainOrderOpenTime / 2);
+
+        QTimer::singleShot(constants->mainOrderOpenTime / 2, this, SLOT(finishOpening()));
+    }
+    void burn()
+    {
+        if (burning == NULL)
+        {
+            this->setEnabled(false);
+            this->AnimationStart(WIDTH, 0, constants->orderDisappearTime);
+            this->AnimationStart(HEIGHT, 0, constants->orderDisappearTime);
+            this->AnimationStart(X_POS,   x() + width() * constants->orderDisappearPointX,
+                                 constants->orderDisappearTime);
+            this->AnimationStart(Y_POS, y() + height() * constants->orderDisappearPointY,
+                                 constants->orderDisappearTime);
+
+            burning = new SpriteObject(dynamic_cast<GraphicObject *>(this->parentItem()), 0, "Burn", constants->orderBurnTime);  // TODO чуть-чуть рандома
+            burning->setGeometry(x() + width() * constants->orderDisappearBurnPointX,
+                                                    y() + height() * constants->orderDisappearBurnPointY,
+                                                    width() * constants->orderBurnWidth,
+                                                    height() * constants->orderBurnHeight);
+            connect(burning, SIGNAL(looped()), SLOT(Delete()));
+        }
+    }
+    void light()
+    {
+        SpriteObject * Lighting = new SpriteObject(this, 0, "OrdersFrameRed");
+        Lighting->setGeometry(0, 0, width(), height());
+        connect(Lighting, SIGNAL(looped()), Lighting, SLOT(Delete()));
+    }
+private:
+    qreal RealWidth, RealHeight;
+private slots:
+    void finishOpening()
+    {
+        this->AnimationStart(WIDTH, RealWidth, constants->mainOrderOpenTime / 2);
+        this->AnimationStart(HEIGHT, RealHeight, constants->mainOrderOpenTime / 2);
+    }
+};
+
 class ResourcePic : public GraphicObject  // отображается на гексах
 {
 public:
+    Resource R;
+
     explicit ResourcePic(GraphicObject * parent, Resource R) :
-        GraphicObject(parent, 0, R) {}
+        GraphicObject(parent, RIGHT_CLICKABLE, R)
+    {
+        this->R = R;
+    }
+
+    void rightClick()
+    {
+        emit help->HelpAsked(R);
+    }
 };
 
 class OrderPic : public GraphicObject  // отображается в таблице ресурсов
@@ -59,19 +165,34 @@ public:
     PlayerColor owner;
 
     bool isTurnedOn = true;
+    bool isLighten = false;
 
-    explicit OrderPic(GraphicObject * parent, Game * game, PlayerColor owner, OrderType R) :
-        GraphicObject(parent, CLICKABLE, R)
+    SpriteObject * Lighting;
+
+    explicit OrderPic(GraphicObject * parent, PlayerColor owner, OrderType R) :
+        GraphicObject(parent, HOVER | RIGHT_CLICKABLE, R)
     {
         this->type = R;
         this->owner = owner;
-        connect(this, SIGNAL(orderPicPressed(QString, QString, bool)), game, SLOT(orderPicPushed(QString, QString, bool)));
+
+        Lighting = NULL;
     }
     virtual void Delete()
     {
+        if (isDeleted)
+            return;
+
         if (burning != NULL)
             burning->Delete();
+        if (Lighting != NULL)
+            Lighting->Delete();
         GraphicObject::Delete();
+    }
+
+    void resizeChildren(qreal W, qreal H)
+    {
+        if (Lighting != NULL)
+            Lighting->setGeometry(0, 0, W, H);
     }
 
 private:
@@ -88,14 +209,22 @@ public slots:
                                  constants->orderTurnedOffOpacity,
                                  constants->ordersTurnTime);
     }
-    void disappear()
+    void light(bool on = true)
     {
-        this->setEnabled(false);
-        this->AnimationStart(WIDTH, 0, constants->orderDisappearTime);
-        this->AnimationStart(HEIGHT, 0, constants->orderDisappearTime);
-        this->AnimationStart(X_POS,   x() + width() / 2, constants->orderDisappearTime);
-        this->AnimationStart(Y_POS, y() + height() / 2, constants->orderDisappearTime);
-        connect(this, SIGNAL(movieFinished()), SLOT(Delete()));
+        isLighten = on;
+        if (on)
+        {
+            if (Lighting == NULL)
+            {
+                Lighting = new SpriteObject(this, 0, "OrdersFrame");
+                resize(width(), height());
+            }
+        }
+        else
+        {
+            connect(Lighting, SIGNAL(looped()), Lighting, SLOT(Delete()));
+            Lighting = NULL;
+        }
     }
     void burn()
     {
@@ -118,41 +247,50 @@ public slots:
         }
     }
 
-    void leftClick()
+    void disappear()
     {
-        emit orderPicPressed(type, owner, isTurnedOn);
+        GraphicObject::disappear(constants->orderDisappearTime);
     }
+
+    void enter() { emit orderPicEntered(type, owner);}
+    void leave() { emit orderPicLeft(type, owner);}
+    void rightClick() { emit help->HelpAsked(type); }
 signals:
-    void orderPicPressed(OrderType, PlayerColor, bool);
+    void orderPicLeft(OrderType, PlayerColor);
+    void orderPicEntered(OrderType, PlayerColor);
 };
 
-class SpecialButton : public StateObject  // отображается в таблице вариантов
+class OrderVariant : public StateObject  // отображается в таблице вариантов
 {
     Q_OBJECT
 
 public:
     QString name;
 
-    explicit SpecialButton(GraphicObject * parent, QString name, bool used = true) :
-        StateObject(parent, "default", CLICKABLE * used, name, "", "SimpleLayer")
+    explicit OrderVariant(GraphicObject * parent, QString name) :
+        StateObject(parent, "default", name, HOVER | CLICKABLE | RIGHT_CLICKABLE)
     {
         this->name = name;
 
-        geometries["entered"] = QRectF(constants->specialButtonShiftX,
-                                                               constants->specialButtonShiftY,
-                                                               constants->specialButtonWidthShift,
-                                                               constants->specialButtonHeightShift);
+        addGeometry("entered", QRectF(constants->specialButtonShiftX,
+                                                              constants->specialButtonShiftY,
+                                                              constants->specialButtonWidthShift,
+                                                              constants->specialButtonHeightShift));
     }
 
     void enter()
     {
-        setState("entered");
+        setGeometryState("entered");
     }
     void leave()
     {
-        setState("default");
+        setGeometryState("default");
     }
 
+    void rightClick()
+    {
+        emit help->HelpAsked(name);
+    }
     void leftClick()
     {
         emit leftClicked(name);

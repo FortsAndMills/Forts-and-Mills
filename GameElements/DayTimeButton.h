@@ -2,7 +2,6 @@
 #define DAYTIMEBUTTON_H
 
 #include "Technical/Headers.h"
-#include "Game/Game.h"
 #include "BasicElements/StateObject.h"
 #include "BasicElements/SpriteObject.h"
 
@@ -15,19 +14,19 @@ class DayTimeButton : public StateObject
     SpriteObject * selection = NULL;
 
 public:
-    explicit DayTimeButton(GraphicObject * parent, DayTime time, QString timeName) :
-        StateObject(parent, "default", CLICKABLE, timeName, "", "SimpleLayer")
+    explicit DayTimeButton(GraphicObject * parent, DayTime time, QString timeName, bool active) :
+        StateObject(parent, "default", timeName, active * (CLICKABLE | HOVER) + !active * CHILD, "", "SimpleLayer")
     {
         this->time = time;
 
-        geometries["entered"] = QRectF(constants->specialButtonShiftX,
-                                                               constants->specialButtonShiftY,
-                                                               constants->specialButtonWidthShift,
-                                                               constants->specialButtonHeightShift);
-        geometries["selected"] = QRectF(constants->dayTimeButtonSelectedShiftX,
-                                                             constants->dayTimeButtonSelectedShiftY,
-                                                             constants->dayTimeButtonSelectedWidthShift,
-                                                             constants->dayTimeButtonSelectedHeightShift);
+        addGeometry("entered", QRectF(constants->specialButtonShiftX,
+                                                              constants->specialButtonShiftY,
+                                                              constants->specialButtonWidthShift,
+                                                              constants->specialButtonHeightShift));
+        addGeometry("selected", QRectF(constants->dayTimeButtonSelectedShiftX,
+                                                               constants->dayTimeButtonSelectedShiftY,
+                                                               constants->dayTimeButtonSelectedWidthShift,
+                                                               constants->dayTimeButtonSelectedHeightShift));
     }
     virtual void Delete()
     {
@@ -39,7 +38,12 @@ public:
     void resizeChildren(qreal W, qreal H)
     {
         if (selection != NULL)
-            selection->setGeometry(-W / 2, -H / 2, 2 * W, 2 * H);  // <undone>
+        {
+            selection->setGeometry(W * constants->dayTimeSelectionX,
+                                                    H * constants->dayTimeSelectionY,
+                                                    W * constants->dayTimeSelectionWidth,
+                                                    H * constants->dayTimeSelectionHeight);
+        }
     }
 
 private:
@@ -50,10 +54,11 @@ public:
         selected = enable;
         if (enable)
         {
-            if (cur_geometry != "entered")
-                setState("selected");
+            if (cur_geometry == "default")
+                setGeometryState("selected");
+
             if (selection == NULL)
-            {  // <<undone>
+            {
                 selection = new SpriteObject(this, 0, "DayTimeSelection");
                 selection->setZValue(constants->selectionZpos);
                 resizeChildren(width(), height());
@@ -68,22 +73,22 @@ public:
             }
 
             if (cur_geometry == "selected")
-                setState("default");
+                setGeometryState("default");
         }
     }
 private:
     void enter()
     {
-        setState("entered");
+        setGeometryState("entered");
     }
     void leave()
     {
         if (selected)
         {
-            setState("selected");
+            setGeometryState("selected");
         }
         else
-            setState("default");
+            setGeometryState("default");
     }
 
     void leftClick() { emit leftClicked(time); }

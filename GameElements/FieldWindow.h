@@ -1,3 +1,6 @@
+#ifndef FIELDWINDOW
+#define FIELDWINDOW
+
 #include "Field.h"
 #include "Technical/Constants.h"
 
@@ -5,18 +8,10 @@ class FieldWindow : public GraphicObject
 {
     Q_OBJECT
 public:
-    Field * field;
-
-private:
     GraphicObject * up, * down, * right, * left;
 
-public:
-    explicit FieldWindow(Game * game, GraphicObject * parent) : GraphicObject(parent)
+    explicit FieldWindow(GraphicObject * parent, Field * field) : GraphicObject(parent)
     {
-        field = new Field(this, game);
-
-        this->setZValue(constants->fieldZPos);
-
         up = new GraphicObject(this, CLICKABLE, "up", "", "SimpleLayer");
         connect(up, SIGNAL(leftClicked()), field, SLOT(moveUp()));
         down = new GraphicObject(this, CLICKABLE, "down", "", "SimpleLayer");
@@ -28,7 +23,6 @@ public:
     }
     virtual void Delete()
     {
-        field->Delete();
         up->Delete();
         down->Delete();
         left->Delete();
@@ -37,20 +31,13 @@ public:
     }
 
 private:
-    void resize(qreal W, qreal H)
+    void resizeChildren(qreal W, qreal H)
     {
-        GraphicObject::resize(W, H);
-
-        qreal arrowSize = constants->fieldSideMargin * W;
-        qreal marginX = (W - constants->fieldWidth - 2 * arrowSize) / 2;
-        qreal marginY = (H - constants->fieldHeight - 2 * arrowSize) / 2;
-        field->setGeometry(marginX + arrowSize,
-                                         marginY + arrowSize,
-                                         constants->fieldWidth, constants->fieldHeight);
-
-        left->setGeometry(marginX, H / 2 - arrowSize / 2, arrowSize, arrowSize);
-        right->setGeometry(W - arrowSize - marginX, H / 2 - arrowSize / 2, arrowSize, arrowSize);
-        up->setGeometry(W / 2 - arrowSize / 2, marginY, arrowSize, arrowSize);
-        down->setGeometry(W / 2 - arrowSize / 2, H - arrowSize - marginY, arrowSize, arrowSize);
+        left->setGeometry(0, H / 3, W / 3, H / 3);
+        right->setGeometry(2 * W / 3, H / 3, W / 3, H / 3);
+        up->setGeometry(W / 3, 0, W / 3, H / 3);
+        down->setGeometry(W / 3, 2 * H / 3, W / 3, H / 3);
     }
 };
+
+#endif

@@ -1,0 +1,394 @@
+#include "Game/Game.h"
+
+void Game::StartGame()
+{
+    ChooseOneOfTheStartHexes();
+    //events << new GameEvent_CHOOSE_HEX(startPositionVariants);
+}
+
+void Game::HexChosen()
+{
+    ProcessChosenHexes();
+    /*foreach (GamePlayer * player, players)  // отмечаем, что выбранные клетки были выбраны
+    {
+        startPositionVariants.removeAll(field[player->selected_x][player->selected_y]);
+    }
+
+    if (players[rules->players[0]]->selected_x != players[rules->players[1]]->selected_x ||
+         players[rules->players[0]]->selected_y != players[rules->players[1]]->selected_y)
+    {  // если два игрока выбрали разные, захватываем их.
+        foreach (GamePlayer * player, players)
+        {
+            field[player->selected_x][player->selected_y]->color = player->color;
+            events << new GameEvent(HEX_CAPTURED, player->selected_x, player->selected_y, player->color);
+
+            GameUnit * unit = NewUnit(player->color,
+                    field[player->selected_x][player->selected_y]->livingNation,
+                    player->selected_x, player->selected_y);
+
+            GatherResources(field[unit->x][unit->y], unit->color, rules->startResources[unit->type]);
+        }
+    }*/
+
+    if (!ChooseOneOfTheStartHexes())
+    {
+        StartPlanning();
+        //events << new GameEvent(PLAN);
+    }
+}
+
+void Game::PlanRealisation()
+{
+    RealizePlan();
+    /*for (time = 0; time < rules->dayTimes; ++time)
+    {
+        NewDayTimeStarted();
+
+        typedef QList < QPair<GameUnit *, int> > act;
+        QMap <int, act> acts;
+        for (int i = 0; i < rules->players.size(); ++i)
+        {
+            for (int j = 0; j < players[rules->players[i]]->units.size(); ++j)
+            {
+                GameUnit * unit = players[rules->players[i]]->units[j];
+                for (int k = 0; k < unit->plan[time]->actions.size(); ++k)
+                {
+                    int p = unit->plan[time]->actions[k].priority;
+
+                    acts[p] << QPair<GameUnit *, int>(unit, k);
+
+                    int j = acts[p].size() - 1;
+                    while (j > 0 && acts[p][j].first->plan[time]->priority < acts[p][j - 1].first->plan[time]->priority)
+                    {
+                        qSwap(acts[p][j], acts[p][j - 1]);
+                        --j;
+                    }
+                }
+            }
+        }
+
+        foreach (act block, acts)
+        {
+            toKill.clear();
+            bufferizedKillRegime = (block.size() > 0 && block[0].first->plan[time]->actions[block[0].second].type == GameAction::SHOOT);
+
+            CheckForActCorrection(block);
+
+            for (int i = 0; i < block.size(); ++i)
+            {
+                Realize(block[i].first, block[i].second);
+            }
+
+            foreach (GameUnit * dead, toKill)
+                DestroyUnit(dead);
+        }
+    }
+    events << new GameEvent(PLAN_REALIZATION_FINISHED);*/
+
+    destroyHomelessUnits();
+    recruitNewUnits();
+    killAllies();
+    burnExtraResources();
+    gatherResources();
+    defenceFill();
+    
+    if (!isGameFinished())
+        startPlanning();
+
+    /*foreach (GamePlayer * player, players)
+        foreach (GameUnit * unit, player->units)
+            for (DayTime i = 0; i < rules->dayTimeNames.size(); ++i)
+    {
+        delete unit->plan[i];
+        unit->plan[i] = NULL;
+    }
+    events << new GameEvent(PLAN);*/
+}
+
+
+// Не отсюда
+void Game::NewDayTimeStarted()
+{
+    QMap<GameUnit *, OrderType> today_plan;
+    foreach (GamePlayer * player, players)
+        foreach (GameUnit * unit, player->units)
+            today_plan[unit] = unit->plan[time]->type;
+    events << new GameEvent(TIME_STARTED, time, today_plan);
+}
+void Game::CheckForActCorrection(QList < QPair<GameUnit *, int> > & block)
+{
+    for (int i = 0; i < block.size(); ++i)
+    {
+        bool burns = false;
+        GameUnit * unit = block[i].first;
+        GameOrder * order = unit->plan[time];
+        GameAction act = order->actions[block[i].second];
+
+        if (africa.contains(unit))
+            burns = true;
+        else if (act.burnsWhenFight && order->wasInFight)
+            burns = true;
+        else if (act.type == GameAction::CAPTURE_HEX)
+        {
+            pos reason = canBeCaptured(unit->x, unit->y, unit->color);
+            if (reason != UNDEFINED_POS)
+            {
+                burns = true;
+                events << new GameEvent(CAPTURE_FAILS_BECAUSE_OF_CASTLE, unit, order->type, reason.first, reason.second);
+            }
+        }
+
+        if (burns)
+        {
+            block.removeAt(i);
+            --i;
+        }
+    }
+}
+
+void Game::Realize(GameUnit * unit, int k)
+{
+    GameOrder * order = unit->plan[time];
+    GameAction::GameActionType act = order->actions[k].type;
+
+    if (act == GameAction::USE_RESOURCE)
+    {
+        players[unit->color]->resources[order->type]--;
+        events << new GameEvent(RESOURCE_USED, unit, order->type);
+    }
+    else if (act == GameAction::ENTER_HEX)
+    {
+        GameUnit * enemy = findEnemyStriking(unit, order->parameter_x, order->parameter_y, unit->x, unit->y);
+        while (unit->health > 0 && enemy != NULL)
+        {
+            events << new GameEvent(UNITS_FACED_TO_FIGHT, unit, unit->x, unit->y, enemy, enemy->x, enemy->y);
+
+            UnitsFight(unit, enemy);
+
+            enemy = findEnemyStriking(unit, order->parameter_x, order->parameter_y, unit->x, unit->y);
+        }
+
+        if (unit->health > 0)
+        {
+            unit->prev_x = unit->x;
+            unit->prev_y = unit->y;
+            unit->x = order->parameter_x;
+            unit->y = order->parameter_y;
+            events << new GameEvent(UNIT_ENTERS, unit, unit->x, unit->y);
+        }
+    }
+    else if (act == GameAction::CAPTURE_HEX)
+    {
+        if (field[unit->x][unit->y]->color != unit->color)
+        {
+            if (field[unit->x][unit->y]->defenceBonusWhenCaptured != 0)
+            {
+                field[unit->x][unit->y]->defence = field[unit->x][unit->y]->defenceBonusWhenCaptured;
+                events << new GameEvent(DEFENCE_BONUS_APPEARS, unit, field[unit->x][unit->y]->defenceBonusWhenCaptured, unit->x, unit->y);
+            }
+
+            field[unit->x][unit->y]->color = unit->color;
+            events << new GameEvent(UNIT_CAPTURES_HEX, unit, unit->x, unit->y, unit->color);
+        }
+
+        if (!isHexAHome(unit->x, unit->y, unit->color))
+        {
+            events << new GameEvent(UNIT_IS_GOING_TO_RECRUIT, unit, unit->x, unit->y, order->parameter_unit_type);
+            recruitedUnits << Recruited(unit->x, unit->y, order->parameter_unit_type, unit->color);
+        }
+    }
+    else if (act == GameAction::CURE)
+    {
+        if (unit->health < unit->max_health)
+        {
+            unit->health++;
+            events << new GameEvent(UNIT_CURES, unit, 1);
+        }
+    }
+    else if (act == GameAction::FIGHT)
+    {
+        events << new GameEvent(UNIT_SEARCHES_FOR_ENEMIES, unit, candidatesToEnemy(unit));
+        GameUnit * enemy = findEnemy(unit, unit->x, unit->y);
+
+        while (unit->health > 0 && enemy != NULL)
+        {
+            events << new GameEvent(UNITS_ARE_GOING_TO_FIGHT, unit, enemy);
+
+            UnitsFight(unit, enemy);
+
+            enemy = findEnemy(unit, unit->x, unit->y);
+        }
+    }
+    else if (act == GameAction::SETTLE_ON_HEX)
+    {
+        events << new GameEvent(UNIT_FINISHES_ENTER, unit, unit->x, unit->y);
+
+        if (field[unit->x][unit->y]->fortificationColor != "Neutral" &&
+             field[unit->x][unit->y]->fortificationColor != unit->color)
+        {
+            if (field[unit->x][unit->y]->fortification != 0)
+            {
+                field[unit->x][unit->y]->fortification = 0;
+                events << new GameEvent(FORTIFICATION_DISAPPEARS, unit, unit->x, unit->y);
+            }
+
+            field[unit->x][unit->y]->fortificationColor = "Neutral";
+        }
+
+        if (field[unit->x][unit->y]->color != "Neutral" &&
+             field[unit->x][unit->y]->color != unit->color)
+        {
+            if (field[unit->x][unit->y]->defenceBonusWhenCaptured != 0)
+            {
+                field[unit->x][unit->y]->defence = 0;
+                events << new GameEvent(DEFENCE_BONUS_DISAPPEARS, unit, unit->x, unit->y);
+            }
+
+            for (int i = 0; i < recruitedUnits.size(); ++i)
+            {
+                Recruited r = recruitedUnits[i];
+                if (r.x == unit->x && r.y == unit->y && r.color != unit->color)
+                {
+                    recruitedUnits.removeAt(i);
+                    --i;
+                }
+            }
+
+            field[unit->x][unit->y]->color = "Neutral";
+            events << new GameEvent(UNIT_DECAPTURES_HEX, unit, unit->x, unit->y);
+        }
+    }
+    else if (act == GameAction::SHOOT)
+    {
+        GameUnit * target = NULL;
+        do
+        {
+            target = NULL;
+            if (adjacentHexes(unit->x, unit->y).contains(QPair<int, int>(order->parameter_x, order->parameter_y)))
+            {
+                target = findFirstAttacking(unit, order->parameter_x, order->parameter_y);
+            }
+            if (target == NULL)
+            {
+                target = findEnemy(unit, order->parameter_x, order->parameter_y);
+            }
+
+            if (target != NULL)
+            {
+                UnitsFight(unit, target, FS_DISTANT);
+            }
+        }
+        while (target != NULL && order->distantAttack > 0);
+
+        if (order->distantAttack > 0)
+        {
+            events << new GameEvent(SHOOT_LEFT, unit, order->distantAttack, order->parameter_x, order->parameter_y);
+        }
+    }
+    else if (act == GameAction::FORTIFICATE)
+    {
+        field[unit->x][unit->y]->fortificationColor = unit->color;
+        field[unit->x][unit->y]->fortification++;
+        events << new GameEvent(FORTIFIED, unit, 1, unit->x, unit->y);
+    }
+}
+
+void Game::destroyHomelessUnits()
+{
+    foreach (GamePlayer * player, players)
+    {
+        QList <GameUnit *> units = player->units;
+        foreach (GameUnit * unit, units)
+        {
+            if (field[unit->home_x][unit->home_y]->color != player->color)
+            {
+                DestroyUnit(unit);
+            }
+        }
+    }
+}
+void Game::recruitNewUnits()
+{
+    foreach (Recruited r, recruitedUnits)
+    {
+        NewUnit(r.color, r.type, r.x, r.y);
+    }
+
+    recruitedUnits.clear();
+}
+void Game::killAllies()
+{
+    QSet <GameUnit *> to_kill;
+    foreach (GamePlayer * player, players)
+    {
+        for (int j = 0; j < player->units.size(); ++j)
+        {
+            if (player->units[j]->isDestroyingAllies)
+            {
+                QSet <GameUnit *> boat = alliesOnTheSameHex(player->units[j]);
+                foreach (GameUnit * u, boat)
+                {
+                    u->death_author = player->units[j];
+                    to_kill << u;
+                }
+            }
+        }
+    }
+
+    foreach (GameUnit * unit, to_kill)
+        DestroyUnit(unit);
+}
+void Game::burnExtraResources()
+{
+    foreach (GamePlayer * player, players)
+    {
+        foreach (Resource R, rules->ordersInGame)
+        {
+            while (player->resources[R] > limit(player->color))
+            {
+                --player->resources[R];
+                events << new GameEvent(BURN_RESOURCE, player->color, R);
+            }
+        }
+    }
+}
+void Game::gatherResources()
+{
+    foreach (QList <GameHex *> hex_row, field)
+    {
+        foreach (GameHex * hex, hex_row)
+        {
+            if (hex->color != "Neutral")
+            {
+                GatherResources(hex, hex->color, hex->resources);
+            }
+        }
+    }
+}
+void Game::defenceFill()
+{
+    foreach (GamePlayer * player, players)
+    {
+        foreach (GameUnit * unit, player->units)
+        {
+            if (unit->defenceBonus != unit->max_defenceBonus)
+            {
+                events << new GameEvent(UNIT_DEFENCE_FILLED, unit, unit->max_defenceBonus - unit->defenceBonus);
+                unit->defenceBonus = unit->max_defenceBonus;
+            }
+        }
+    }
+
+    for (int i = 0; i < rules->fieldH; ++i)
+    {
+        for (int j = 0; j < rules->fieldW; ++j)
+        {
+            if (field[i][j]->color != "Neutral" &&
+                 field[i][j]->defence < field[i][j]->defenceBonusWhenCaptured)
+            {
+                events << new GameEvent(HEX_DEFENCE_FILLED, field[i][j]->defenceBonusWhenCaptured - field[i][j]->defence, i, j);
+                field[i][j]->defence = field[i][j]->defenceBonusWhenCaptured;
+            }
+        }
+    }
+}

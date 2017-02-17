@@ -18,23 +18,19 @@ public:
     }
 };
 
-class Pictures
+class Images
 {
 public:
-    enum DesignStyle {CLASSIC};
-
     QList < PictureNameFolder > names;
 
-    explicit Pictures()
+    explicit Images()
     {
-        style = CLASSIC;
-
         InitPictures();
         for (int n = 0; n < names.size(); ++n)
         {
             foreach (QString name, names[n].names)
             {
-                pictures[name] = new QPixmap(names[n].prefix + name + names[n].suffix);
+                pictures[name] = new QPixmap(":/Content/" + names[n].prefix + "/" + name + names[n].suffix);
             }
         }
 
@@ -51,12 +47,11 @@ public:
     QMap <QString, int> picture_columns;
 
 private:
-    DesignStyle style;
-    QMap <DesignStyle, QMap<QString, QString> > designPictures;
+    QMap<QString, QString> designPictures;
     QString designTransformation(QString name)
     {
-        if (designPictures[style].contains(name))
-            return designPictures[style][name];
+        if (designPictures.contains(name))
+            return designPictures[name];
         return name;
     }
 
@@ -72,7 +67,7 @@ public:
         if (pictures.contains(name))
             return *pictures[name];
 
-        qDebug() << "ERROR: no picture with name \"" + name + "\"!!!";
+        debug << "ERROR: no picture with name \"" + name + "\"!!!";
         return QPixmap();
     }
 };

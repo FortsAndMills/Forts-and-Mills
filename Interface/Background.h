@@ -3,19 +3,44 @@
 
 #include "Technical/Headers.h"
 #include "Technical/Constants.h"
-#include "BasicElements/GraphicObject.h"
+#include "BasicElements/StateObject.h"
 
-class Background : public GraphicObject
+class Background : public StateObject
 {
     Q_OBJECT
 
+    StateObject * Frame;
+
 public:
-    explicit Background(QGraphicsScene * scene, QString pictureName) :
-        GraphicObject(0, 0, pictureName)
+    explicit Background(QGraphicsScene * scene) :
+        StateObject(0, "Neutral", "NeutralMainWindow")
     {
         scene->addItem(this);
         this->setAcceptedMouseButtons(Qt::LeftButton);
         this->setAcceptHoverEvents(true);
+
+        Frame = new StateObject(this, "Neutral", "NeutralMainWindowFrame", CHILD);
+        Frame->setZValue(1);
+
+        this->addPicture("Blue", "BlueMainWindow");
+        this->addPicture("Red", "RedMainWindow");
+        this->addPicture("Yellow", "YellowMainWindow");
+        this->addPicture("Green", "GreenMainWindow");
+        Frame->addPicture("Blue", "BlueMainWindowFrame");
+        Frame->addPicture("Red", "RedMainWindowFrame");
+        Frame->addPicture("Yellow", "YellowMainWindowFrame");
+        Frame->addPicture("Green", "GreenMainWindowFrame");
+    }
+
+    void resizeChildren(qreal W, qreal H)
+    {
+        Frame->setGeometry(0, 0, W, H);
+    }
+
+    void setState(PlayerColor color)
+    {
+        this->setPictureState(color);
+        Frame->setPictureState(color);
     }
 
 private:

@@ -1,44 +1,54 @@
 #ifndef SETTINGS
 #define SETTINGS
 
-#include "Technical\Headers.h"
+#include "Technical/Headers.h"
+#include "Game/GameRules.h"
 
-class Settings : public QObject  // NOTE нужно ли вообще ProgrammSettings в итоге?
+class Settings : public QObject
 {
 private:
     const QString PROGRAMM_SETTINGS_FILE_NAME = "ProgrammSettings.opt";
-    const QString Host_Settings_File_Name = "Connection.txt";
+    const QString Host_Settings_File_Name = "Connection.connection";
+public:
+    const QString Debug_File_Name = "log.log";
+    const qint32 version = 1320;
 
 public:
     // ОБЪЯВЛЕНИЕ ВСЕХ НАСТРОЕК----------------------------------------------------------
-    quint16 PORT = 64125;
-    QString HOST_NAME = "81.195.19.44";
-    int W = 8, H = 5;
-
-#define POWER_POINT_VERSION 1
-#define REAL_CLIENT 2
-    int PROGRAMM_VERSION = 2;
+    quint16 PORT = 64124;
+    QString HOST_NAME = "fortsandmills.got-game.org";
+    GameRules * rules;
 
     QPoint APPLICATION_START_POSITION = QPoint(100, 100);
     QSize APPLICATION_START_SIZE = QSize(1200, 720);
     bool IS_APPLICATION_MAXIMIZED = false;
-
+    bool lessonsPassed[LESSONS_AMOUNT];
 
 
     // ВВОД-ВЫВОД ВСЕХ НАСТРОЕК---------------------------------------------------------
     friend QDataStream &operator << (QDataStream &stream, const Settings *settings)
     {
-        return stream
-                    << settings->APPLICATION_START_POSITION
+        stream << settings->APPLICATION_START_POSITION
                     << settings->APPLICATION_START_SIZE
-                    << settings->IS_APPLICATION_MAXIMIZED;
+                    << settings->IS_APPLICATION_MAXIMIZED
+                    << settings->rules;
+
+        for (int i = 0; i < LESSONS_AMOUNT; ++i)
+                    stream << settings->lessonsPassed[i];
+
+        return stream;
     }
     friend QDataStream &operator >>(QDataStream &stream, Settings *settings)
     {
-        return stream
-                    >> settings->APPLICATION_START_POSITION
+        stream >> settings->APPLICATION_START_POSITION
                     >> settings->APPLICATION_START_SIZE
-                    >> settings->IS_APPLICATION_MAXIMIZED;
+                    >> settings->IS_APPLICATION_MAXIMIZED
+                    >> settings->rules;
+
+        for (int i = 0; i < LESSONS_AMOUNT; ++i)
+                    stream >> settings->lessonsPassed[i];
+
+        return stream;
     }
 
 
@@ -46,16 +56,27 @@ public:
     // СЧИТЫВАНИЕ И ЗАПИСЫВАНИЕ-------------------------------------------------------
     explicit Settings(QObject * parent) : QObject(parent)
     {
-        //read();
+        rules = new GameRules();
+        for (int i = 0; i < LESSONS_AMOUNT; ++i)
+                    lessonsPassed[i] = false;
+
+        read();
     }
 
     void read()
     {
         QFile * hostFile = new QFile(Host_Settings_File_Name, this);
-        if (hostFile->open(QIODevice::ReadOnly))
+        if (hostFile->open(QIODevice::ReadOnly | QIODevice::Text))
         {
             QTextStream tstream(hostFile);
-            tstream >> PROGRAMM_VERSION >> PORT >> HOST_NAME >> H >> W;
+            QString s;
+            tstream >> s >> s >> PORT
+                          >> s >> s >> s >> HOST_NAME;
+
+            if(tstream.status() != QTextStream::Ok)
+            {
+                qDebug() << "ERROR: Ошибка чтения файла подключения\n";
+            }
             hostFile->close();
         }
 
@@ -67,21 +88,19 @@ public:
 
             if(stream.status() != QDataStream::Ok)
             {
-                qDebug() << "ERROR: Ошибка чтения файла программных настроек";
+                qDebug() << "ERROR: Ошибка чтения файла программных настроек\n";
             }
             file->close();
-            return;
         }
-        qDebug() << "NOTE: Отсутствует файл программных настроек";
     }
     void write()
     {        
         QFile * hostFile = new QFile(Host_Settings_File_Name, this);
-        if (hostFile->open(QIODevice::WriteOnly))
+        if (hostFile->open(QIODevice::WriteOnly | QIODevice::Text))
         {
             QTextStream tstream(hostFile);
-            tstream << PROGRAMM_VERSION << " " << PORT << " " << HOST_NAME
-                          << "\r\n" << H << " " << W;
+            tstream << "PORT = " << PORT << endl <<
+                               "HOST NAME = " << HOST_NAME << endl;
             hostFile->close();
         }
 
