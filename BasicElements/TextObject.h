@@ -9,55 +9,60 @@
 class TextObject : public GraphicObject
 {
     Q_OBJECT
-    QPixmap gradient;
+    QGraphicsTextItem * Label;
 public:
     QString text;
 
 public:
-    explicit TextObject(GraphicObject *parent, QString gradientName, QString text) :
+    explicit TextObject(GraphicObject *parent, QString text) :
         GraphicObject(parent)
     {
-        this->gradient = pictures->get(gradientName);
+        Label = new QGraphicsTextItem(this);
+
+        QGraphicsDropShadowEffect * effect = new QGraphicsDropShadowEffect(this);
+        effect->setXOffset(0);
+        effect->setYOffset(0);
+        effect->setBlurRadius(20);
+        effect->setColor(Qt::white);
+        Label->setGraphicsEffect(effect);
+
         this->text = text;
-    }
-    void resize(qreal W, qreal H)
-    {
-        GraphicObject::resize(W, H);
-        recountFontSize();
+        Label->setHtml(processText(text));
     }
 
-private:
-    qreal fontSize;
-    void recountFontSize()
+    QString processText(QString text)
     {
-        fontSize = 25;  // TODO вычисление размера надписи
+        QString newText = "";
+
+        newText += "<font style=\"color:rgba(0,0,0,255)\">";
+        newText += text;
+        newText += "</font>";
+
+        return "<center>" + newText + "</center>";
     }
-
-public:
-    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
-                   QWidget * widget = 0)
+    void resizeChildren(qreal W, qreal H)
     {
-        QFont font = QFont(constants->MainFontFamily, fontSize, 100);
-        painter->setFont(font);
+        int i = 1;
+        do
+        {
+            Label->setFont(QFont(constants->MainFontFamily, i, 100));
+            Label->setTextWidth(W);
+            ++i;
+        }
+        while (i < constants->MaxTextSize &&
+               Label->boundingRect().height() < H);
 
-        QPen pen;
-        QRect rect = QRect(0, 0, this->width(), this->height());
-        pen.setBrush(QBrush(gradient.scaled(this->width(), this->height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
-        painter->setPen(pen);
-        painter->drawText(rect, Qt::AlignCenter, text);
-
-        Object::paint(painter, option, widget);
-    }
-    QRectF boundingRect() const  // для корректной обрезки
-    {
-        return QRectF(0, 0, this->width(), this->height());
+        i -= 2;
+        Label->setFont(QFont(constants->MainFontFamily, i, 100));
+        Label->setTextWidth(W);
+        Label->setPos(0, (H - Label->boundingRect().height()) / 2);
     }
 
     void setText(QString text)
     {
         this->text = text;
-        recountFontSize();
-        this->update();
+        Label->setHtml(processText(text));
+        resizeChildren(width(), height());
     }
 };
 

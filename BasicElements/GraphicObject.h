@@ -11,7 +11,8 @@
 #define RIGHT_CLICKABLE 4
 #define PUSHABLE 8
 #define WHEEL 16
-#define CHILD 32
+#define HOVER 32
+#define CHILD 64
 class GraphicObject : public Object
 {
     Q_OBJECT
@@ -20,22 +21,29 @@ class GraphicObject : public Object
 public:
     void setProperties(Properties newFlags);
 
+public:
+    Object * frame;  // Выводится при наведении мыши
+    Object * layer;  // Выводится при клике
+    void setFrame(QString frameName)
+    {
+        frame->setPixmap(images->get(frameName));
+    }
+
+public:
     explicit GraphicObject(GraphicObject *parent = 0, Properties flags = 0,
                            QString pictureName = "", QString framePictureName = "",
                            QString layerName = "");
     virtual void Delete();
 
-protected:
-    Object * frame;  // Выводится при наведении мыши
-    Object * layer;  // Выводится при клике
+
 public:
     void resize(qreal w, qreal h);
 
-private:
     bool isClicked = false;  // находимся ли в состоянии нажатой клавиши
+private:
     bool dontRelease = false;  // нужно ли отпускать в момент отпускания
     QPointF cursor_position;  // для драга
-public:
+private:
     void mousePressEvent(QGraphicsSceneMouseEvent *);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *);
@@ -45,6 +53,7 @@ public:
 
 protected:
     virtual void leftClick() {}  // Для переопределения
+    virtual void leftClickStart() {}
     virtual void rightClick() {}
     virtual void enter() {}
     virtual void leave() {}
@@ -55,6 +64,7 @@ protected:
 
 signals:
     void leftClicked();  // Сигналы для внешнего мира
+    void leftClickStarted();
     void rightClicked();
     void dragStarted();
     void dragFinished();

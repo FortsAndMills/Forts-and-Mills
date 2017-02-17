@@ -1,7 +1,7 @@
 #include "Object.h"
 
 Object::Object(Object *parent, QString pictureName) :
-    QObject(), QGraphicsPixmapItem(pictures->get(pictureName), parent)
+    QObject(), QGraphicsPixmapItem(images->get(pictureName), parent)
 {
     this->setTransformationMode(Qt::SmoothTransformation);  // просто настроечки
     this->setCacheMode(QGraphicsItem::NoCache);
@@ -16,6 +16,13 @@ Object::Object(Object *parent, QString pictureName) :
 }
 void Object::Delete()
 {
+    foreach (QGraphicsItem * child, this->childItems())
+    {
+        Object * obj = dynamic_cast<Object *>(child);
+        if (obj)
+            obj->Delete();
+    }
+
     foreach (Object * anchor, psevdo_parent)
         anchor->psevdo_children.remove(this);
 
@@ -23,7 +30,8 @@ void Object::Delete()
     animations->stopAll(this);
 
     prepareGeometryChange();
-    this->scene()->removeItem(this);
+    if (this->scene())
+        this->scene()->removeItem(this);
     this->deleteLater();
 }
 
@@ -38,6 +46,7 @@ void Object::deanchorFrom(Object *anchor)
     if (this->psevdo_parent.contains(anchor))
         this->psevdo_parent.remove(anchor);
 }
+
 void Object::setPos(qreal x, qreal y)
 {
     foreach (Object * object, psevdo_children)
@@ -45,15 +54,18 @@ void Object::setPos(qreal x, qreal y)
     QGraphicsPixmapItem::setPos(x, y);
 }
 
-void Object::resize(qreal w, qreal h)
+void Object::updatePicture()
 {
     prepareGeometryChange();
-
-    if (!isNull())
-        QGraphicsPixmapItem::setPixmap(original.scaled(w, h, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-
+    QGraphicsPixmapItem::setPixmap(original.scaled(Width, Height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+}
+void Object::resize(qreal w, qreal h)
+{
     Width = w;
     Height = h;
+
+    if (!isNull())
+        updatePicture();
 
     this->setTransformOriginPoint(w / 2.0, h / 2.0);  // для вращений и прочего
 
@@ -64,6 +76,10 @@ void Object::setPixmap(const QPixmap &pixmap)
     qreal OldWidth = width(), OldHeight = height();
     original = pixmap;
     resize(OldWidth, OldHeight);  // нужно вернуться к старым размерам
+}
+void Object::setPicture(QString name)
+{
+    setPixmap(images->get(name));
 }
 
 void Object::moveBy(qreal dx, qreal dy)
@@ -85,7 +101,8 @@ void Object::ClipWithItem(Object *item)
     foreach (QGraphicsItem * qgi, this->childItems())  // обрезаем детей
     {
         Object * obj = dynamic_cast<Object *>(qgi);
-        obj->ClipWithItem(item);
+        if (obj != NULL)
+            obj->ClipWithItem(item);
     }
 }
 void Object::UnclipWithItem(Object *item)
@@ -94,7 +111,8 @@ void Object::UnclipWithItem(Object *item)
     foreach (QGraphicsItem * qgi, this->childItems())
     {
         Object * obj = dynamic_cast<Object *>(qgi);
-        obj->UnclipWithItem(item);
+        if (obj != NULL)
+            obj->UnclipWithItem(item);
     }
 }
 void Object::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -130,37 +148,37 @@ void Object::InitAnimationTypes()
     setFunctions[ROTATION] = &Object::setRotation;
 }
 Animation * Object::AnimationStart(ANIMATION_TYPE type,
-                                           qreal target_value, int time, bool isMain)
+                                           qreal target_value, int time)
 {
     if (isDeleted)
-        qDebug() << "FATAL ERROR: deleted object animated!!!";
+        debug << "FATAL ERROR: deleted object animated!!!";
 
     Animation * a = animations->contains(this, type);
     if (a == NULL)
     {
         a = new Animation(this, getFunctions[type], setFunctions[type],
-                                         type, target_value, time, isMain);
-        connect(a, SIGNAL(finished()), SLOT(animationFinished()));
+                                         type, target_value, time);
+        connect(a, SIGNAL(finished()), (Object *)this, SLOT(animationFinished()));
     }
     else
     {
-        a->start(target_value, time, isMain);
+        a->start(target_value, time);
     }
-    RecheckIsAnimated(true);
+    RecheckIsAnimated();
 
     return a;
 }
-Animation * Object::AnimationStart(QRectF tar, int time, bool isMain)
+Animation * Object::AnimationStart(QRectF tar, int time)
 {
-    AnimationStart(X_POS, tar.x(), time, isMain);
-    AnimationStart(Y_POS, tar.y(), time, isMain);
-    AnimationStart(WIDTH, tar.width(), time, isMain);
-    return AnimationStart(HEIGHT, tar.height(), time, isMain);
+    AnimationStart(X_POS, tar.x(), time);
+    AnimationStart(Y_POS, tar.y(), time);
+    AnimationStart(WIDTH, tar.width(), time);
+    return AnimationStart(HEIGHT, tar.height(), time);
 }
 
-void Object::RecheckIsAnimated(bool for_sure)
+void Object::RecheckIsAnimated()
 {
-    bool NewData = for_sure || animations->contains(this);
+    bool NewData = animations->contains(this);
 
     if (NewData && !isAnimatedNow)  // если значение изменилось, вызываем вирт. ф.
         startedAnimation();
@@ -175,4 +193,11 @@ void Object::RecheckIsAnimated(bool for_sure)
 void Object::animationFinished()
 {
     RecheckIsAnimated();
+}
+
+void Object::disappear(int time)
+{
+    this->setEnabled(false);
+    this->AnimationStart(QRectF(x() + width() / 2, y() + height() / 2, 0, 0), time);
+    connect(this, SIGNAL(movieFinished()), this, SLOT(Delete()));
 }

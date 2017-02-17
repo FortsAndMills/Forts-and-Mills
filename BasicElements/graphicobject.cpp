@@ -1,5 +1,4 @@
 #include "GraphicObject.h"
-#include "Technical/Pictures.h"
 
 GraphicObject::GraphicObject(GraphicObject *parent, Properties flags,
                              QString pictureName, QString framePictureName,
@@ -21,10 +20,10 @@ void GraphicObject::setProperties(Properties newFlags)
 
     if ((flags & CLICKABLE) && (flags & PUSHABLE))
     {
-        qDebug() << "NOTE: graphic object is clickable and pushable simulteniously!";
+        debug << "NOTE: graphic object is clickable and pushable simulteniously!\n";
     }
 
-    setAcceptHoverEvents(!frame->isNull() ||(flags & (CHILD | WHEEL)));
+    setAcceptHoverEvents((flags & (CHILD | HOVER)));
     this->setAcceptedMouseButtons((Qt::MouseButton)
               ((Qt::LeftButton * (bool)(flags & (CLICKABLE | DRAGABLE | CHILD | PUSHABLE))) |
                (Qt::RightButton * (bool)(flags & (RIGHT_CLICKABLE | CHILD)))));
@@ -66,8 +65,8 @@ void GraphicObject::mousePressEvent(QGraphicsSceneMouseEvent *qme)
 
         if (flags & CLICKABLE)
         {
-            leftClick();
-            emit leftClicked();
+            leftClickStart();
+            emit leftClickStarted();
 
             isClicked = true;
 
@@ -125,6 +124,15 @@ void GraphicObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *qme)
     }
     else
     {
+        if (qme->button() == Qt::LeftButton)
+        {
+            if (flags & CLICKABLE)
+            {
+                leftClick();
+                emit leftClicked();
+            }
+        }
+
         isClicked = false;
         layer->setVisible(false);
     }
@@ -144,20 +152,26 @@ void GraphicObject::hoverEnterEvent(QGraphicsSceneHoverEvent *qme)
     if (CHILD & flags)
         dynamic_cast<GraphicObject *>(parentItem())->hoverEnterEvent(qme);
 
-    frame->setVisible(true);
+    if (HOVER & flags)
+    {
+        frame->setVisible(true);
 
-    enter();
-    emit entered();
+        enter();
+        emit entered();
+    }
 }
 void GraphicObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *qme)
 {
     if (CHILD & flags)
         dynamic_cast<GraphicObject *>(parentItem())->hoverLeaveEvent(qme);
 
-    frame->setVisible(false);
+    if (HOVER & flags)
+    {
+        frame->setVisible(false);
 
-    leave();
-    emit left();
+        leave();
+        emit left();
+    }
 }
 
 void GraphicObject::wheelEvent(QGraphicsSceneWheelEvent *qwe)

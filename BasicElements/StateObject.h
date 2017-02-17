@@ -4,90 +4,66 @@
 #include "Technical/Constants.h"
 #include "GraphicObject.h"
 
-// TODO спасите меня от этого безумия
 class StateObject : public GraphicObject
 {
     Q_OBJECT
     qreal ChangeTime;
 
-    // РАЗЛИЧНЫЕ ПАРАМЕТРЫ СОСТОЯНИЙ И БАЗОВЫЕ ФУНКЦИИ------------
 protected:
-    QString cur_picture = "";  // Текущее положение
-    QMap <QString, GraphicObject *> objects; // Карта всех состояний
-protected:
+    QString cur_picture;  // Текущее положение
+    QMap <QString, GraphicObject *> pictures; // Карта всех состояний
+public:
     void addPicture(QString state, QString pictureName)  // Функция добавления
     {
-        objects[state] = new GraphicObject(this, CHILD, pictureName);
-        objects[state]->setOpacity(0);
-        objects[state]->setZValue(constants->statesZpos);
+        pictures[state] = new GraphicObject(this, CHILD, pictureName);
+        pictures[state]->setOpacity(0);
+        pictures[state]->setZValue(constants->statesZpos);
     }
     void setPictureState(QString state, bool isImmediate = false)  // Функция переключения
     {
-        if (objects.contains(state))
-        {
-            if (cur_picture != "")
-            {
-                if (isImmediate)
-                    objects[cur_picture]->setOpacity(0);
-                else
-                    objects[cur_picture]->AnimationStart(OPACITY, 0, ChangeTime);
-            }
+        if (isImmediate)
+            pictures[cur_picture]->setOpacity(0);
+        else
+            pictures[cur_picture]->AnimationStart(OPACITY, 0, ChangeTime);
 
-            cur_picture = state;
-            if (isImmediate)
-                objects[cur_picture]->setOpacity(1);
-            else
-                objects[cur_picture]->AnimationStart(OPACITY, 1, ChangeTime);
-        }
+        cur_picture = state;
+        if (isImmediate)
+            pictures[cur_picture]->setOpacity(1);
+        else
+            pictures[cur_picture]->AnimationStart(OPACITY, 1, ChangeTime);
     }
 public:
     GraphicObject * cur_object() const
     {
-        return objects[cur_picture];
+        return pictures[cur_picture];
     }
 
 protected:
-    QString cur_properties = "";
-    QMap <QString, Properties> properties;
-    void setPropertyState(QString state)
-    {
-        if (properties.contains(state))
-        {
-            cur_properties = state;
-            this->setProperties(properties[cur_properties]);
-        }
-    }
-
-    QString cur_frame = "";
-    QMap <QString, QString> frames;
-    void setFrameState(QString state)
-    {
-        if (frames.contains(state))
-        {
-            cur_frame = state;
-            this->frame->setPixmap(pictures->get(frames[cur_frame]));
-        }
-    }
-
     QString cur_geometry = "";
     QMap <QString, QRectF> geometries;
+    void addGeometry(QString state, QRectF geometry)
+    {
+        geometries[state] = geometry;
+    }
     void setGeometryState(QString state, bool isImmediate = false)
     {
         if (geometries.contains(state))
         {
-            if (cur_geometry != "" && cur_geometry != state && !isImmediate)
+            if (cur_geometry != state && !isImmediate)
             {
                 cur_geometry = state;
-                foreach (GraphicObject * pic, objects)
+                foreach (GraphicObject * pic, pictures)
                 {
                     pic->AnimationStart(X_POS, geometries[cur_geometry].x() * width(), ChangeTime);
                     pic->AnimationStart(Y_POS, geometries[cur_geometry].y() * height(), ChangeTime);
                     pic->AnimationStart(WIDTH, geometries[cur_geometry].width() * width(), ChangeTime);
                     pic->AnimationStart(HEIGHT, geometries[cur_geometry].height() * height(), ChangeTime);
                 }
+
                 layer->AnimationStart(currentRect(), ChangeTime);
+                frame->AnimationStart(currentRect(), ChangeTime);
             }
-            else
+            else if (isImmediate)
             {
                 cur_geometry = state;
                 setInsideGeometry();
@@ -96,36 +72,32 @@ protected:
     }
 
 public:
-    explicit StateObject(GraphicObject *parent, QString defaultStateName,
-                         Properties defaultProperties = 0,
-                         QString defaultPictureName = "",
-                         QString defaultFrameName = "",
+    explicit StateObject(GraphicObject *parent,
+                         QString defaultStateName,
+                         QString defaultPictureName,
+                         Properties properties = 0,
+                         QString frameName = "",
                          QString layerName = "",
-                         qreal time = constants->objectStateChangeTime) :
-        GraphicObject(parent, 0, "", "", layerName)
+                         qreal time = constants->stateObjectChangeTime) :
+        GraphicObject(parent, properties, "", frameName, layerName)
     {
-        addState(defaultStateName, defaultPictureName, defaultProperties, defaultFrameName,
-                 QRectF(0, 0, 1, 1));
-        setState(defaultStateName, true);
+        addPicture(defaultStateName, defaultPictureName);
+        pictures[defaultStateName]->setOpacity(1);
+        cur_picture = defaultStateName;
+
+        addGeometry(defaultStateName, QRectF(0, 0, 1, 1));
+        cur_geometry = defaultStateName;
 
         ChangeTime = time;
 
-        layer->ClipWithItem(objects[defaultStateName]);
+        layer->ClipWithItem(this);
+        frame->ClipWithItem(this);
     }
     virtual void Delete()
     {
-        foreach (GraphicObject * obj, objects)
+        foreach (GraphicObject * obj, pictures)
             obj->Delete();
         GraphicObject::Delete();
-    }
-
-    QRectF boundingRect() const
-    {
-        return currentRect();
-    }
-    QPainterPath shape() const
-    {
-        return (QPainterPath)cur_object()->shape();
     }
 
     QRectF currentRect() const
@@ -142,50 +114,28 @@ public:
     }
     void setInsideGeometry()
     {
-        foreach (GraphicObject * pic, objects)
+        foreach (GraphicObject * pic, pictures)
         {
             pic->setGeometry(currentRect());
         }
 
         if (layer != NULL)
             this->layer->setGeometry(currentRect());
+        if (frame != NULL)
+            this->frame->setGeometry(currentRect());
     }
 
+    QRectF boundingRect() const
+    {
+        return currentRect();
+    }
+    QPainterPath shape() const
+    {
+        return mapFromItem(cur_object(), (QPainterPath)cur_object()->shape());
+    }
     bool contains(const QPointF &point) const
     {
-        return objects[cur_picture]->contains(point);
-    }
-
-    // ФУНКЦИИ ДЛЯ УДОБСТВА ОПРЕДЕЛЕНИЯ--------------------------------------------
-    void addState(QString state, QString pictureName)
-    {
-        addPicture(state, pictureName);
-    }
-    void addState(QString state, QString pictureName, Properties flags)
-    {
-        addState(state, pictureName);
-        properties[state] = flags;
-    }
-    void addState(QString state, QString pictureName, Properties flags, QString frameName)
-    {
-        addState(state, pictureName, flags);
-        frames[state] = frameName;
-    }
-    void addState(QString state, QString pictureName, Properties flags,
-                  QString frameName, QRectF pos)
-    {
-        addState(state, pictureName, flags, frameName);
-        geometries[state] = pos;
-    }
-
-    // ФУНКЦИИ ПЕРЕКЛЮЧЕНИЯ-------------------------------------------------------------------
-public:
-    virtual void setState(QString state, bool isImmediate = false)
-    {
-        setPictureState(state, isImmediate);
-        setFrameState(state); // сначала фрэйм, потом пропертис
-        setPropertyState(state);
-        setGeometryState(state, isImmediate);
+        return pictures[cur_picture]->contains(point);
     }
 };
 

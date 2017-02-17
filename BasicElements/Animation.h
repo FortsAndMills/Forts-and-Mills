@@ -16,20 +16,20 @@ private:
     qreal (Object::*getValue)() const;  // Функции получения и изменения значения
     void (Object::*setValue)(qreal newValue);
 
-public:
+private:
     qreal V;  // Скорость
 
 public:
     explicit Animation(Object * work_object,
               qreal (Object::*getValue)() const,
               void (Object::*setValue)(qreal newValue),
-              ANIMATION_TYPE type, qreal target, int time, bool isMain = false);
+              ANIMATION_TYPE type, qreal target, int time);
     friend AnimationManager;
-    friend Object;
+    friend Object;  // для доступа к target
 
     void stop();  // Останавливает анимацию и сразу переключает на конечное значение
-    void start(qreal target_value, int time, bool isMain = false);  // Начинает анимацию с новым target
-public slots:
+    void start(qreal target_value, int time);  // Начинает анимацию с новым target
+private slots:
     void frame();  // Реализация одного кадра
 
 signals:

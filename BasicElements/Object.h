@@ -24,15 +24,18 @@ public:
 
 
 // Контроль размера объекта и его картинки
-public:
+protected:
     virtual void resizeChildren(qreal, qreal) {}
+public:
     virtual void resize(qreal w, qreal h);
 
 private:
     QPixmap original;
+    void updatePicture();
 public:
     bool isNull() { return original.isNull(); }
     void setPixmap(const QPixmap &pixmap);  // установка картинки
+    void setPicture(QString name);
 
 // Недети
 private:
@@ -41,12 +44,12 @@ private:
 public:
     void deanchorFrom(Object * anchor);
     void anchorTo(Object * anchor);
+
+    // Геометрия
     void setPos(qreal x, qreal y);
     void setPos(QPointF pos) { setPos(pos.x(), pos.y()); }
     void setX(qreal x) { setPos(x, y()); }
     void setY(qreal y) { setPos(x(), y); }
-
-// Геометрия - удобные функции
 private:
     qreal Width, Height;  // FAIL: объекты без картинки всегда имеют нулевой размер...
 public:
@@ -64,10 +67,21 @@ public:
     {
         setGeometry(rect.x(), rect.y(), rect.width(), rect.height());
     }
+    QPointF center()
+    {
+        return QPointF(width() / 2, height() / 2);
+    }
+    QPointF center(Object * obj)
+    {
+        return mapToItem(obj, center());
+    }
+    QPointF absoluteCenter()
+    {
+        return QPointF(x() + width() / 2, y() + height() / 2);
+    }
 
     void moveBy(qreal dx, qreal dy);  // FAIL где анимация, где реальность?
     void moveBy(QPointF delta) { moveBy(delta.x(), delta.y()); }
-
 
 // А вот и аналог знаменитейшего ItemClipsChildrenToShape
 private:
@@ -75,6 +89,7 @@ private:
 public:
     void ClipWithItem(Object * item);
     void UnclipWithItem(Object * item);
+protected:
     virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option,
                QWidget * widget = 0);
 
@@ -86,15 +101,14 @@ private:
     void InitAnimationTypes();
 public:
     Animation * AnimationStart(ANIMATION_TYPE type,
-                               qreal target_value, int time = constants->defaultAnimationTime,
-                               bool isMain = false);
-    Animation * AnimationStart(QRectF tar, int time, bool isMain = false);
+                               qreal target_value, int time = constants->defaultAnimationTime);
+    Animation * AnimationStart(QRectF tar, int time);
 
 
 // проблема анимированности
-public:
+private:
     bool isAnimatedNow = false;  // чтобы знать, анимирована ли в данный момент
-    void RecheckIsAnimated(bool for_sure = false);
+    void RecheckIsAnimated();
 protected:
     virtual void startedAnimation() {}  // для переопределения
     virtual void finishedAnimation() {}
@@ -102,6 +116,9 @@ private slots:
     void animationFinished();
 signals:
     void movieFinished();
+
+public:
+    void disappear(int time);
 };
 
 #endif
