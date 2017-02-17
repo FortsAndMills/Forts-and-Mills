@@ -12,6 +12,6 @@
 
 Принципы игры таковы, что игра с искусственным интеллектом лишена идеологического смысла. Так что вам понадобится подключение к сети и оппонент.
 
-![Main Menu](http://www.imageup.ru/img292/2685578/screenshot-menu.png.html)
+![Main Menu](http://www.imageup.ru/img292/2685578/screenshot-menu.png)
 
 ### Скачать саму игру как для Windows, так и для Unix можно по [этой ссылке](https://sourceforge.net/projects/fortsandmills/?source=directory)
