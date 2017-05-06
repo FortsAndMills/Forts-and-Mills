@@ -10,6 +10,9 @@
 #include "UnitWay.h"
 #include "Shield.h"
 
+// Картинка нации для старта игры
+// Отличие от обычной картинки в том, что по правой кнопке мыши
+// она должна выдавать подсказку
 class LivingNationPicture : public GraphicObject
 {
     Q_OBJECT
@@ -25,6 +28,9 @@ public:
 
     void rightClick() { emit help->HelpAsked(type); }
 };
+
+// Какая-либо мигающая информация вверху гекса
+// Такая может быть только одна единовременно
 class Information : public MergingObject
 {
     Q_OBJECT
@@ -48,18 +54,20 @@ public:
     GameHex * prototype;
     Game * game;
 
-    GraphicObject * HexPicture;
-    QList <ResourcePic *> table;
+    GraphicObject * HexPicture;  // мельница, форт, гора или ничего
+    QList <ResourcePic *> table;  // таблица ресурсов гекса
 
-    SpriteObject * Lighting;
-    Object * UnitHomePicture;
+    SpriteObject * Lighting;  // подсветка при выделении перед стартом
+    Object * UnitHomePicture;  // домик, который отображается при наведении на соотв. юнита
 
-    Object * livingNationPicture;
-    MergingObject * information;
+    Object * livingNationPicture;  // картинка нации для старта
+    MergingObject * information;  // мерцающая вверху информация (не является домом или рекрутирующийся юнит)
 
     QSet <int> ids;
 public:
-    QMap <int, QPointF> points;  // точки для юнитов и их атрибутов на гексе
+    // точки для юнитов и их атрибутов на гексе
+    // всё настолько хитро, что вынесено в отдельный .cpp файл
+    QMap <int, QPointF> points;
     enum POSITION_STATE {STAY, ENTERING, LEAVING};
     QMap <int, POSITION_STATE> pointPositionState;
     QMap <int, WAY> pointsWay;
@@ -67,10 +75,10 @@ public:
     QMap <int, QList <Object *> > orders;  // оставленные юнитом приказы
     QMap <Object *, QPointF> orders_pos;  // положение оставленных приказов
 
-    QList <Shield *> shields;
+    QList <Shield *> shields;  // тоже самое для щитов
     QMap <Shield *, QPointF> shield_pos;
 
-    QMap <PlayerColor, MergingObject *> plannedCapturing;
+    QMap <PlayerColor, MergingObject *> plannedCapturing;  // при планировании, захват отображается как мигание соответствующим цветом
 
 public:
     explicit Hex(GraphicObject * parent, Game * game, GameHex * prototype);
@@ -80,10 +88,17 @@ public:
 
 public:
     void resizeChildren(qreal W, qreal H);
+    // пересчёт координат таблицы ресурсов
     QList<QPointF> countTableCoordinates(qreal W, qreal H, int n);
+    // точки входа и выхода из гекса в каждом направлении
     QMap <WAY, QPointF> EnterPoint;
     QMap <WAY, QPointF> LeavePoint;
+    // у гекса есть семь "якорей": по шести направлениям и центр
+    // если в якоре нужно расположить несколько объектов, они расбрасываются
+    // согласно указанному в данной карте
     QMap <int, QVector <QPoint> > ShiftMap;
+
+    // Перерасчёт позиций точек, а через них - объектов
     void recountPoints();
     void recountOrdersPosition();
     void recountShieldsPosition();
@@ -98,10 +113,10 @@ public:
         return mapToItem(obj, points[p]);
     }
 
+    // resize мгновенно меняет размер, reconfigure делает это через анимацию
 private:
     void resizeOrders();
     void resizeShields();
-
 public:
     void reconfigureOrders();
     void reconfigureShields();
@@ -117,11 +132,15 @@ private:
     }
 
 public:
+    // создание и удаление новых точек
     int createPoint(POSITION_STATE state = STAY, WAY way = "");
     void removePoint(int id);
 
+    // размещает переданные ресурсы также, как и ресурсы в таблице на гексе
+    // нужно для анимации сбора ресурсов
     void setNewResourcesPosition(QList<OrderPic *> resources);
 
+    // смена цвета, выделения и подсветки
     void setState(QString state, bool isImmediate = false);
     void select(bool enable = true, bool immediate = false);
     void light(bool enable = true, bool immediate = false);
@@ -130,22 +149,25 @@ public:
     void planCapturing(PlayerColor color);
     void deplanCapturing(PlayerColor color);
 
-    void addOrder(Order * order);
-    void removeOrder(Order * order);
-
     void showUnitHome(QString color);
     void hideUnitHome();
 
-    void hideLivingNation();    
+    void highlight(OrderType type, bool light = true);
+
+    void hideLivingNation();
     void showInformation(QString pic_name, QString name);
     void hideInformation();
 
-    void highlight(OrderType type, bool light = true);
+    // добавление и удаление объектов
+
+    void addOrder(Order * order);
+    void removeOrder(Order * order);
 
     void defenceAppear(int amount, PlayerColor color);
     void defenceDisappear();
     void defenceTurn(int amount, bool on = true);
 
+    // интерактивность
     void leftClick() { emit clicked(prototype->coord); }
     void rightClick() { emit help->HelpAsked(prototype->type); }
     void enter() { emit entered(prototype->coord); }

@@ -10,6 +10,8 @@
 #include "Interface/SpecialButton.h"
 #include "Technical/Client.h"
 
+// Организация неигровых элементов интерфейса и их, фу-фу, геометрия
+
 class InterfaceOrganization : public GameElementsOrganization
 {
     Q_OBJECT

@@ -4,6 +4,8 @@
 #include "Technical/Headers.h"
 #include "GameElements/Hex.h"
 
+// Игровое поле
+
 class Field : public GraphicObject
 {
     Q_OBJECT
@@ -15,9 +17,10 @@ public:
     virtual void Delete();
 
 public:
-    bool isSplitted(int x, int y, WAY way);
-    QMap <WAY, QPointF> oneHexShift;  // смещение на один гекс в данном направлении
-    Hex * HexAt(QPointF point);  // найти гекс под этой точкой
+    QMap <WAY, QPointF> oneHexShift;  // смещение на один гекс в данном направлении - полезные константы
+
+    bool isSplitted(int x, int y, WAY way);  // приводит ли перемещение из данного гекса в данном направлении к разрыву поля
+    Hex * HexAt(QPointF point);  // найти гекс под этой точкой экрана
 
 private:
     QPointF coordinates(int i, int j);  // возвращает координаты данного гекса с учётом сдвига

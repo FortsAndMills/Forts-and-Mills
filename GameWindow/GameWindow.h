@@ -12,6 +12,7 @@ public:
 
     bool isRealizingFinished = false;
 
+    // упорядочивание событий от игры!
     void MixEvents();
 
 protected slots:

@@ -3,26 +3,30 @@
 #include "Technical/AnimationManager.h"
 #include "BasicElements/TextObject.h"
 #include "Game/GameRules.h"
-
 #include "SystemControlPanel.h"
-#include "GameLogic/GameWindow.h"
+#include "GameWindow/GameWindow.h"
 #include "MenuWindow.h"
+#include "CreatingGameWindow.h"
+#include "HowToPlayWindow.h"
 #include "Background.h"
+#include "Learning/LessonGame.h"
+#include "Learning/LessonGameWindow.h"
 
 class MainWindow : public QGraphicsView
 {
     Q_OBJECT
 
-    enum {MENU, GAME} state = MENU;
+    enum {MENU, CREATING_GAME, LESSONS, GAME} state = MENU;
 
     QGraphicsScene * scene;
 
     Background * background;
-    Object * backgroundFrame;
     SystemControlPanel * control_panel;
 
     GameWindow * game_window = NULL;
     MenuWindow * menu_window;
+    HowToPlayWindow * how_to_play_window;
+    CreatingGameWindow * creating_game_window;
 
     // ИНИЦИАЛИЗАЦИЯ--------------------------------------------------------------------------
 public:
@@ -47,14 +51,23 @@ public:
         scene->setItemIndexMethod(QGraphicsScene::NoIndex);
         this->setScene(scene);
 
-        background = new Background(scene, "MainWindow");  // объявление объектов
+        background = new Background(scene);  // объявление объектов
         connect(background, SIGNAL(moved(QPoint)), SLOT(moved(QPoint)));
 
-        CreateWindows();
+        menu_window = new MenuWindow(background);
+        connect(menu_window->CreateNewGame, SIGNAL(leftClicked()), SLOT(StartCreatingGame()));
+        connect(menu_window->HowToPlayFrame, SIGNAL(leftClicked()), SLOT(ShowLessons()));
 
-        backgroundFrame = new Object();
-        backgroundFrame->setPixmap(pictures->get("MainWindowFrame"));
-        scene->addItem(backgroundFrame);
+        creating_game_window = new CreatingGameWindow(background);
+        connect(creating_game_window->cancel, SIGNAL(leftClicked()), SLOT(returnToMainMenu()));
+        connect(creating_game_window->create, SIGNAL(leftClicked()), SLOT(createGame()));
+
+        how_to_play_window = new HowToPlayWindow(background);
+        connect(how_to_play_window->HomeButton, SIGNAL(leftClicked()), SLOT(returnToMainMenu()));
+        foreach (LessonLabel * LL, how_to_play_window->lessons)
+        {
+            connect(LL, SIGNAL(clicked(int)), SLOT(CreateLearningGame(int)));
+        }
 
         control_panel = new SystemControlPanel();
         scene->addItem(control_panel);
@@ -67,23 +80,8 @@ public:
 
         if (settings->IS_APPLICATION_MAXIMIZED)
             this->showMaximized();
-    }
-    void CreateWindows()
-    {
-        menu_window = new MenuWindow(background);
 
-        if (settings->PROGRAMM_VERSION == REAL_CLIENT)
-        {
-            client->TryToConnect();  // Просим подсоединиться.
-        }
-        else  // иначе убираем меню и начинаем новую игру
-        {
-            state = GAME;
-            Game * game = new Game(new GameRules());
-            game_window = new GameWindow(game, 0, background);
-
-            menu_window->setVisible(false);
-        }
+        client->TryToConnect();  // Просим подсоединиться.
     }
 
     void resizeEvent(QResizeEvent * qre)
@@ -97,7 +95,6 @@ public:
         scene->setSceneRect(0, 0, W, H);
 
         background->setGeometry(0, 0, W, H);
-        backgroundFrame->setGeometry(0, 0, W, H);
         control_panel->setGeometry(W - constants->controlPanelWidth, 0,
                                    constants->controlPanelWidth, constants->controlPanelHeight);
 
@@ -106,6 +103,8 @@ public:
     void resizeWindows(qreal W, qreal H)
     {
         menu_window->setGeometry(0, 0, W, H);
+        creating_game_window->setGeometry(0, 0, W, H);
+        how_to_play_window->setGeometry(0, 0, W, H);
         if (game_window != NULL)
             game_window->setGeometry(0, 0, W, H);
     }
@@ -113,27 +112,118 @@ public:
 
     // СЛОТЫ
 public slots:
-    void CreateGame(qint8 PlayerIndex, QList <qint32> random) // создание новой игры по запросу сервера
+    void StartCreatingGame()
+    {
+        state = CREATING_GAME;  // меняем состояние
+
+        menu_window->turn(false);
+        creating_game_window->turn(true);
+    }
+    void createGame()
+    {
+        state = MENU;  // меняем состояние
+
+        menu_window->turn(true);
+        creating_game_window->turn(false);
+
+        client->sendCreateGameMessage();
+    }
+    void returnToMainMenu()
+    {
+        state = MENU;  // меняем состояние
+
+        menu_window->turn(true);
+
+        creating_game_window->turn(false);
+        how_to_play_window->turn(false);
+
+        if (game_window != NULL)
+        {
+            // запускаем анимацию пересоздания списка доступных игр
+            menu_window->recreateList();
+
+            game_window->AnimationStart(OPACITY, 0);
+            game_window->setEnabled(false);
+            connect(game_window, SIGNAL(movieFinished()), game_window, SLOT(Delete()));
+            game_window = NULL;
+
+            background->setState("Neutral");
+            control_panel->setState("Neutral");
+        }
+        else
+        {
+            help->HelpAsked("HowToAskHelp");
+        }
+    }
+    void returnToLessons()
+    {
+        state = LESSONS;  // меняем состояние
+
+        how_to_play_window->turn(true);
+
+        game_window->AnimationStart(OPACITY, 0);
+        game_window->setEnabled(false);
+        connect(game_window, SIGNAL(movieFinished()), game_window, SLOT(Delete()));
+        game_window = NULL;
+
+        background->setState("Neutral");
+        control_panel->setState("Neutral");
+    }
+    void ShowLessons()
+    {
+        state = LESSONS;
+        menu_window->turn(false);
+        how_to_play_window->turn(true);
+    }
+    void CreateGame(qint8 PlayerIndex, QList <qint32> random_numbers) // создание новой игры по запросу сервера
     {
         if (state == GAME)  // если это произошло во время игры, автор программы мартыш.
-            qDebug() << "GLOBAL ERROR: creating game during... game";
+            debug << "GLOBAL ERROR: creating game during... game\n";
         state = GAME;  // меняем состояние
 
-        if (game_window != NULL)  // удаляем предыдущие графические данные игры
-            game_window->Delete();
+        // Создаём игру и отображаем её на экране
+        GameRules * rules = menu_window->getRules();
+        Game * game = new Game(rules, new Random(random_numbers));
+        game_window = new GameWindow(game, PlayerIndex, background);
+        resizeWindows(width(), height());
+        connect(game_window, SIGNAL(GoHome()), SLOT(returnToMainMenu()));
+
+        menu_window->turn(false);
+
+        game_window->setOpacity(0);
+        game_window->AnimationStart(OPACITY, 1);
+        background->setState(rules->players[PlayerIndex]);
+        control_panel->setState(rules->players[PlayerIndex]);
+
+        qApp->alert(this);
+    }
+    void CreateLearningGame(int LessonNumber) // создание новой игры по запросу сервера
+    {
+        if (state == GAME)  // если это произошло во время игры, автор программы мартыш.
+            debug << "GLOBAL ERROR: creating lesson game during... game\n";
+        state = GAME;  // меняем состояние
 
         // Создаём игру и отображаем её на экране
         GameRules * rules = new GameRules();
-        Game * game = new Game(rules, random);
-        game_window = new GameWindow(game, PlayerIndex, background);
+        LessonGame * game = new LessonGame(rules, LessonNumber);
+        LessonGameWindow * lgame_window = new LessonGameWindow(background, game);
+        game_window = lgame_window;
         resizeWindows(width(), height());
+        connect(game_window, SIGNAL(GoHome()), SLOT(returnToLessons()));
+        connect(lgame_window, SIGNAL(LessonPassed(int)), SLOT(LessonPassed(int)));
 
-        menu_window->AnimationStart(OPACITY, 0);  // анимация появления
-        game_window->setVisible(true);  // TODO а если окон будет больше чем два?
+        menu_window->turn(false);
+        how_to_play_window->turn(false);
+
         game_window->setOpacity(0);
         game_window->AnimationStart(OPACITY, 1);
     }
-
+    void LessonPassed(int n)
+    {
+        settings->lessonsPassed[n] = true;
+        menu_window->CheckForLessonsPassed();
+        how_to_play_window->CheckForLessonsPassed();
+    }
 
     // РАБОТА КОНТРОЛЬНОЙ ПАНЕЛИ---------------------------------------------------
 private slots:
@@ -154,6 +244,10 @@ private slots:
     // СОХРАНЕНИЕ НАСТРОЕК ПО ЗАВЕРШЕНИЮ РАБОТЫ---------------------
     void closeEvent(QCloseEvent *)
     {
+        if (state == GAME)
+            game_window->giveup();
+        client->sendLeaveMessage();
+
         settings->IS_APPLICATION_MAXIMIZED = this->isMaximized();
 
         if (this->isMaximized())  // по-другому истинные координаты не получишь
@@ -162,5 +256,8 @@ private slots:
         settings->APPLICATION_START_SIZE = size();
 
         settings->write();
+        if (logFile->size() != 0)
+            qDebug() << "log file is not empty";
+        logFile->close();
     }
 };

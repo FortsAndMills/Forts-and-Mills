@@ -4,6 +4,8 @@
 #include "BasicElements/Object.h"
 #include "Technical/Constants.h"
 
+// Полупрозрачный крестик "лечения", который всплывает при соотв. действии
+
 class CureIcon : public Object
 {
     Q_OBJECT
@@ -23,6 +25,8 @@ public:
         this->AnimationStart(Y_POS, y() - height() * (constants->cureIconTargetPointHeight - 1) / 2 + height() * constants->cureIconTargetPointY, constants->cureIconAnimationTime);
         this->AnimationStart(WIDTH, width() * constants->cureIconTargetPointWidth, constants->cureIconAnimationTime);
         this->AnimationStart(HEIGHT, height() * constants->cureIconTargetPointHeight, constants->cureIconAnimationTime);
+
+        // за некоторое время до финала начинаем исчезать
         QTimer::singleShot(constants->cureIconAnimationTime - constants->cureIconAppearTime, this, SLOT(finishAnimation()));
     }
 

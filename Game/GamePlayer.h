@@ -3,6 +3,8 @@
 
 #include "Technical/Headers.h"
 
+// Игровой класс игрока
+
 class GamePlayer
 {
 public:

@@ -27,9 +27,7 @@ public:
     virtual void GenerateField();
 
     bool isHexAHome(Coord which, QString color);
-
     Coord canBeCaptured(Coord which, PlayerColor color);
-
     int resourcesLimit(PlayerColor color);
 
     QString isGameFinished();

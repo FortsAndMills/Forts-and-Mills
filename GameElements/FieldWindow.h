@@ -4,6 +4,7 @@
 #include "Field.h"
 #include "Technical/Constants.h"
 
+// Окно со стрелочками для управления полем
 class FieldWindow : public GraphicObject
 {
     Q_OBJECT

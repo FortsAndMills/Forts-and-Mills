@@ -109,6 +109,7 @@ void Unit::Delete()
     GraphicObject::Delete();
 }
 
+// вращение обода юнита
 void Unit::turnFrame()
 {
     if (unitFrame->isDeleted)
@@ -204,6 +205,7 @@ void Unit::resizeHealth()
         health[i]->setVisible(true);
     }
 }
+
 void Unit::resizeOrders()
 {
     recountOrderGeometry();
@@ -287,7 +289,7 @@ void Unit::reconfigureHealth()
 }
 
 // ИГРОВЫЕ ДЕЙСТВИЯ------------------------------------------------------------------------
-void Unit::blow()
+void Unit::blow()  // взрыв с последующим удалением
 {
     this->setEnabled(false);
 
@@ -342,6 +344,7 @@ void Unit::openMainOrder()
 {
     mainOrder->open();
 
+    // пускаем дым в честь такого события
     bigSelection = new SpriteObject(this, 0, prototype->color + "UnitSelectionLayer", -1, true);
     bigSelection->setZValue(constants->selectionZpos);
     resizeChildren(width(), height());
@@ -429,6 +432,8 @@ void Unit::showOrdersPanel(QList<OrderType> orders)
     ordersPanel->setVariants(orders);
     ordersPanel->appear();
 
+    // подключаем сигналы от панели
+    // кнопки панели меняются при её включении, поэтому это нужно делать здесь
     foreach (OrderVariant * var, ordersPanel->variants)
         connect(var, SIGNAL(leftClicked(QString)), this, SIGNAL(orderVariantChosen(QString)));
 }
@@ -454,6 +459,7 @@ void Unit::bigSelect()
 
 }
 
+// выбранный приказ появляется на панели приказов, и оттуда едет к юниту
 void Unit::locateOrderLikeOnPanel(Order * order)
 {
     orders_stack.append(order);

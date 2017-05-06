@@ -6,6 +6,8 @@
 #include "BasicElements/GraphicObject.h"
 #include "GameElements/Order.h"
 
+// положение юнита характеризуется не только координатами гекса
+// но и точкой в самом гексе
 class Position
 {
 public:
@@ -59,7 +61,7 @@ private:
     bool isSelected = false;
     bool isEntered = false;
     bool isLighten = false;
-    void recheckZPos()
+    void recheckZPos()  // следим за тем, какой юнит "выше" всех остальных
     {
         if (isSelected || isEntered || isLighten)
             this->setZValue(constants->selectedUnitZPos);

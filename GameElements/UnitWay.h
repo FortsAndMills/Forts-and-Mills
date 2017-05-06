@@ -6,6 +6,7 @@
 #include "BasicElements/SpriteObject.h"
 #include "Unit.h"
 
+// стрелочка, следующая за юнитом при перемещении
 class UnitWay : public SpriteObject
 {
     Q_OBJECT
@@ -35,6 +36,7 @@ public:
         setRotation(rotation);
     }
 
+    // неприятная геометрия для вычисления положения стрелочки
     QRectF geometry;
     qreal rotation;
 private:

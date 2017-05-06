@@ -3,6 +3,9 @@
 
 #include "GameField.h"
 
+// вспомогательные функции для поиска юнитов в тех же клетках
+// или идущих в конкретном направлении...
+// союзников и врагов...
 class GameUnitsMoving : public GameField
 {
 public:

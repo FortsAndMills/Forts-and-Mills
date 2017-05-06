@@ -1,6 +1,8 @@
 #include "GameOrder.h"
 #include "GameRules.h"
 
+// ИНИЦИАЛИЗАЦИЯ ИГРОВЫХ ПРИКАЗОВ
+
 GameOrderParameters::GameOrderParameters(GameRules * rules, UnitType owner, OrderType type)
 {
     this->type = type;

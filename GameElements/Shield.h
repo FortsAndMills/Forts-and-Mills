@@ -4,12 +4,13 @@
 #include "Technical/Headers.h"
 #include "BasicElements/StateObject.h"
 
+// Бонус в обороне как для фортов, так и для бегемота
 class Shield : public StateObject
 {
     Q_OBJECT
 
 public:
-    bool isOn = true;
+    bool isOn = true;  // если бонус "уже использован", то он серый и меньше в размере
     PlayerColor color;
 
     explicit Shield(GraphicObject * parent, PlayerColor color) :
@@ -23,6 +24,7 @@ public:
                                                               constants->ShieldSmallStateHeightShift));
         addPicture("small", "NeutralShield");
     }
+    // для призраков-гексов))
     explicit Shield(Shield * another, GraphicObject * newParent) : Shield(newParent, another->color)
     {
         if (!another->isOn)

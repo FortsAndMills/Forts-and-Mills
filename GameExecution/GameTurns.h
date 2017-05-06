@@ -4,13 +4,17 @@
 #include "GameHelp.h"
 #include "GameMessages.h"
 
+// модуль для взаимодействия с графическим модулем
 class GameTurns : public GameHelp
 {
 public:
+    // список игровых событий для передачи графике
     QList <GameMessage *> events;
 
+    // выбранные игроками гексы
     QMap <PlayerColor, Coord> chosenHex;
 
+    // готовность игроков
     QMap <PlayerColor, bool> ready;
     bool isEveryoneReady()
     {
@@ -22,6 +26,7 @@ public:
 
     explicit GameTurns(GameRules * rules, Random * rand);
 
+    // удобная функция
     virtual GameMessage * AddEvent()
     {
         return (events << new GameMessage()).last();
@@ -29,6 +34,7 @@ public:
 
     void playerGiveUp(int index);
 
+    // может ли юнит использовать приказ и какие у него есть варианты
     bool CanUse(GameUnit * unit, OrderType order);
     QList<OrderType> whatCanUse(GameUnit *);
 

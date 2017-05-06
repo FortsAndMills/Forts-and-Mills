@@ -4,12 +4,13 @@ GameWindow::GameWindow(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
     EventsRealization(game, PlayerIndex, parent)
 {
     game->StartGame();
+    // это чтобы NextPhase вызвался уже после инициализации...
     QTimer::singleShot(1, this, SLOT(NextPhase()));
 }
 
 void GameWindow::NextPhase()
 {
-    if (isRealizingFinished)
+    if (isRealizingFinished)  // завершение обработки очередного события
     {
         game->events.removeAt(0);
         Substate = 0;
@@ -23,6 +24,7 @@ void GameWindow::NextPhase()
         MixEvents();
     }
 
+    // реализуем очередное действие и делаем то, что попросили
     WaitingType WT = this->RealizeEvent();
     isRealizingFinished = WT.finished_this_event;
 
@@ -34,6 +36,7 @@ void GameWindow::NextPhase()
 
 void GameWindow::MixEvents()
 {
+    // перемешивание происходит только когда очередное событие - начало реализации очередного времени дня
     if (game->events[0]->type == TIME_STARTED)
     {
         QStack <GameUnit *> hero;  // чьи приказы реализовываются
@@ -131,6 +134,7 @@ void GameWindow::MixEvents()
     }
 }
 
+// вспомогательная функция нахождения последнего события раунда
 GameMessage *GameWindow::lastDayTimeEvent(int base)
 {
     int i = base;

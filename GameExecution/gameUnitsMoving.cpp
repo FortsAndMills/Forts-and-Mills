@@ -5,6 +5,7 @@ GameUnitsMoving::GameUnitsMoving(GameRules *rules, Random *rand) :
 {
 }
 
+
 QSet <GameUnit *> GameUnitsMoving::findAll(SEARCH_TYPE ST, GameUnit * for_whom,
                           Coord staying, Coord going_to)
 {

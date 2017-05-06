@@ -1,5 +1,7 @@
 #include "GameHex.h"
 
+// ИНИЦИАЛИЗАЦИЯ ИГРОВЫХ ГЕКСОВ
+
 GameHexParameters::GameHexParameters(HexType type)
 {
     this->type = type;

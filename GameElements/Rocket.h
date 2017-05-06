@@ -5,6 +5,7 @@
 #include "Technical/Constants.h"
 #include "BasicElements/SpriteObject.h"
 
+// Ракеты для выстрелов!
 class Rocket : public GraphicObject
 {
     Q_OBJECT
@@ -13,11 +14,12 @@ class Rocket : public GraphicObject
 
 public:
     Coord target;
-    bool single;
+    bool single;  // одноразовая или в цикле
 
-    enum RocketType {ROCKET, BLAST} type;
-    QString name;
-    qreal wid_coeff;
+    enum RocketType {ROCKET, BLAST} type;  // ракета или бласт от штурма
+    // константы, различающиеся для разных типов ракет
+    QString name;  // например, название картинки
+    qreal wid_coeff;  // размеры и время полёта
     qreal heig_coeff;
     int appear_time, fly_time;
 
@@ -54,6 +56,7 @@ public:
         GraphicObject::Delete();
     }
 
+    // неприятная геометрия для рассчёта положения ракеты и её поворота
     QRectF geometry;
     qreal rotation;
     void reconfigure(QPointF base, QPointF top)
@@ -107,7 +110,7 @@ public:
     }
 
 private slots:
-    void flied()
+    void flied()  // завершение цикла анимации
     {        
         setStartPosition();
         if (!single)
@@ -117,7 +120,7 @@ private slots:
         else
             QTimer::singleShot(constants->rocketExplosionTime, this, SLOT(Delete()));
     }
-    void explode()
+    void explode()  // взрыв!
     {
         if (isDeleted)
             return;

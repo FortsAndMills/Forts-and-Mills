@@ -110,6 +110,8 @@ public:
 private slots:
     bool unitClicked(bool on, UnitType type)
     {
+        // проверки на корректность добавления или удаления типа юнита из игры
+
         int i = 0;
         while (units->units[i]->type != type) { ++i; }
 
@@ -142,6 +144,8 @@ private slots:
     }
     bool orderClicked(bool on, OrderType type)
     {
+        // проверки на корректность добавления или удаления вида приказов в игру
+
         int i = 0;
         while (orders->orders[i]->type != type) { ++i; }
 

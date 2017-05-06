@@ -92,11 +92,14 @@ void Interaction::hexEntered(Coord c)
         hexCopy->Delete();
     }
 
+    // при наведении на гекс стоит создать её копию в левом нижнем углу
     hexCopy = new Hex(hex(c), this);
     hexCopy->select(false, true);
     hexCopy->light(false, true);
     resizeHexCopy();
 
+    // во время планирования также отображается юнит из этой клетки
+    // TODO стоит эту инфу хранить динамически, чтоб можно было и во время реализации этим баловаться
     if (state != REALIZATION_PHASE)
     {
         GameUnit * unit = game->whoHasHomeAt(c);
@@ -154,10 +157,12 @@ void Interaction::orderVariantClicked(OrderType type)
         delete selectedUnit->prototype->plan[dayTime];
     }
 
+    // создаём новый приказ выбранного типа
     GameOrder * order = new GameOrder(game->rules, selectedUnit->prototype->type, type, priorities[dayTime]);
     ++priorities[dayTime];
     selectedUnit->prototype->plan[dayTime] = order;
 
+    // инициализируем его и привязываем к текущему юниту
     orders[order] = new Order(this, order);
     orders[order]->anchorTo(selectedUnit);
     orders[order]->anchor = selectedUnit->where();
@@ -166,11 +171,13 @@ void Interaction::orderVariantClicked(OrderType type)
     selectedUnit->reconfigureOrders();
     selectedUnit->hidePanel();
 
+    // приказ отображается использованным
     if (type != DefaultOrder)
     {
         player_windows[mainPlayerColor]->turnResource(type, false);
     }
 
+    // переходим в состояние выбора параметра приказа
     getReadyToChooseOrderParameter();
 }
 
@@ -192,7 +199,7 @@ void Interaction::unitHoverLeft(GameUnit *unit)
 }
 void Interaction::unitRightClicked(GameUnit *unit)
 {
-    unitLeftClicked(unit);
+    return;
 }
 void Interaction::unitLeftClicked(GameUnit * unit)
 {
@@ -200,16 +207,19 @@ void Interaction::unitLeftClicked(GameUnit * unit)
     {
         if (this->mainPlayerColor == unit->color)
         {
+            // если выбирался параметр приказа, то всё нужно откатывать назад
+            // и "недовыбранный" приказ убрать
             if (state == CHOOSE_ORDER_PARAMETER)
                 breakChoosingOrderParameter();
 
+            // если кликнутый юнит совпадает с выделенным
             if (selectedUnit == units[unit])
             {
-                if (state == CHOOSE_ORDER_PARAMETER)
+                if (state == CHOOSE_ORDER_PARAMETER)  // перезапуск выбора типа приказа
                 {
                     selectedUnit->showOrdersPanel(game->whatCanUse(selectedUnit->prototype));
                 }
-                else
+                else  // он перестаёт быть выделенным
                 {
                     units[unit]->deselect();
                     units[unit]->hidePanel();
@@ -261,9 +271,6 @@ void Interaction::dayTimeClicked(DayTime time)
     }
 }
 
-#define GIVE_UP (qint8)1
-#define MILLS_COORDINATES_MESSAGE (qint8)2
-#define PLAN (qint8)3
 void Interaction::GoButtonPushed()
 {
     if (state == CHOOSE_ORDER_PARAMETER)
@@ -295,9 +302,6 @@ void Interaction::DialogReturned(bool isOk, QString sig_mes)
 {
     if (ARE_YOU_SURE_DIALOG == state)
     {
-        if (sig_mes != "plan")
-            debug << "something went wrong...";
-
         state = PLANNING;
 
         if (isOk)
@@ -312,6 +316,13 @@ void Interaction::DialogReturned(bool isOk, QString sig_mes)
     if (sig_mes == "GiveUp" && isOk)
         giveup();
 }
+
+// общение с другими игроками
+// на вход и выход передаются сообщения чисто местного протокола
+
+#define GIVE_UP (qint8)1
+#define MILLS_COORDINATES_MESSAGE (qint8)2
+#define PLAN (qint8)3
 void Interaction::sendPlan()
 {
     if (state == CHOOSING_HEX)
@@ -344,12 +355,14 @@ void Interaction::sendPlan()
         {
             for (int time = 0; time < game->rules->dayTimes; ++time)
             {
+                // забиваем пустые места приказами безделья
                 if (game->players[mainPlayerColor]->units[i]->plan[time] == NULL)
                 {
                     game->players[mainPlayerColor]->units[i]->plan[time] = new GameOrder(game->rules, game->players[mainPlayerColor]->units[i]->type, DefaultOrder, priorities[time]);
                     ++priorities[time];
                 }
 
+                // отправляем план
                 GameOrder * order = game->players[mainPlayerColor]->units[i]->plan[time];
                 write << game->rules->orderIndex(order->type) << order->priority;
 
@@ -442,6 +455,7 @@ void Interaction::NextButtonClicked()
     NextPhase();
 }
 
+// оповещения о событиях
 void Interaction::serverDisconnected()
 {
     dialog->set(mainPlayerColor, "ОШИБКА!<br>Соединение с сервером разорвано! Пытаемся переподключиться...", false, false, true);
@@ -487,7 +501,7 @@ void Interaction::giveup()
             NextPhase();
     }
 
-    if (planned_to_go_home)
+    if (planned_to_go_home)  // что это?
         emit GoHome();
 }
 
@@ -512,7 +526,7 @@ void Interaction::homeButtonClicked()
     }
 
     prev_state = state;
-    go->enable(false);
+    go->enable(false);  // TODO возможно, тут сокрыта бага им. Козловцева
     planned_to_go_home = true;
 
     dialog->set(mainPlayerColor, "Сдаётесь?", false, true, true, false, "", "GiveUp");

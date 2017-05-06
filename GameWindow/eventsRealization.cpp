@@ -13,15 +13,17 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
     {
         if (Substate == 0)
         {
+            // делаем доступными к нажатию определённые гексы
             getReadyToChooseHex(e->variants);
 
             Substate = 1;
-            if (game->isEveryoneReady())
+            if (game->isEveryoneReady())  // ??!?
                 return WaitingType();
             return WaitingType(WAIT_FOR_INTERACTION, 0, false);
         }
         else
         {
+            // заполняем лог и запускаем продолжение
             logMillChoice();
             game->HexChosen();
             return WaitingType();
@@ -56,7 +58,7 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
     else if (e->type == NEW_UNIT_APPEAR)
     {
         newUnit(e->unit, e->hex->coord);
-        hex(e->unit->home)->hideInformation();
+        hex(e->unit->home)->hideInformation();  // предполагается, что там была картинка этого юнита как рекрутирующегося
 
         if (game->events[1]->type == NEW_UNIT_APPEAR ||
                 state != REALIZATION_PHASE)
@@ -70,6 +72,7 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
 
         if (game->events[1]->type != GATHER_RESOURCES)
         {
+            // анимация запускается единовременно для всех таких идущих подряд событий
             disappearAllTurnedOffOrders();
             reconfigureResources();
         }
@@ -90,11 +93,13 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
     }
     else if (e->type == TIME_STARTED)
     {
+        // переключаем время дня на табличке
         if (dayTime != -1)
             DayTimeTable->select(dayTime, false);
         dayTime = e->time;
         DayTimeTable->select(dayTime, true);
 
+        // появляются все приказы
         foreach (Unit * unit, units)
                 unit->mainOrderAppear(e->plan[unit->prototype]);
 
@@ -110,6 +115,7 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
     {
         player_windows[e->unit->color]->lightResource(e->R, true);
 
+        // при необходимости открывается приказ исполнителя
         if (!units[e->unit]->isMainOrderOpenned())
         {
             units[e->unit]->openMainOrder();
@@ -178,7 +184,7 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
     }
     else if (e->type == UNITS_ARE_GOING_TO_FIGHT)
     {
-        // здесь какая-то перестановка должна быть
+        // TODO здесь какая-то перестановка должна быть?
 
         foreach (GameUnit * u, e->fighters)
         {
@@ -230,7 +236,8 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
             if (Substate == 0 && e->isActiveOrderBurns)
             {
                 player_windows[e->unit->color]->burnLighten(e->resources[Substate]);
-                //if (Substate + 1 < e->resources.size())
+                // переключение на панель того игрока, у которого сгорают ресурсы
+                //if (Substate + 1 < e->resources.size())   так-так, почему это не работает?
                     //leftPanelSwitcherClicked(e->unit->color);
             }
             else
@@ -297,6 +304,8 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
         Unit * u = units[e->unit];
         u->healthChanged(e->amount);
 
+        // TODO надо бы это в event-функцию оформить...
+        // это просто создание крестика, инициализация и старт анимации
         CureIcon * cure = new CureIcon(this);
         cure->setPos(mapFromItem(units[e->unit], units[e->unit]->center()) - QPointF(constants->cureIconWidth, constants->cureIconHeight) * constants->unitsSize / 2);
         cure->resize(constants->cureIconWidth * constants->unitsSize, constants->cureIconHeight * constants->unitsSize);
@@ -320,6 +329,7 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
     }
     else if (e->type == TIME_FINISHED)
     {
+        // открываем все оставшиеся приказы, которые являются бездельем
         bool wait = false;
         foreach (Unit * u, units)
         {
@@ -333,6 +343,7 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
         if (wait)
             return WaitingType(BUTTON, constants->mainOrderOpenTime, false);
 
+        // все приказы безделья исчезают
         foreach (Unit * u, units)
         {
             if (u->mainOrder != NULL)
@@ -365,6 +376,7 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
     {
         DayTimeTable->disappear();
 
+        // для изменения количества времён дня, табличку приходится пересоздавать
         DayTimeTable = new DayTimePanel(this, game->rules->dayTimes);
         resizeDayTimeTable(width(), height());
         for (int i = 0; i < game->rules->dayTimes; ++i)
@@ -385,6 +397,7 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
         }
         resizeDialog(width(), height());
 
+        // все кнопки исчезают
         next->AnimationStart(OPACITY, 0);
         whiteFlag->AnimationStart(OPACITY, 0);
         go->AnimationStart(OPACITY, 0);
@@ -396,6 +409,7 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
     return WaitingType();
 }
 
+// ищем центр объекта, который представляет то, чем сражается юнит
 QList <QPointF> EventsRealization::UnitsFightObject(QList <GameUnit *> fighters, QList<FightBrid> fb, QList<GameHex *> positions)
 {
     QList <QPointF> ans;
@@ -453,21 +467,22 @@ bool EventsRealization::UnitsFight(QList <GameUnit *> fighters, QList<FightBrid>
 
     for (int i = 0; i < fighters.size(); ++i)
     {
+        // подсвечиваем красным штрафующие приказы
         if ((fb[i] != ENEMY_ORDER_PENALTY && pens > 0) || pens == fighters.size())
         {
             if (units[fighters[i]]->mainOrder != NULL)
                 units[fighters[i]]->mainOrder->light();
         }
 
-        if (fb[i] == FORTIFICATION)
+        if (fb[i] == FORTIFICATION)  // убираем использованные щиты
         {
             fortify(hexes[positions[i]], -value);
         }
-        else if (fb[i] == HEX_DEFENCE)
+        else if (fb[i] == HEX_DEFENCE)  // деактивируем бонус гекса
         {
             hexes[positions[i]]->defenceTurn(value, false);
         }
-        else if (fb[i] == ORDER_BONUS)
+        else if (fb[i] == ORDER_BONUS)  // стреляем бластом из приказа, дающего бонус, в точку, представляющую противника
         {
             for (int j = 0; j < fighters.size(); ++j)
             {
@@ -479,7 +494,7 @@ bool EventsRealization::UnitsFight(QList <GameUnit *> fighters, QList<FightBrid>
         {
             units[fighters[i]]->defenceTurn(value, false);
         }
-        else if (fb[i] == DISTANT)
+        else if (fb[i] == DISTANT)  // смешно смотрится, если несколько участников боя
         {
             for (int j = 0; j < fighters.size(); ++j)
             {

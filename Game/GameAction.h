@@ -3,13 +3,21 @@
 
 #include "Technical/Headers.h"
 
+// Отмечает базовое действие, которое может совершить юнит
+// Игровой приказ может совмещать несколько действий
+// Каждое действие может иметь параметр, который игроку предстоит выбрать
+// В этом классе содержится категориальная информация об этом
+
 class GameAction
 {
 public:
+    // тип параметра действия
     enum GameActionParameterType {NONE,
                                                               ADJACENT_HEX_WHERE_CAN_GO,
                                                               VISIBLE_HEX_IN_RADIUS_2,
                                                               TYPE_OF_UNIT} p_type;
+
+    // что по сути параметр: ничего, тип юнита или гекс.
     int whatParameter()
     {
         if (p_type == NONE)
@@ -19,9 +27,11 @@ public:
         return 2;
     }
 
+    // Хранение значений параметров
     Coord target;
     UnitType unitType;
 
+    // Возможные действия
     enum GameActionType {START_REALIZATION,
                                             AMBUSH,
                                             LEAVE_HEX,
@@ -36,9 +46,9 @@ public:
                                             FORTIFICATE,
                                             FINISH_REALIZATION} type;
 
-    int priority;
+    int priority;  // его приоритет в списке всех действий раунда
 
-    int amount;
+    int amount;  // "мощность", обычно игровая константа - для удобства.
 
     GameAction()
     {

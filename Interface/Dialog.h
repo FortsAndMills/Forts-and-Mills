@@ -49,6 +49,7 @@ public:
         GraphicObject::Delete();
     }
 
+    // геометрия держится на неоформленных в константы цифрах...
     void resizeChildren(qreal W, qreal H)
     {
         if (SupportPicture == NULL && WaitingPicture == NULL && cancel == NULL && ok == NULL && back == NULL)

@@ -13,10 +13,11 @@ void GameTurns::playerGiveUp(int index)
 
 bool GameTurns::CanUse(GameUnit *unit, OrderType order)
 {
+    // если этот приказ технически не может использоваться юнитом, сразу нет
     if (!GameOrderParameters(rules, unit->type, order).canUse)
         return false;
 
-    int spend = 0;
+    int spend = 0;  // подсчёт ресурсов
     foreach (GameUnit * u, players[unit->color]->units)
     {
         for (int t = 0; t < rules->dayTimes; ++t)
@@ -30,6 +31,7 @@ bool GameTurns::CanUse(GameUnit *unit, OrderType order)
 }
 QList<OrderType> GameTurns::whatCanUse(GameUnit * unit)
 {
+    // перебираем все варианты и запускаем CanUse
     QList <OrderType> ans;
     foreach (OrderType order, rules->ordersInGame)
     {
@@ -42,23 +44,28 @@ QList<OrderType> GameTurns::whatCanUse(GameUnit * unit)
 
 bool GameTurns::ChooseOneOfTheStartHexes()
 {
+    // составляем список вариантов
     QList <Coord> variants;
     for (int x = 0; x < rules->fieldH; ++x)
         for (int y = 0; y < rules->fieldW; ++y)
             if (hexes[x][y]->canBeChosenAsStartPoint)
                 variants << Coord(x, y);
 
-    if (variants.size() < players.size())
+    if (variants.size() < players.size())  // если выбор закончился
         return false;
 
+    // очищаем от предыдущих ходов
     chosenHex.clear();
     ready.clear();
+
+    // шлём запрос пользователю выбрать гекс
     AddEvent()->ChooseHex(variants);
     return true;
 }
 
 void GameTurns::StartPlanning()
 {
+    // очистка от предыдущих планов
     foreach (GamePlayer * player, players)
     {
         foreach (GameUnit * unit, player->units)

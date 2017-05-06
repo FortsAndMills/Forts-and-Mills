@@ -4,6 +4,9 @@
 #include "Technical/Headers.h"
 #include "GameBase.h"
 
+// Техническая структура для передачи данных о событиях
+// из игрового модуля в графический
+
 enum GameEventType
 {
     CHOOSE_HEX,
@@ -50,6 +53,7 @@ class GameMessage
 public:
     GameEventType type;
 
+    // всевозможные параметры
     QList <Coord> variants;
     GameUnit * unit = NULL;
     GameUnit * unit2 = NULL;
@@ -299,6 +303,8 @@ public:
         this->color = color;
     }
 
+    // объединение всех полей с юнитами в одно множество
+    // для фиксации того, какие юниты "участвуют" в этом событии
     QSet <GameUnit *> involved()
     {
         QSet <GameUnit *> ans = relevants;

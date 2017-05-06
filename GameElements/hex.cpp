@@ -10,6 +10,7 @@
 Hex::Hex(GraphicObject *parent, Game *game, GameHex *prototype) :
     StateObject(parent, "Neutral", prototype->type + "Hex", CLICKABLE | HOVER | RIGHT_CLICKABLE, prototype->type + "HexFrame", "SimpleLayer")
 {
+    // TODO переделать через AllPlayers в GameRules
     addPicture("Blue", "BlueHex");
     addPicture("Red", "RedHex");
     addPicture("Green", "GreenHex");
@@ -42,6 +43,7 @@ Hex::Hex(GraphicObject *parent, Game *game, GameHex *prototype) :
 
     information = NULL;
 }
+// создание копии-призрака для анимации сдвига поля
 Hex::Hex(Hex *another, GraphicObject * newParent) : Hex(newParent, another->game, another->prototype)
 {
     this->setX(another->x());
@@ -89,6 +91,7 @@ void Hex::Delete()
     StateObject::Delete();
 }
 
+// геомееетрия!
 QList<QPointF> Hex::countTableCoordinates(qreal W, qreal H, int n)
 {
     QList<QPointF> answer;
@@ -131,6 +134,7 @@ void Hex::recountOrdersPosition()
 {
     for (int i = 0; i < orders.size(); ++i)
     {
+        // для каждого якоря гекса центр приказа изначально совпадает с центром якоря
         QPointF center = points[i];
         for (int j = 0; j < orders[i].size(); ++j)
         {
@@ -138,6 +142,7 @@ void Hex::recountOrdersPosition()
                         center.x() - constants->unitOrderWidth * constants->unitsSize / 2,
                         center.y() - constants->unitOrderHeight * constants->unitsSize / 2);
 
+            // каждый следующий приказ смещается вправо и вниз
             center += QPointF(constants->orderStackShiftX * constants->unitOrderWidth * constants->unitsSize,  // TODO произведения констант сделать константой
                                            constants->orderStackShiftX * constants->unitOrderWidth * constants->unitsSize);
         }
@@ -197,6 +202,8 @@ void Hex::resizeChildren(qreal W, qreal H)
 
     foreach (MergingObject * mo, plannedCapturing)
         mo->setGeometry(0, 0, W, H);
+
+    // ЗАПОЛНЕНИЕ КОНСТАНТ ЯКОРЕЙ
 
     EnterPoint[UP] = QPointF(W / 2, 3 * H / 4);  // TODO придумать что-то более адекватное!
     EnterPoint[DOWN] = QPointF(W / 2, H / 4);
@@ -278,6 +285,7 @@ int Hex::createPoint(POSITION_STATE state, WAY way)
     int id = 0;
     while (points.contains(id)) { ++id; }
 
+    // TODO в принципе, эти три значения можно и в структуру как-то оформить
     ids << id;
     pointPositionState[id] = state;
     pointsWay[id] = way;
@@ -285,6 +293,7 @@ int Hex::createPoint(POSITION_STATE state, WAY way)
     recountPoints();
     reconfigureOrders();
 
+    // дальнейшие работы с точкой идут через id
     return id;
 }
 void Hex::removePoint(int id)
@@ -300,6 +309,8 @@ void Hex::removePoint(int id)
 
 void Hex::setNewResourcesPosition(QList<OrderPic *> resources)
 {
+    // делаем из переданных объектов "копию" таблички ресурсов
+    // для анимации сбора ресурсов
     QList <QPointF> coord = countTableCoordinates(width(), height(), resources.size());
     for (int i = 0; i < resources.size(); ++i)
     {
@@ -307,17 +318,9 @@ void Hex::setNewResourcesPosition(QList<OrderPic *> resources)
         resources[i]->resize(constants->resourceTablePicSize * width(),
                                          constants->resourceTablePicSize * width());
     }
-
-    if (prototype->resources.size() < resources.size())  // сбрасываем до нуля
-    {
-        foreach (OrderPic * order, resources)
-        {
-            order->moveBy(order->width() / 2, order->height() / 2);
-            order->resize(0, 0);
-        }
-    }
 }
 
+// Переключения между состояниями
 void Hex::setState(QString state, bool isImmediate)
 {
     setPictureState(state, isImmediate);
@@ -391,6 +394,7 @@ void Hex::deplanCapturing(PlayerColor color)
     }
 }
 
+// TODO а как так вышло, что нужно заполнять поле order->anchor_point?
 void Hex::addOrder(Order *order)
 {
     order->anchorTo(this);
@@ -423,6 +427,8 @@ void Hex::showInformation(QString pic_name, QString name)
     if (information != NULL)
     {
         debug << "PANIC! information on information!\n";
+        // может, лучше плавно заставить её исчезнуть?
+        // вроде эта "ошибка" встречается по разумным причинам!
         information->Delete();
     }
 
@@ -438,24 +444,27 @@ void Hex::hideInformation()
     }
 }
 
+// подсветка определённых ресурсов
 void Hex::highlight(OrderType type, bool light)
 {
     if (light)
     {
+        // составляем список остающихся ресурсов
         QList <ResourcePic *> to_shift;
         foreach (ResourcePic * R, table)
         {
             if (R->R == type)
                 to_shift.push_back(R);
-            else
+            else  // остальные исчезают
                 R->AnimationStart(OPACITY, 0, constants->hexResourcesShiftTime);
         }
 
-        if (to_shift.size() == 0)
+        if (to_shift.size() == 0)  // если искомых ресурсов нет, исчезает весь гекс
         {
             AnimationStart(OPACITY, constants->hexOpaqueState, constants->hexResourcesShiftTime);
         }
 
+        // рассчитываем таблицу для случая нового числа ресурсов и анимируем
         QList <QPointF> table_pos = countTableCoordinates(width(), height(), to_shift.size());
         for (int i = 0; i < to_shift.size(); ++i)
         {
@@ -465,6 +474,8 @@ void Hex::highlight(OrderType type, bool light)
     }
     else
     {
+        // делаем все ресурсы видимыми и двигаем к исходной позиции
+
         QList <QPointF> table_pos = countTableCoordinates(width(), height(), table.size());
         for (int i = 0; i < table.size(); ++i)
         {
@@ -477,6 +488,7 @@ void Hex::highlight(OrderType type, bool light)
     }
 }
 
+// появление оборонительного бонуса
 void Hex::defenceAppear(int amount, QString color)
 {
     for (int i = 0; i < amount; ++i)
@@ -502,6 +514,8 @@ void Hex::defenceDisappear()
         shields[i]->disappear(constants->shieldReconfigureTime);
     shields.clear();
 }
+// turn означает анимацию использования оборонительного бонуса
+// turn on=true, соответственно, означает его восполнение
 void Hex::defenceTurn(int amount, bool on)
 {
     int i = shields.size() - 1;

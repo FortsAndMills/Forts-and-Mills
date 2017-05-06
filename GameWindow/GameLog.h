@@ -3,6 +3,7 @@
 
 #include "Interaction.h"
 
+// Данные игры сохраняются в файлик!
 class GameLog : public Interaction
 {
     Q_OBJECT

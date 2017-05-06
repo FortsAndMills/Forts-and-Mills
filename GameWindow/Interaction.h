@@ -3,6 +3,7 @@
 
 #include "StatesControl.h"
 
+// Обработка сигналов пользователя
 class Interaction : public StatesControl
 {    
     Q_OBJECT

@@ -3,6 +3,8 @@
 
 #include "Technical/Headers.h"
 
+// Параметры гекса, зависящие только от его типа
+
 class GameHexParameters
 {
 public:
@@ -21,6 +23,8 @@ public:
     GameHexParameters(HexType type);
 };
 
+// Класс игрового гекса
+
 class GameHex : public GameHexParameters
 {
 public:
@@ -34,7 +38,7 @@ public:
 
     QList <Resource> resources;
 
-    UnitType livingNation = "";    
+    UnitType livingNation = "";    // для старта игры
 
     explicit GameHex(HexType type, Coord Pos) : GameHexParameters(type)
     {

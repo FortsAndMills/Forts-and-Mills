@@ -5,15 +5,20 @@
 #include "BasicElements/StateObject.h"
 #include "BasicElements/SpriteObject.h"
 
+// Одна кнопка на панели времён дня внизу игрового окна
+
 class DayTimeButton : public StateObject
 {
     Q_OBJECT
 
     DayTime time;
 
+    // надо найти красивый спрайт выделения))
     SpriteObject * selection = NULL;
 
 public:
+    // active отвечает за то, отображается ли панель в игровом окне или в главменю
+    // в последнем случае, она неинтерактивна и просто висит картинкой
     explicit DayTimeButton(GraphicObject * parent, DayTime time, QString timeName, bool active) :
         StateObject(parent, "default", timeName, active * (CLICKABLE | HOVER) + !active * CHILD, "", "SimpleLayer")
     {
@@ -49,6 +54,8 @@ public:
 private:
     bool selected = false;
 public:
+    // при выделении меняем геометрию (чуть увеличиваем картинку)
+    // и включаем спрайт
     void select(bool enable = true)
     {
         selected = enable;
@@ -77,6 +84,7 @@ public:
         }
     }
 private:
+    // при наведении увеличиваем картинку слегка
     void enter()
     {
         setGeometryState("entered");

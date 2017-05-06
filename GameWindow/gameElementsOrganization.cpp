@@ -49,6 +49,7 @@ void GameElementsOrganization::Delete()
     GraphicObject::Delete();
 }
 
+// ищет координаты соседнего гекса - удобная функция
 QPointF GameElementsOrganization::adjacentHexCoord(Hex *hex, QString way)
 {
     QPointF p = mapFromItem(hex->parentItem(), hex->pos());
@@ -69,6 +70,8 @@ QPointF GameElementsOrganization::adjacentHexCoord(Hex *hex, QString way)
     return p;
 }
 
+// координаты объектов обычно ищутся через точки на гексах, к которым они привязаны
+// поэтому для объектов хранится не только гекс, к которым они привязаны, но и id якоря внутри гекса
 QPointF GameElementsOrganization::unitCoordinate(Unit * u)
 {
     return hex(u)->point(u->point(), this) - QPointF(constants->unitsSize / 2, constants->unitsSize / 2);
@@ -167,6 +170,7 @@ void GameElementsOrganization::resizeFortifications()
             fortifications[hex][i]->setGeometry(fortificationGeometry(hex, i));
 }
 
+// все объекты отправляются в полёт к своим назначенным точкам
 void GameElementsOrganization::allHexesToReconfigurePoints()
 {
     foreach (Hex * hex, hexes)

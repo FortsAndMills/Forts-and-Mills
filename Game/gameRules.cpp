@@ -4,6 +4,8 @@
 QList <QString> GameRules::AllPlayers = {"Blue", "Red", "Green", "Yellow"};
 QList <QString> GameRules::AllOrders = {"Capture", "Recruit", "Liberate", "Attack", "Go", "Retreat", "Siege", "Fire", "Cure", "Fortify"};
 QList <QString> GameRules::AllUnits = {"Scrat", "Pig", "Hippo", "Karkun", "Bruter", "Mumusha"};
+// вспомогательная функция: упорядочивает
+// элементы a в зависимости от их порядка в example
 void sort(QList <QString> & a, QList <QString> example)
 {
     int k = 0;
@@ -44,6 +46,8 @@ GameRules::GameRules()
 }
 void GameRules::recountGenerationParameters()
 {
+    // в зависимости от остальных настроек меняет параметры генерации поля
+    // и вспомогательные поля
     sort(ordersInGame, AllOrders);
     sort(unitsInGame, AllUnits);
 
@@ -59,6 +63,7 @@ void GameRules::recountGenerationParameters()
     numOfHexTypes["Mountain"] = Range(4, 8, K);
     numOfHexTypes["Mill"] = Range(6, 8, K);
 
+    // для количества генерящихся приказов приходится использовать магию
     int cb = 0;
     if (ordersInGame.contains("Recruit"))
         --cb;
@@ -86,6 +91,7 @@ void GameRules::recountGenerationParameters()
 }
 void GameRules::FormPlayersList(Random *rand)
 {
+    // составляем список цветов игроков
     QList <QString> vars = AllPlayers;
 
     for (int i = 0; i < NumOfPlayers; ++i)
@@ -96,6 +102,7 @@ void GameRules::FormPlayersList(Random *rand)
     }
 }
 
+// консервация и деконсервация в список int-ов
 QList<qint32> GameRules::get()
 {
     QList <qint32> ans;

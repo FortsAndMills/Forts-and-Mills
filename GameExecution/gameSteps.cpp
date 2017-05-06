@@ -6,6 +6,7 @@ GameSteps::GameSteps(GameRules *rules, Random *rand) :
 
 }
 
+// обработка выбора мельниц в начале игры
 void GameSteps::ProcessChosenHexes()
 {
     QSet <GameHex *> ch;
@@ -20,14 +21,17 @@ void GameSteps::ProcessChosenHexes()
             ch << hex(chosenHex[player->color]);
     }
 
+    // если количество различных выбранных гексов не равно количеству игроков
     if (ch.size() == players.size() - giveupers)
     {
         foreach (GamePlayer * player, players)
         {
             if (!player->GiveUp)
             {
+                // удаляем гекс из вариантов
                 hex(chosenHex[player->color])->canBeChosenAsStartPoint = false;
 
+                // перекрашиваем и даём юнита
                 GameHex * Hex = hex(chosenHex[player->color]);
                 GameUnit * New = NewUnit(player, Hex->livingNation, Hex->coord);
                 CaptureHex(Hex, player->color);
@@ -39,6 +43,7 @@ void GameSteps::ProcessChosenHexes()
 
 void GameSteps::RealizePlan()
 {
+    // заполняем пропуски приказами безделья
     for (time = 0; time < rules->dayTimes; ++time)
     {
         foreach (GamePlayer * player, players)
@@ -51,10 +56,12 @@ void GameSteps::RealizePlan()
         }
     }
 
+    // для каждого времени дня
     for (time = 0; time < rules->dayTimes; ++time)
     {
         NewDayTimeStarted(time);
 
+        // разбиваем действия по приоритетам; называем один пак таких действий актом
         typedef QList < Action > act;
         QMap <int, act> acts;
         for (int i = 0; i < rules->players.size(); ++i)
@@ -69,6 +76,7 @@ void GameSteps::RealizePlan()
 
                         acts[p] << Action(unit, time, k);
 
+                        // в рамках одного акта сортируем по приоритету приказа
                         int j = acts[p].size() - 1;
                         while (j > 0 && acts[p][j].order->priority < acts[p][j - 1].order->priority)
                         {
@@ -80,10 +88,12 @@ void GameSteps::RealizePlan()
             }
         }
 
+        // разыгрываем каждый акт
         foreach (act actions, acts)
         {
             for (int i = 0; i < actions.size(); ++i)
             {
+                // проверка на то, что приказ валиден
                 if (CheckIfActionBurns(actions[i]))
                 {
                     actions.removeAt(i);
@@ -91,8 +101,10 @@ void GameSteps::RealizePlan()
                 }
             }
 
+            // реализация действия
             Realize(actions);
 
+            // убиваем мёртвых юнитов
             foreach (GamePlayer * p, players)
             {
                 QList <GameUnit *> units = p->units;
@@ -103,13 +115,14 @@ void GameSteps::RealizePlan()
         }
 
         AddEvent()->TimeFinished(time);
-        killAllies();
+        killAllies();  // проверка на Брутера
     }
     AddEvent()->PlanRealizationFinished();
 }
 
 void GameSteps::destroyHomelessUnits()
 {
+    // разборки с бездомными юнитами в конце раунда
     foreach (GamePlayer * player, players)
     {
         QList <GameUnit *> units = player->units;
@@ -192,6 +205,7 @@ void GameSteps::gatherResources()
 }
 void GameSteps::defenceFill()
 {
+    // восполнение оборонительного бонуса для юнитов
     foreach (GamePlayer * player, players)
     {
         foreach (GameUnit * unit, player->units)
@@ -204,6 +218,7 @@ void GameSteps::defenceFill()
         }
     }
 
+    // для гексов
     for (int i = 0; i < rules->fieldH; ++i)
     {
         for (int j = 0; j < rules->fieldW; ++j)

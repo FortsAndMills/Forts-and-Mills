@@ -3,6 +3,8 @@
 
 #include "Technical/Headers.h"
 
+// Параметры юнита, зависящие только от типа юнита
+
 class GameUnitParameters
 {
 public:
@@ -17,6 +19,8 @@ public:
 
     GameUnitParameters(GameRules *rules, UnitType type);
 };
+
+// Игровой класс юнита
 
 class GameUnit : public GameUnitParameters
 {
@@ -33,12 +37,9 @@ public:
 
     // вспомогательные переменные
     qint16 id;
-
     Coord going_to;
-
     int distantAttack;
-
-    QSet <GameUnit *> death_authors;
+    QSet <GameUnit *> death_authors;  // "виновники в смерти" для корректной анимации
 
     explicit GameUnit(GameRules * rules, UnitType type, PlayerColor color, Coord where, qint16 id) :
         GameUnitParameters(rules, type)

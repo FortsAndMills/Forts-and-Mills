@@ -8,6 +8,7 @@
 #include "BasicElements/StateObject.h"
 #include "GameExecution/Game.h"
 
+// Укрепление (щиты)
 class Fortification : public GraphicObject
 {
     Q_OBJECT
@@ -26,7 +27,8 @@ public:
     void rightClick() { emit help->HelpAsked("Fortification"); }
 };
 
-class Order : public GraphicObject  // отображается на поле
+// отображается на поле возле юнитов при планировании
+class Order : public GraphicObject
 {
     Q_OBJECT
 
@@ -57,7 +59,9 @@ signals:
     void rightClicked(GameOrder *);
 };
 
-class MainOrder : public SpriteObject  // отображается на поле при реализации
+// отображается на поле при реализации
+// анимация открытия реализуется в спрайтах
+class MainOrder : public SpriteObject
 {
     Q_OBJECT
 
@@ -139,7 +143,8 @@ private slots:
     }
 };
 
-class ResourcePic : public GraphicObject  // отображается на гексах
+// отображается на гексах
+class ResourcePic : public GraphicObject
 {
 public:
     Resource R;
@@ -156,7 +161,8 @@ public:
     }
 };
 
-class OrderPic : public GraphicObject  // отображается в таблице ресурсов
+// отображается в таблице ресурсов
+class OrderPic : public GraphicObject
 {
     Q_OBJECT
 
@@ -260,7 +266,8 @@ signals:
     void orderPicEntered(OrderType, PlayerColor);
 };
 
-class OrderVariant : public StateObject  // отображается в таблице вариантов
+// отображается в таблице вариантов
+class OrderVariant : public StateObject
 {
     Q_OBJECT
 

@@ -9,11 +9,10 @@ public:
     explicit GameHelp(GameRules * rules, Random * rand);
 
     GameUnit * whoHasHomeAt(Coord c);
-
     QSet <GameUnit *> alliesOnTheSameHex(GameUnit * tar);
-
     void deleteAllies(QList<GameUnit *> &e);
 
+    // проверка на сдавшихся игроков
     QString lastPlayerInGame()
     {
         QString ans = "Neutral";

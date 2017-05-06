@@ -10,6 +10,8 @@
 #include "GameElements/CureIcon.h"
 #include "Technical/AnimationManager.h"
 
+// графическая основа интерфейса, геометрия и прочая технотень
+
 class GameElementsOrganization : public GraphicObject
 {
     Q_OBJECT

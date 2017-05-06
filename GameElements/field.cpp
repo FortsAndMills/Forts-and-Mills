@@ -30,6 +30,7 @@ void Field::Delete()
     GraphicObject::Delete();
 }
 
+// прекрасная задачка на целочисленную арифметику
 bool Field::isSplitted(int x, int y, WAY way)
 {
     if (way == UP)
@@ -95,13 +96,19 @@ Hex *Field::HexAt(QPointF point)
     return NULL;
 }
 
-// TODO безобразие с полем
-void Field::moveDown()  // FAIL четыре одинаковые функции
+// FAIL безобразие с полем
+// четыре одинаковые функции! Впрочем, работает, но некрасиво
+void Field::moveDown()
 {
+    // нужно сдвинуть верхний ряд целиком вниз,
+    // а также создать и заанимировать призрака-копию этого верхнего ряда
+    // в его оригинальном положении
+
     int moved = (hexes.size() - 1 - y_shift) % hexes.size();
     for (int i = 0; i < hexes[moved].size(); ++i)
     {
-        Hex * Imaginarium = new Hex(hexes[moved][i]);  // А вот и призрак!
+        // А вот и призрак! Копия, которая исчезнет в пустоту для красоты
+        Hex * Imaginarium = new Hex(hexes[moved][i]);
         Imaginarium->AnimationStart(OPACITY, 0);
         connect(Imaginarium, SIGNAL(movieFinished()), Imaginarium, SLOT(Delete()));
         Imaginarium->AnimationStart(Y_POS, Imaginarium->y() + constants->hexHeight);
@@ -113,6 +120,9 @@ void Field::moveDown()  // FAIL четыре одинаковые функции
 
     y_shift = (y_shift + 1 + hexes.size()) % hexes.size();
 
+    // теперь, когда всё поле сдвинуто на гекс вверх относительно
+    // целевого положения, можно просто отправить все гексы двигаться
+    // в его направлении. Призрак уже был заанимирован в цикле выше
     AnimateHexes();
 }
 void Field::moveUp()
@@ -180,6 +190,8 @@ void Field::moveLeft()
 
 void Field::AnimateHexes()
 {
+    // отправляем все гексы на нужные места
+    // очень полезная функция - можно перемешать все гексы, а потом вызвать её!
     for (int i = 0; i < hexes.size(); ++i)
     {
         for (int j = 0; j < hexes[i].size(); ++j)

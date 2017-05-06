@@ -8,6 +8,7 @@ GameField::GameField(GameRules *rules, Random *rand) :
 
 void GameField::GenerateField()
 {
+    // Сначала всё наше поле - "пустое".
     QList <HexType *> vars;
     HexType types[rules->fieldH][rules->fieldW];
     for (int x = 0; x < rules->fieldH; ++x)
@@ -19,6 +20,7 @@ void GameField::GenerateField()
         }
     }
 
+    // генерим форты, мельницы и горы
     for (QMap <HexType, Range>::iterator it = rules->numOfHexTypes.begin();
                                                                      it != rules->numOfHexTypes.end(); ++it)
     {
@@ -37,6 +39,7 @@ void GameField::GenerateField()
         }
     }
 
+    // создаём, собственно, гексы и список тех, которые участвуют в розыгрыше ресурсов
     QList <GameHex *> all;
     for (int x = 0; x < rules->fieldH; ++x)
     {
@@ -51,6 +54,7 @@ void GameField::GenerateField()
         }
     }
 
+    // расставляем ресурсы
     for (int i = 0; i < rules->ordersInGame.size(); ++i)
     {
         int amount = rules->numOfResourcesOnField[rules->ordersInGame[i]].get_rand(rand);
@@ -61,6 +65,7 @@ void GameField::GenerateField()
         }
     }
 
+    // "живущии нации" - для старта игры
     for (int x = 0; x < rules->fieldH; ++x)
     {
         for (int y = 0; y < rules->fieldW; ++y)
@@ -85,7 +90,6 @@ bool GameField::isHexAHome(Coord which, PlayerColor color)
 
     return false;
 }
-
 Coord GameField::canBeCaptured(Coord which, PlayerColor color)
 {
     foreach (Coord p, adjacentHexes(which))
@@ -99,7 +103,6 @@ Coord GameField::canBeCaptured(Coord which, PlayerColor color)
     }
     return NOWHERE;
 }
-
 int GameField::resourcesLimit(PlayerColor color)
 {
     int count = 0;
@@ -116,6 +119,7 @@ int GameField::resourcesLimit(PlayerColor color)
     return count;
 }
 
+// проверка на окончание игры!
 PlayerColor GameField::isGameFinished()
 {
     PlayerColor winner = "Neutral";

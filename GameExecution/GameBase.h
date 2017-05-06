@@ -9,7 +9,9 @@
 #include "Game/GameOrder.h"
 #include "Game/GameAction.h"
 
+// виды статусов юнита в бою
 enum FightStatus {FS_ATTACK, FS_DEFEND, FS_DISTANT};
+// варианты того, чем может сражаться юнит
 enum FightBrid {ENEMY_ORDER_PENALTY,
                              FORTIFICATION,
                              HEX_DEFENCE,
@@ -36,6 +38,7 @@ public:
     explicit GameBase(GameRules * rules, Random * rand);
     virtual ~GameBase() {}
 
+    // вспомогательные функции навигации по полю
     WAY oppositeWay(WAY way);
     Coord adjacentHex(Coord which, WAY way);
     QList<Coord> visible_hexes(Coord my, int radius = 2);

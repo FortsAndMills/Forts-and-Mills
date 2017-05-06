@@ -14,7 +14,6 @@ GameUnit *GameHelp::whoHasHomeAt(Coord c)
                  return u;
     return NULL;
 }
-
 QSet <GameUnit *> GameHelp::alliesOnTheSameHex(GameUnit * tar)
 {
     QSet <GameUnit *> ans;
@@ -27,7 +26,7 @@ QSet <GameUnit *> GameHelp::alliesOnTheSameHex(GameUnit * tar)
     }
     return ans;
 }
-
+// в списке e оставить только первого юнита каждого цвета
 void GameHelp::deleteAllies(QList <GameUnit *> & e)
 {
     for (int i = 1; i < e.size(); ++i)

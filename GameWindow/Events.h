@@ -23,6 +23,7 @@ public:
     void newUnit(GameUnit * unit, Coord where);
     void blowUnit(GameUnit * unit);
 
+    // перемещения юнита при планировании и не только
     bool moveUnit(Unit * unit, Coord cord, Hex::POSITION_STATE position_type = Hex::STAY);
     void moveUnitBack(Unit * unit);
     void moveUnitForward(Unit * unit);

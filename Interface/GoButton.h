@@ -6,31 +6,86 @@
 
 class GoButton : public StateObject
 {
+    Q_OBJECT
+
 public:
-    explicit GoButton(GraphicObject * parent) :
-        StateObject(parent, "disabled", 0, "DisabledGoButton")
+    explicit GoButton(GraphicObject * parent, PlayerColor color) :
+        StateObject(parent, "disabled", "DisabledGoButton", 0, "SimpleLayer")
     {
-        addState("enabled", "GoButton", PUSHABLE);
-        addState("pushed", "PressedGoButton", 0);
+        addPicture("enabled", color + "GoButton");
+        addPicture("pushed", "PressedGoButton");
     }
     void enable(bool enable = true)
     {
         if (enable)
         {
-            setState("enabled");
+            setPictureState("enabled");
+            setProperties(CLICKABLE);
         }
         else
         {
-            setState("disabled");
+            setPictureState("disabled");
+            setProperties(0);
         }
     }
 
-    void push(bool newState)
+    void leftClick()
     {
-        if (newState)
-            setState("pushed");
+        setPictureState("pushed");
+        setProperties(0);
+    }
+};
+
+class NextButton : public GraphicObject
+{
+    Q_OBJECT
+
+public:
+    explicit NextButton(GraphicObject * parent, PlayerColor mainPlayerColor) :
+        GraphicObject(parent, CLICKABLE, mainPlayerColor + "Next", "", "SimpleLayer")
+    {
+    }
+
+    bool noCheckMode = false;
+
+public slots:
+    void enableWithCheck()
+    {
+        if (isClicked && !noCheckMode)
+        {
+            leftClickStart();
+            emit leftClickStarted();
+        }
         else
-            qDebug() << "ERROR; GoButton depushed!";
+            enable(true);
+    }
+    void enable(bool enable)
+    {
+        if (enable)
+        {
+            layer->setVisible(false);
+            setProperties(CLICKABLE);
+            isClicked = false;
+            disableWhenReleased = false;
+        }
+        else
+        {
+            layer->setVisible(true);
+            setProperties(0);
+            isClicked = false;
+        }
+    }
+
+protected:
+    bool disableWhenReleased = true;
+    void leftClickStart()
+    {
+        disableWhenReleased = true;
+    }
+    void leftClick()
+    {
+        if (disableWhenReleased)
+            enable(false);
     }
 };
 

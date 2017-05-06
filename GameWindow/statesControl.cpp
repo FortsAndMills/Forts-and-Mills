@@ -68,6 +68,7 @@ void StatesControl::getReadyToRealization()
 
     setTime(-1);
 
+    // удаление приказов возле юнитов
     orders.remove(NULL);
     foreach (Order * order, orders)
         order->disappear();
@@ -76,6 +77,7 @@ void StatesControl::getReadyToRealization()
     foreach (Unit * unit, units)
         unit->orders_stack.clear();
 
+    // включение обратно "использованных" в фазе планирования приказов
     foreach (GameUnit * u, game->players[mainPlayerColor]->units)
         for (DayTime t = 0; t < game->rules->dayTimes; ++t)
             if (u->plan[t] != NULL && u->plan[t]->type != DefaultOrder)
@@ -88,21 +90,27 @@ void StatesControl::getReadyToRealization()
 
 bool StatesControl::setNextTime()
 {
+    // проверка на корректность запроса
     if (dayTime + 1 == game->rules->dayTimes)
         return false;
 
+    // выключение выделения текущего времени дня
     if (dayTime != -1)
     {
         DayTimeTable->select(dayTime, false);
 
+        // "завершение" того, что отображается в промежуточном состоянии
+        // например, если юнит идёёёёт, то он должен прийти
         foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
             finishPlannedOrder(unit);
     }
 
     ++dayTime;
 
+    // выделение нового текущего времени дня
     DayTimeTable->select(dayTime, true);
 
+    // отображение приказов в это время дня
     foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
         showPlannedOrder(unit);
 
@@ -152,7 +160,7 @@ void StatesControl::setTime(DayTime time)
 void StatesControl::setEarlyTime(DayTime time)
 {
     DayTimeTable->select(dayTime, false);
-    while (dayTime != time)
+    while (dayTime != time)  // откатываем приказы полностью
     {
         foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
             deshowPlannedOrder(unit, true);
@@ -160,7 +168,7 @@ void StatesControl::setEarlyTime(DayTime time)
         dayTime--;
     }
 
-    if (dayTime != -1)
+    if (dayTime != -1)  // откатываем только до промежуточного состояния
     {
         foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
             definishPlannedOrder(unit);
@@ -170,7 +178,7 @@ void StatesControl::setEarlyTime(DayTime time)
 }
 void StatesControl::setLateTime(DayTime time)
 {
-    if (dayTime != -1)
+    if (dayTime != -1)  // завершаем текущие планы из "промежуточных" состояний
     {
         DayTimeTable->select(dayTime, false);
 
@@ -181,7 +189,7 @@ void StatesControl::setLateTime(DayTime time)
     }
 
     ++dayTime;
-    while (dayTime != time)
+    while (dayTime != time)  // проходимся по планам полностью
     {
         foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
         {
@@ -192,6 +200,7 @@ void StatesControl::setLateTime(DayTime time)
         dayTime++;
     }
 
+    // показываем текущие планы
     foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
         showPlannedOrder(unit);
 
@@ -204,6 +213,7 @@ void StatesControl::getReadyToChooseOrderParameter()
 
     QList <Coord> variants;
 
+    // получаем, какой параметр нужно выбрать
     GameAction::GameActionParameterType PT = order->nextParameterType();
     if (PT == GameAction::ADJACENT_HEX_WHERE_CAN_GO)
     {
@@ -220,6 +230,7 @@ void StatesControl::getReadyToChooseOrderParameter()
     else if (PT == GameAction::NONE)
         finishedChoosingOrderParameter();
 
+    // делаем доступными для выбора указанные гексы
     foreach (Coord c, variants)
     {
         if (game->hex(c)->canGoHere)
@@ -240,30 +251,31 @@ void StatesControl::breakChoosingOrderParameter()
 
     state = PLANNING;
 
-    delightWholeField();
-    disableWholeField();  // убираем следы выбора параметра
+    delightWholeField();  // убираем следы выбора параметра
+    disableWholeField();
     selectedUnit->hideUnitTypePanel();
 }
 void StatesControl::finishedChoosingOrderParameter()
 {
-    delightWholeField();
+    delightWholeField();  // убираем следы выбора параметров приказа
     disableWholeField();
     selectedUnit->hideUnitTypePanel();
 
+    // ищем следующий параметр, который нужно выбрать
     selectedUnit->prototype->plan[dayTime]->findNextActionWithNoParameter();
 
     if (selectedUnit->prototype->plan[dayTime]->nextParameterType() != GameAction::NONE)
     {
         getReadyToChooseOrderParameter();
     }
-    else
+    else  // если такого нет, то отображаем новоявленный приказ и переходим к след. времени
     {
         showPlannedOrder(selectedUnit->prototype);
-        if (setNextTime())
+        if (setNextTime())  // если это было не последнее время, сразу же суём панельку
         {
             selectedUnit->showOrdersPanel(game->whatCanUse(selectedUnit->prototype));
         }
-        else
+        else  // иначе можно девыделить юнита
         {
             state = PLANNING;
             selectedUnit->deselect();
@@ -272,6 +284,11 @@ void StatesControl::finishedChoosingOrderParameter()
     }
 }
 
+// ОТОБРАЖЕНИЕ ПЛАНИРУЮЩИХСЯ ПРИКАЗОВ
+// В текущее время дня приказы отображаются как "выполняющиеся", т.е. в процессе
+// show отображает как раз такое промежуточное, текущее состояние
+// finish завершает приказ, т.е. переводит из промежуточного в конечное
+// плюс у обеих операций должны быть обратные для отката
 void StatesControl::showPlannedOrder(GameUnit *unit)
 {
     if (unit->plan[dayTime] == NULL)
@@ -281,22 +298,27 @@ void StatesControl::showPlannedOrder(GameUnit *unit)
     {
         if (a.type == GameAction::LEAVE_HEX)
         {
+            // ищем те приказы, которые совершаются на покидаемом гексе
             DayTime time = dayTime - 1;
             while (time > 0 && orders[unit->plan[time - 1]]->anchor == units[unit]->where())
                 --time;
-            while (time < dayTime)
+            while (time < dayTime)  // эти приказы перевязываются к гексу
             {
                 this->anchorOrderFromUnit(units[unit], orders[unit->plan[time]]);
                 ++time;
             }
 
+            // перемещаем юнита и создаём стрелку
             moveUnit(units[unit], a.target, Hex::ENTERING);
             createWay(units[unit]);
 
+            // помечаем, что приказ при этом привязан к новой позиции юнита
+            // и, если что, он будет оставлен на целевом гексе
             orders[unit->plan[dayTime]]->anchor = units[unit]->where();
         }
         else if (a.type == GameAction::SHOOT)
         {
+            // отображаем анимацию стрельбы в цикле
             rockets[units[unit]] << new Rocket(this, mainPlayerColor, false, Rocket::ROCKET, a.target);
             rockets[units[unit]].last()->anchorTo(hex(units[unit]));
             resizeRockets();
@@ -322,19 +344,21 @@ void StatesControl::deshowPlannedOrder(GameUnit *unit, bool several)
     {
         if (a.type == GameAction::LEAVE_HEX)
         {
-            if (several)
+            if (several)  // если нужно убрать сразу много стрелок, то они просто исчезают
             {
                 ways_to[units[unit]].pop()->disappear();
                 ways_from[units[unit]].pop()->disappear();
             }
-            else
+            else  // если только одну, то красиво сжимается вместе с "возвращением" юнита
             {
                 ways_to[units[unit]].pop()->hide();
                 ways_from[units[unit]].pop()->hide();
             }
 
+            // само возвращение юнита!
             moveUnitBack(units[unit]);
 
+            // возвращаем ему приказы с гекса, на который вернулся
             DayTime time = dayTime - 1;
             while (time >= 0 && orders[unit->plan[time]]->anchor == units[unit]->where())
             {
@@ -356,6 +380,7 @@ void StatesControl::deshowPlannedOrder(GameUnit *unit, bool several)
         {
             hex(units[unit])->hideInformation();
 
+            // проверка на то, что в этом гексе должна быть инфа об отсутствии дома
             if (hex(units[unit])->prototype->color == mainPlayerColor &&
                  !game->isHexAHome(units[unit]->where(), mainPlayerColor))
             {
@@ -373,6 +398,7 @@ void StatesControl::finishPlannedOrder(GameUnit * unit)
     {
         if (a.type == GameAction::LEAVE_HEX)
         {
+            // завершаем перемещение, изменив статус последней точки
             hex(units[unit])->pointPositionState[units[unit]->point()] = Hex::STAY;
             hex(units[unit])->recountPoints();
 
@@ -380,6 +406,7 @@ void StatesControl::finishPlannedOrder(GameUnit * unit)
         }
         else if (a.type == GameAction::SHOOT)
         {
+            // ракеты стреляются только в "текущем" состоянии
             foreach (Rocket * r, rockets[units[unit]])
                 r->disappear();
             rockets[units[unit]].clear();
@@ -395,6 +422,7 @@ void StatesControl::definishPlannedOrder(GameUnit *unit)
     {
         if (a.type == GameAction::LEAVE_HEX)
         {
+            // возвращаем последнюю точку в состояние "входит"
             hex(units[unit])->pointPositionState[units[unit]->stack.last().point] = Hex::ENTERING;
             hex(units[unit])->recountPoints();
             hex(units[unit])->reconfigureOrders();
@@ -403,6 +431,7 @@ void StatesControl::definishPlannedOrder(GameUnit *unit)
         }
         else if (a.type == GameAction::SHOOT)
         {
+            // возвращаем ракеты
             rockets[units[unit]] << new Rocket(this, mainPlayerColor, false, Rocket::ROCKET, a.target);
             rockets[units[unit]].last()->anchorTo(hex(units[unit]));
             resizeRockets();
@@ -420,19 +449,23 @@ void StatesControl::deplanOrder(GameUnit * unit, DayTime time)
         return;
     }
 
+    // перестаём отображать приказ, требующий удаления
     if (time == dayTime && state != CHOOSE_ORDER_PARAMETER)
         deshowPlannedOrder(unit, time);
 
+    // включаем обратно ресурс
     if (order->type != DefaultOrder)
     {
         player_windows[mainPlayerColor]->turnResource(order->type, true);
     }
 
+    // удаляем графическое представление приказа из списка приказов юнита
     units[unit]->orders_stack.removeAll(orders[order]);
-
+    // и удаляем его!
     orders[order]->disappear();
     orders.remove(order);
 
+    // удаляем также и игровое представление приказа
     delete order;
     unit->plan[time] = NULL;
 }

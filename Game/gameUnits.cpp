@@ -11,8 +11,6 @@ GameUnitParameters::GameUnitParameters(GameRules * rules, UnitType type)
     isDestroyingAllies = false;
 
     startResources << "Capture" << "Go" << "Attack";
-    //if (!rules->doesCaptureRecruits)
-    //    startResources << "Recruit";
 
     if (type == "Pig")
     {
