@@ -4,15 +4,17 @@
 #include "GraphicObject.h"
 #include "Technical/Constants.h"
 
+// для объектов, состоящих из анимированных спрайтов
+
 class SpriteObject : public GraphicObject
 {
     Q_OBJECT
 private:
-    QPixmap FullPicture;  // всё просто
+    QPixmap FullPicture;  // всё просто: спрайт это табличка картинок
     int rows, columns;
-    qreal FrameWidth, FrameHeight;
-    int frame;
+    qreal FrameWidth, FrameHeight;  // размеры кадра
 
+    int frame;  // текущий кадр
 protected:
     int frames() { return rows * columns; }
 

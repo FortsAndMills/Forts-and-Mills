@@ -4,6 +4,11 @@
 #include "Technical/Constants.h"
 #include "GraphicObject.h"
 
+// объект с несколькими "состояниями"
+// "состояние" предполагает свою картинку или свой размер
+// смена состояний - плавная, одна картинка должна появится, другая исчезнуть
+// поэтому приходится хранить объекты для каждой картинки
+
 class StateObject : public GraphicObject
 {
     Q_OBJECT
@@ -13,7 +18,7 @@ protected:
     QString cur_picture;  // Текущее положение
     QMap <QString, GraphicObject *> pictures; // Карта всех состояний
 public:
-    void addPicture(QString state, QString pictureName)  // Функция добавления
+    void addPicture(QString state, QString pictureName)  // Функция добавления нового состояния
     {
         pictures[state] = new GraphicObject(this, CHILD, pictureName);
         pictures[state]->setOpacity(0);
@@ -21,12 +26,13 @@ public:
     }
     void setPictureState(QString state, bool isImmediate = false)  // Функция переключения
     {
-        if (isImmediate)
+        if (isImmediate)  // мгновенная смена без анимации
             pictures[cur_picture]->setOpacity(0);
         else
             pictures[cur_picture]->AnimationStart(OPACITY, 0, ChangeTime);
 
         cur_picture = state;
+
         if (isImmediate)
             pictures[cur_picture]->setOpacity(1);
         else
@@ -39,6 +45,7 @@ public:
     }
 
 protected:
+    // всё тоже самое, но для геометрии
     QString cur_geometry = "";
     QMap <QString, QRectF> geometries;
     void addGeometry(QString state, QRectF geometry)
@@ -85,11 +92,15 @@ public:
         pictures[defaultStateName]->setOpacity(1);
         cur_picture = defaultStateName;
 
+        // дефолтное геометрическое состояние всегда 0 0 1 1
         addGeometry(defaultStateName, QRectF(0, 0, 1, 1));
         cur_geometry = defaultStateName;
 
-        ChangeTime = time;
+        ChangeTime = time;  // время смены состояний
 
+        // по умолчанию, фрейм и лэйр обрезаются родителем
+        // но этот родитель пуст и не является картинкой
+        // поэтому по умолчанию в GraphicObject обрезки не происходит
         layer->ClipWithItem(this);
         frame->ClipWithItem(this);
     }
@@ -114,6 +125,7 @@ public:
     }
     void setInsideGeometry()
     {
+        // при изменении размера приходятся менять размер всех возможных состояний
         foreach (GraphicObject * pic, pictures)
         {
             pic->setGeometry(currentRect());

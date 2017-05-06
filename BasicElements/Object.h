@@ -37,7 +37,9 @@ public:
     void setPixmap(const QPixmap &pixmap);  // установка картинки
     void setPicture(QString name);
 
-// Недети
+// Недети - костыль для корректной обрезки изображений на прозрачном фоне
+// Псевдодети должны перемещаться вместе с этим объектом, но
+// не должны обрезаться её фигурой, как qt-шные дети.
 private:
     QSet <Object *> psevdo_children;
     QSet <Object *> psevdo_parent;

@@ -4,14 +4,15 @@ Object::Object(Object *parent, QString pictureName) :
     QObject(), QGraphicsPixmapItem(images->get(pictureName), parent)
 {
     this->setTransformationMode(Qt::SmoothTransformation);  // просто настроечки
-    this->setCacheMode(QGraphicsItem::NoCache);
-    this->setAcceptHoverEvents(false);
+    this->setCacheMode(QGraphicsItem::NoCache);  // вроде так лучше
+    this->setAcceptHoverEvents(false);  // по умолчанию, не интерактивен
     this->setAcceptedMouseButtons(0);
 
-    original = pixmap();
+    original = pixmap();  // сохранение картинки
     Width = original.width();
     Height = original.height();
 
+    // инициализация ссылок на функции для передачи в класс анимации
     InitAnimationTypes();
 }
 void Object::Delete()
@@ -35,6 +36,7 @@ void Object::Delete()
     this->deleteLater();
 }
 
+// привязка и отвязка к другим объектам
 void Object::anchorTo(Object *anchor)
 {
     anchor->psevdo_children << this;
@@ -47,6 +49,7 @@ void Object::deanchorFrom(Object *anchor)
         this->psevdo_parent.remove(anchor);
 }
 
+// при изменении позиции перемещаются и псевдодети
 void Object::setPos(qreal x, qreal y)
 {
     foreach (Object * object, psevdo_children)
@@ -56,7 +59,7 @@ void Object::setPos(qreal x, qreal y)
 
 void Object::updatePicture()
 {
-    prepareGeometryChange();
+    prepareGeometryChange();  // документация рекомендует
     QGraphicsPixmapItem::setPixmap(original.scaled(Width, Height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 }
 void Object::resize(qreal w, qreal h)
@@ -73,6 +76,8 @@ void Object::resize(qreal w, qreal h)
 }
 void Object::setPixmap(const QPixmap &pixmap)
 {
+    // функция меняет картинку с сохранением текущего размера объекта
+
     qreal OldWidth = width(), OldHeight = height();
     original = pixmap;
     resize(OldWidth, OldHeight);  // нужно вернуться к старым размерам
@@ -84,6 +89,8 @@ void Object::setPicture(QString name)
 
 void Object::moveBy(qreal dx, qreal dy)
 {
+    // Если этот объект движется в некотором направлении,
+    // а его нужно сместить, то целевая переменная также смещается
     Animation * X_Animation = animations->contains(this, X_POS);
     Animation * Y_Animation = animations->contains(this, Y_POS);
 
@@ -95,6 +102,7 @@ void Object::moveBy(qreal dx, qreal dy)
     setPos(x() + dx, y() + dy);
 }
 
+// костыли для корректной обрезки
 void Object::ClipWithItem(Object *item)
 {
     shapeClips << item;  // обрезаем себя
@@ -147,6 +155,7 @@ void Object::InitAnimationTypes()
     getFunctions[ROTATION] = &Object::rotation;
     setFunctions[ROTATION] = &Object::setRotation;
 }
+// общая функция старта анимации для этого объекта
 Animation * Object::AnimationStart(ANIMATION_TYPE type,
                                            qreal target_value, int time)
 {
@@ -154,20 +163,24 @@ Animation * Object::AnimationStart(ANIMATION_TYPE type,
         debug << "FATAL ERROR: deleted object animated!!!";
 
     Animation * a = animations->contains(this, type);
-    if (a == NULL)
+    if (a == NULL)  // создание новой анимации
     {
         a = new Animation(this, getFunctions[type], setFunctions[type],
                                          type, target_value, time);
+
+        // хотим получить оповещение по завершению анимации
         connect(a, SIGNAL(finished()), (Object *)this, SLOT(animationFinished()));
     }
     else
     {
-        a->start(target_value, time);
+        a->start(target_value, time);  // перезагрузка старой
     }
+    // пересчитываем, анимируется ли сейчас объект
     RecheckIsAnimated();
 
     return a;
 }
+// удобные обобщения
 Animation * Object::AnimationStart(QRectF tar, int time)
 {
     AnimationStart(X_POS, tar.x(), time);
@@ -175,9 +188,18 @@ Animation * Object::AnimationStart(QRectF tar, int time)
     AnimationStart(WIDTH, tar.width(), time);
     return AnimationStart(HEIGHT, tar.height(), time);
 }
+void Object::disappear(int time)
+{
+    // "сжимание в точку":
+    this->setEnabled(false);
+    this->AnimationStart(QRectF(x() + width() / 2, y() + height() / 2, 0, 0), time);
+    // по завершении удаление
+    connect(this, SIGNAL(movieFinished()), this, SLOT(Delete()));
+}
 
 void Object::RecheckIsAnimated()
 {
+    // пересчёт текущего состояния анимаций
     bool NewData = animations->contains(this);
 
     if (NewData && !isAnimatedNow)  // если значение изменилось, вызываем вирт. ф.
@@ -192,12 +214,6 @@ void Object::RecheckIsAnimated()
 }
 void Object::animationFinished()
 {
+    // ри оповещении о завершении какой-то анимации, производим пересчёт
     RecheckIsAnimated();
-}
-
-void Object::disappear(int time)
-{
-    this->setEnabled(false);
-    this->AnimationStart(QRectF(x() + width() / 2, y() + height() / 2, 0, 0), time);
-    connect(this, SIGNAL(movieFinished()), this, SLOT(Delete()));
 }

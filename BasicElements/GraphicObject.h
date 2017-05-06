@@ -5,6 +5,8 @@
 #include "Technical/Pictures.h"
 #include "BasicElements/Object.h"
 
+// Базовый класс для интерактивных объектов
+
 #define Properties unsigned int
 #define DRAGABLE 1
 #define CLICKABLE 2
@@ -41,9 +43,10 @@ public:
 
     bool isClicked = false;  // находимся ли в состоянии нажатой клавиши
 private:
-    bool dontRelease = false;  // нужно ли отпускать в момент отпускания
+    bool dontRelease = false;  // нужно ли отпускать в момент отпускания мышки
     QPointF cursor_position;  // для драга
 private:
+    // обработки сигналов
     void mousePressEvent(QGraphicsSceneMouseEvent *);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *);

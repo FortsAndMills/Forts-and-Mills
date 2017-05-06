@@ -4,6 +4,7 @@
 #include "Technical/Headers.h"
 #include "Technical/Constants.h"
 
+// Базовый класс всех анимаций, происходящих в игре
 class Animation : public QObject
 {
     Q_OBJECT
@@ -25,7 +26,7 @@ public:
               void (Object::*setValue)(qreal newValue),
               ANIMATION_TYPE type, qreal target, int time);
     friend AnimationManager;
-    friend Object;  // для доступа к target
+    friend Object;  // для доступа к target :(
 
     void stop();  // Останавливает анимацию и сразу переключает на конечное значение
     void start(qreal target_value, int time);  // Начинает анимацию с новым target

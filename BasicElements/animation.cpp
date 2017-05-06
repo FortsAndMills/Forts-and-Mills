@@ -11,6 +11,7 @@ Animation::Animation(Object *work_object,
     this->getValue = getValue;
     this->setValue = setValue;
 
+    // анимация стартует при инициализации
     this->start(target, time);
 }
 
@@ -18,7 +19,8 @@ void Animation::start(qreal target_value, int time)  // TODO анимации с
 {
     this->target = target_value;
 
-    qreal value = (work_object->*getValue)();  // Выбираем нужную скорость
+    // Выбираем нужную скорость
+    qreal value = (work_object->*getValue)();
     V = (target - value) / time * constants->framesPerSecond;
 
     if (qAbs(V) < constants->minAnimationVelocity)  // проверка на то, что анимация уже завершена
@@ -52,7 +54,7 @@ void Animation::frame()
     {
         stop();
     }
-    else
+    else  // установка нового значения
     {
         (work_object->*setValue)(newValue);
     }

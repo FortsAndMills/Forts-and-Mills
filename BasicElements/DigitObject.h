@@ -4,12 +4,15 @@
 #include "Technical/Headers.h"
 #include "GraphicObject.h"
 
+// Цифры (пока используются только для размера поля в главменю)
+
 class DigitObject : public GraphicObject
 {
 public:
     int n;
     QString type;
 
+    // отображает одну цифру или 'x'
     DigitObject(GraphicObject * parent, int n, QString type, Properties prop) :
         GraphicObject(parent, prop, n >= 0 && n <= 9 ? type + "Digit" + QString::number(n) : "x")
     {
@@ -17,12 +20,14 @@ public:
         this->n = n;
     }
 
+    // изменение цифры
     void setN(int n)
     {
         this->n = n;
         this->setPicture(type + "Digit" + QString::number(n));
     }
 
+    // переопределение функций для корректного взаимодействия с мышкой
     QRectF boundingRect() const
     {
         return QRectF(0, 0, width(), height());
