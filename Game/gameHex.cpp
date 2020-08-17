@@ -10,27 +10,29 @@ GameHexParameters::GameHexParameters(HexType type)
     canHaveResources = false;
     canBeChosenAsStartPoint = false;
     canGoHere = true;
-    isBuilding = true;
+    isTall = true;
     forbidsToCaptureAdjacentHexesWhenCaptured = false;
-    highingResourceLimitWhenCaptured = 0;
+    increasesResourceLimitWhenCaptured = 0;
     defenceBonusWhenCaptured = 0;
     mustBeCapturedToWin = false;
 
     if (type == "Simple")
     {
         canHaveResources = true;
-        isBuilding = false;
+        isTall = false;
     }
     if (type == "Mill")
     {
-        canBeChosenAsStartPoint = true;
-        highingResourceLimitWhenCaptured = 1;
+        //canBeChosenAsStartPoint = true;
+        //increasesResourceLimitWhenCaptured = 1;
     }
     if (type == "Fort")
     {
         forbidsToCaptureAdjacentHexesWhenCaptured = true;
         defenceBonusWhenCaptured = 2;
-        mustBeCapturedToWin = true;
+        canBeChosenAsStartPoint = true;
+        increasesResourceLimitWhenCaptured = 1;
+        //mustBeCapturedToWin = true;
     }
     if (type == "Mountain")
     {

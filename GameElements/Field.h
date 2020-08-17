@@ -4,6 +4,8 @@
 #include "Technical/Headers.h"
 #include "GameElements/Hex.h"
 
+#include <QGraphicsRotation>
+
 // Игровое поле
 
 class Field : public GraphicObject
@@ -23,6 +25,7 @@ public:
     Hex * HexAt(QPointF point);  // найти гекс под этой точкой экрана
 
 private:
+    QGraphicsRotation * yRotation;
     QPointF coordinates(int i, int j);  // возвращает координаты данного гекса с учётом сдвига
     void resize(qreal W, qreal H);
 

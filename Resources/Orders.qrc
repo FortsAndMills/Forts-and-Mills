@@ -1,0 +1,33 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Content/Orders/Attack.png</file>
+        <file>Content/Orders/Capture.png</file>
+        <file>Content/Orders/Cure.png</file>
+        <file>Content/Orders/Fire.png</file>
+        <file>Content/Orders/Fortify.png</file>
+        <file>Content/Orders/Go.png</file>
+        <file>Content/Orders/Siege.png</file>
+        <file>Content/Orders/Unknown.png</file>
+        <file>Content/Orders/Wait.png</file>
+        <file>Content/Orders/AttackTurn.png</file>
+        <file>Content/Orders/CaptureTurn.png</file>
+        <file>Content/Orders/CureTurn.png</file>
+        <file>Content/Orders/FireTurn.png</file>
+        <file>Content/Orders/FortifyTurn.png</file>
+        <file>Content/Orders/GoTurn.png</file>
+        <file>Content/Orders/SiegeTurn.png</file>
+        <file>Content/Orders/WaitTurn.png</file>
+        <file>Content/Orders/Recruit.png</file>
+        <file>Content/Orders/RecruitTurn.png</file>
+        <file>Content/Orders/Liberate.png</file>
+        <file>Content/Orders/LiberateTurn.png</file>
+        <file>Content/Orders/Retreat.png</file>
+        <file>Content/Orders/RetreatTurn.png</file>
+        <file>Content/Orders/Agite.png</file>
+        <file>Content/Orders/AgiteTurn.png</file>
+        <file>Content/Orders/Pursue.png</file>
+        <file>Content/Orders/PursueTurn.png</file>
+        <file>Content/Orders/Build.png</file>
+        <file>Content/Orders/BuildTurn.png</file>
+    </qresource>
+</RCC>

@@ -13,21 +13,21 @@
 // Картинка нации для старта игры
 // Отличие от обычной картинки в том, что по правой кнопке мыши
 // она должна выдавать подсказку
-class LivingNationPicture : public GraphicObject
-{
-    Q_OBJECT
+//class LivingNationPicture : public GraphicObject
+//{
+//    Q_OBJECT
 
-    UnitType type;
+//    UnitType type;
 
-public:
-    LivingNationPicture(GraphicObject * parent, UnitType type) :
-        GraphicObject(parent, RIGHT_CLICKABLE, type)
-    {
-        this->type = type;
-    }
+//public:
+//    LivingNationPicture(GraphicObject * parent, UnitType type) :
+//        GraphicObject(parent, RIGHT_CLICKABLE, type)
+//    {
+//        this->type = type;
+//    }
 
-    void rightClick() { emit help->HelpAsked(type); }
-};
+//    void rightClick() { emit help->HelpAsked(type); }
+//};
 
 // Какая-либо мигающая информация вверху гекса
 // Такая может быть только одна единовременно
@@ -55,12 +55,13 @@ public:
     Game * game;
 
     GraphicObject * HexPicture;  // мельница, форт, гора или ничего
+    QMap <WAY, GraphicObject *> rivers;  // реки
     QList <ResourcePic *> table;  // таблица ресурсов гекса
 
     SpriteObject * Lighting;  // подсветка при выделении перед стартом
     Object * UnitHomePicture;  // домик, который отображается при наведении на соотв. юнита
 
-    Object * livingNationPicture;  // картинка нации для старта
+    //Object * livingNationPicture;  // картинка нации для старта
     MergingObject * information;  // мерцающая вверху информация (не является домом или рекрутирующийся юнит)
 
     QSet <int> ids;
@@ -133,7 +134,7 @@ private:
 
 public:
     // создание и удаление новых точек
-    int createPoint(POSITION_STATE state = STAY, WAY way = "");
+    int createPoint(POSITION_STATE state = STAY, WAY way = NO_WAY);
     void removePoint(int id);
 
     // размещает переданные ресурсы также, как и ресурсы в таблице на гексе
@@ -154,7 +155,7 @@ public:
 
     void highlight(OrderType type, bool light = true);
 
-    void hideLivingNation();
+    //void hideLivingNation();
     void showInformation(QString pic_name, QString name);
     void hideInformation();
 

@@ -12,21 +12,9 @@ GameBase::GameBase(GameRules *rules, Random * rand)
 
 WAY GameBase::oppositeWay(WAY way)
 {
-    if (way == UP)
-        return DOWN;
-    if (way == DOWN)
-        return UP;
-    if (way == RIGHT_UP)
-        return LEFT_DOWN;
-    if (way == RIGHT_DOWN)
-        return LEFT_UP;
-    if (way == LEFT_UP)
-        return RIGHT_DOWN;
-    if (way == LEFT_DOWN)
-        return RIGHT_UP;
-
-    debug << "ERROR: opposite way error!\n";
-    return "";
+    if (way == NO_WAY)
+        debug << "ERROR: NO WAY came to opposite way error!\n";
+    return WAY((int(way) + 3) % 6);
 }
 Coord GameBase::adjacentHex(Coord which, WAY way)
 {
@@ -61,7 +49,7 @@ QList<Coord> GameBase::visible_hexes(Coord my, int radius)
             ans << coord;
             ++k;
         }
-        while (k < radius && !hex(coord)->isBuilding);
+        while (k < radius && !hex(coord)->isTall);
     }
 
     return ans;
@@ -70,7 +58,7 @@ QList<Coord> GameBase::visible_hexes(Coord my, int radius)
 QMap<WAY, Coord> GameBase::adjacentHexesMap(Coord which)
 {
     QMap <WAY, Coord > ans;
-    foreach (QString way, WAYS)
+    foreach (WAY way, WAYS)
     {
         ans[way] = adjacentHex(which, way);
     }
@@ -79,7 +67,7 @@ QMap<WAY, Coord> GameBase::adjacentHexesMap(Coord which)
 QList<Coord> GameBase::adjacentHexes(Coord which)
 {
     QList <Coord> ans;
-    foreach (QString way, WAYS)
+    foreach (WAY way, WAYS)
     {
         ans << adjacentHex(which, way);
     }
@@ -97,5 +85,10 @@ WAY GameBase::whereIs(Coord which, Coord from)
     }
 
     debug << "FATAL: WAY determination error!\n";
-    return "";
+    return NO_WAY;
+}
+
+bool GameBase::isAdjacent(Coord first, Coord second)
+{
+    return adjacentHexes(first).contains(second);
 }

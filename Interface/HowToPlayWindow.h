@@ -95,7 +95,7 @@ public:
 
         HomeButton->setGeometry(constants->cancelButtonX * W,
                                              constants->cancelButtonY * H,
-                                             constants->cancelButtonWidth * W,
+                                             constants->cancelButtonHeight * H,
                                              constants->cancelButtonHeight * H);
 
         resizeLessons();

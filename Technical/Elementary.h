@@ -84,6 +84,11 @@ public:
         return stream >> c.x >> c.y;
     }
 };
+
+inline uint qHash (const QPointF & key)
+{
+    return qHash (QPair<float,float>(key.x(), key.y()) );
+}
 #define ANY Coord(-2, -2)
 #define NOWHERE Coord()
 

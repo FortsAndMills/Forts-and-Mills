@@ -50,7 +50,7 @@ void GameElementsOrganization::Delete()
 }
 
 // ищет координаты соседнего гекса - удобная функция
-QPointF GameElementsOrganization::adjacentHexCoord(Hex *hex, QString way)
+QPointF GameElementsOrganization::adjacentHexCoord(Hex *hex, WAY way)
 {
     QPointF p = mapFromItem(hex->parentItem(), hex->pos());
     if (way == UP)

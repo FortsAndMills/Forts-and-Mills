@@ -11,19 +11,29 @@ void StatesControl::getReadyToChooseHex(QList <Coord> variants)
     if (!game->players[mainPlayerColor]->GiveUp)
     {
         state = CHOOSING_HEX;
-
         foreach (Hex * hex, hexes)
         {
-            if (variants.contains(hex->prototype->coord))
-            {
-                hex->light();
-                hex->forbidToSelect(false);
-            }
-            else
-            {
-                hex->light(false);
-                hex->forbidToSelect();
-            }
+//            if (game->rules->regions_start)
+//            {
+//                if (variants.contains(hex->prototype->region_center))
+//                    hex->forbidToSelect(false);
+//                else
+//                    hex->forbidToSelect();
+//                hex->deplanCapturing(mainPlayerColor);
+//            }
+//            else
+//            {
+                if (variants.contains(hex->prototype->coord))
+                {
+                    hex->light();
+                    hex->forbidToSelect(false);
+                }
+                else
+                {
+                    hex->light(false);
+                    hex->forbidToSelect();
+                }
+//            }
         }
     }
     else
@@ -44,6 +54,7 @@ void StatesControl::getReadyToPlanning()
         go->AnimationStart(OPACITY, 1, constants->goButtonAppearTime);
         next->AnimationStart(OPACITY, 0, constants->goButtonAppearTime);
         next->enable(false);
+        //wantToCaptureRegion(ANY, false);
     }
     else
     {
@@ -56,8 +67,10 @@ void StatesControl::getReadyToPlanning()
     if (!DayTimeTable->isVisible())
         DayTimeTable->appear();
 
-    foreach (Hex * hex, hexes)
-        hex->hideLivingNation();
+    StartUnitsChoice->AnimationStart(OPACITY, 0);
+
+//    foreach (Hex * hex, hexes)
+//        hex->hideLivingNation();
 
     DayTimeTable->deselectAll();
     dayTime = -1;
@@ -214,7 +227,7 @@ void StatesControl::getReadyToChooseOrderParameter()
     QList <Coord> variants;
 
     // получаем, какой параметр нужно выбрать
-    GameAction::GameActionParameterType PT = order->nextParameterType();
+    GameAction::GameActionParameter PT = order->nextParameterType();
     if (PT == GameAction::ADJACENT_HEX_WHERE_CAN_GO)
     {
         variants = game->adjacentHexes(selectedUnit->stack.last().position);
@@ -222,6 +235,14 @@ void StatesControl::getReadyToChooseOrderParameter()
     else if (PT == GameAction::VISIBLE_HEX_IN_RADIUS_2)
     {
         variants = game->visible_hexes(selectedUnit->stack.last().position, 2);
+    }
+    else if (PT == GameAction::ENEMY_UNIT)
+    {
+        isSelectingEnemyUnit = true;
+        foreach (Hex* hex, hexes)
+        {
+            hex->highlight("");
+        }
     }
     else if (PT == GameAction::TYPE_OF_UNIT)
     {
@@ -251,15 +272,26 @@ void StatesControl::breakChoosingOrderParameter()
 
     state = PLANNING;
 
+    // TODO этот код дважды повторяется
     delightWholeField();  // убираем следы выбора параметра
     disableWholeField();
     selectedUnit->hideUnitTypePanel();
+    isSelectingEnemyUnit = false;
+    foreach (Hex* hex, hexes)
+    {
+        hex->highlight("", false);
+    }
 }
 void StatesControl::finishedChoosingOrderParameter()
 {
     delightWholeField();  // убираем следы выбора параметров приказа
     disableWholeField();
     selectedUnit->hideUnitTypePanel();
+    isSelectingEnemyUnit = false;
+    foreach (Hex* hex, hexes)
+    {
+        hex->highlight("", false);
+    }
 
     // ищем следующий параметр, который нужно выбрать
     selectedUnit->prototype->plan[dayTime]->findNextActionWithNoParameter();
@@ -271,7 +303,7 @@ void StatesControl::finishedChoosingOrderParameter()
     else  // если такого нет, то отображаем новоявленный приказ и переходим к след. времени
     {
         showPlannedOrder(selectedUnit->prototype);
-        if (setNextTime())  // если это было не последнее время, сразу же суём панельку
+        if (!game->must_be_last(selectedUnit->prototype, dayTime) && setNextTime())  // если это было не последнее время, сразу же суём панельку
         {
             selectedUnit->showOrdersPanel(game->whatCanUse(selectedUnit->prototype));
         }

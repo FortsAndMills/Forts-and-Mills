@@ -12,123 +12,135 @@ class GameAction
 {
 public:
     // тип параметра действия
-    enum GameActionParameterType {NONE,
-                                                              ADJACENT_HEX_WHERE_CAN_GO,
-                                                              VISIBLE_HEX_IN_RADIUS_2,
-                                                              TYPE_OF_UNIT} p_type;
+    enum GameActionParameter {NONE,
+                              ADJACENT_HEX_WHERE_CAN_GO,
+                              VISIBLE_HEX_IN_RADIUS_2,
+                              ENEMY_UNIT,
+                              TYPE_OF_UNIT} parameter;
 
-    // что по сути параметр: ничего, тип юнита или гекс.
-    int whatParameter()
+    enum GameActionParameterType {PT_NOTHING,
+                                  PT_HEX,
+                                  PT_UNIT,
+                                  PT_UNIT_TYPE} p_type;
+
+
+    // что по сути параметр: ничего, тип юнита, юнит или гекс.
+    GameActionParameterType whatParameter()
     {
-        if (p_type == NONE)
-            return 0;
-        if (p_type == TYPE_OF_UNIT)
-            return 1;
-        return 2;
+        if (parameter == NONE)
+            return PT_NOTHING;
+        if (parameter == TYPE_OF_UNIT)
+            return PT_UNIT_TYPE;
+        if (parameter == ENEMY_UNIT)
+            return PT_UNIT;
+        return PT_HEX;
     }
 
     // Хранение значений параметров
     Coord target;
     UnitType unitType;
+    GameUnit* unit;
 
     // Возможные действия
     enum GameActionType {START_REALIZATION,
-                                            AMBUSH,
-                                            LEAVE_HEX,
-                                            ENTER_HEX,
-                                            ENTER_HEX_WITH_FIGHT,
-                                            FINISH_ENTERING,
-                                            SHOOT,
-                                            CAPTURE_HEX,
-                                            RECRUIT,
-                                            LIBERATE,
-                                            CURE,
-                                            FORTIFICATE,
-                                            FINISH_REALIZATION} type;
+                         AGITE,
+                         AMBUSH,
+                         LEAVE_HEX,
+                         PURSUE,
+                         CROSS,
+                         ENTER_HEX_WITH_FIGHT,
+                         RETURN,
+                         FINISH_ENTERING,
+                         SHOOT,
+                         CAPTURE_HEX,
+                         RECRUIT,
+                         LIBERATE,
+                         CURE,
+                         FORTIFICATE,
+                         FINISH_REALIZATION} type;
 
     int priority;  // его приоритет в списке всех действий раунда
 
     int amount;  // "мощность", обычно игровая константа - для удобства.
 
-    GameAction()
+    GameAction(int priority = 0)
     {
+        parameter = NONE;
+        this->priority = priority;
     }
 
-    void StartRealization(int priority)
+    void StartRealization()
     {
         type = START_REALIZATION;
-        p_type = NONE;
-        this->priority = priority;
     }
-    void Ambush(int priority, int damage)
+    void Agite()
+    {
+        type = AGITE;
+        parameter = ADJACENT_HEX_WHERE_CAN_GO;
+    }
+    void Ambush(int damage)
     {
         type = AMBUSH;
-        p_type = NONE;
-        this->priority = priority;
         amount = damage;
     }
-    void LeaveHex(int priority)
+    void LeaveHex()
     {
         type = LEAVE_HEX;
-        p_type = ADJACENT_HEX_WHERE_CAN_GO;
-        this->priority = priority;
+        parameter = ADJACENT_HEX_WHERE_CAN_GO;
     }
-    void EnterHexWithFight(int priority)
+    void Pursue()
+    {
+        type = PURSUE;
+        parameter = ENEMY_UNIT;
+    }
+    void Cross()
+    {
+        type = CROSS;
+    }
+    void EnterHexWithFight()
     {
         type = ENTER_HEX_WITH_FIGHT;
-        p_type = NONE;
-        this->priority = priority;
     }
-    void FinishEntering(int priority)
+    void Return()
+    {
+        type = RETURN;
+    }
+    void FinishEntering()
     {
         type = FINISH_ENTERING;
-        p_type = NONE;
-        this->priority = priority;
     }
-    void Shoot(int priority, int damage)
+    void Shoot(int damage)
     {
         type = SHOOT;
-        p_type = VISIBLE_HEX_IN_RADIUS_2;
-        this->priority = priority;
+        parameter = VISIBLE_HEX_IN_RADIUS_2;
         amount = damage;
     }
-    void CaptureHex(int priority)
+    void CaptureHex()
     {
         type = CAPTURE_HEX;
-        p_type = NONE;
-        this->priority = priority;
     }
-    void Recruit(int priority)
+    void Recruit()
     {
         type = RECRUIT;
-        p_type = TYPE_OF_UNIT;
-        this->priority = priority;
+        parameter = TYPE_OF_UNIT;
     }
-    void Liberate(int priority)
+    void Liberate()
     {
         type = LIBERATE;
-        p_type = NONE;
-        this->priority = priority;
     }
-    void Cure(int priority, int amount)
+    void Cure(int amount)
     {
         type = CURE;
-        p_type = NONE;
-        this->priority = priority;
         this->amount = amount;
     }
-    void Fortificate(int priority, int amount)
+    void Fortificate(int amount)
     {
         type = FORTIFICATE;
-        p_type = NONE;
-        this->priority = priority;
         this->amount = amount;
     }
-    void FinishRealization(int priority)
+    void FinishRealization()
     {
         type = FINISH_REALIZATION;
-        p_type = NONE;
-        this->priority = priority;
     }
 };
 

@@ -218,6 +218,8 @@ public:
             table[type][i]->burn();
             table[type].removeAt(i);
         }
+        else
+            burn(type);
     }
     void reconfigureResources()
     {

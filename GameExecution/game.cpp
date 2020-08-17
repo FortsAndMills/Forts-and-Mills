@@ -18,6 +18,11 @@ void Game::HexChosen()
 
         if (!ChooseOneOfTheStartHexes())
         {
+            //if (rules->waves_start && !rules->surround_start)
+            //    WavesStart();
+            //if ((rules->surround_start || rules->regions_start) && !rules->waves_start)
+            //    gatherResources();
+
             StartPlanning();
         }
     }
@@ -37,6 +42,7 @@ void Game::PlanRealisation()
         burnExtraResources();
         gatherResources();
         defenceFill();
+        agitationEnds();
 
         if (isGameFinished() == "Neutral")
         {

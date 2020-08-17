@@ -48,7 +48,10 @@ Unit::Unit(GraphicObject *parent, QString color, QString type) :
 
     picture = new GraphicObject(this, CHILD, color + type);
 
-    unitFrame = new Object(this, color + "UnitFrame");
+    if (color != "Neutral")
+        unitFrame = new Object(this, color + "UnitFrame");
+    else
+        unitFrame = NULL;
 
     for (int i = 0; i < prototype.init_health; ++i)
     {
@@ -84,7 +87,8 @@ Unit::Unit(Unit *another) :
 void Unit::Delete()
 {
     picture->Delete();
-    unitFrame->Delete();
+    if (unitFrame != NULL)
+        unitFrame->Delete();
     foreach (SpriteObject * h, health)
         h->Delete();
     if (explosion != NULL)
@@ -112,7 +116,7 @@ void Unit::Delete()
 // вращение обода юнита
 void Unit::turnFrame()
 {
-    if (unitFrame->isDeleted)
+    if (unitFrame == NULL || unitFrame->isDeleted)
         return;
 
     unitFrame->setRotation(0);
@@ -223,7 +227,8 @@ void Unit::resizeShields()
 void Unit::resizeChildren(qreal W, qreal H)
 {
     picture->setGeometry(0, 0, W, H);
-    unitFrame->setGeometry(0, 0, W, H);
+    if (unitFrame != NULL)
+        unitFrame->setGeometry(0, 0, W, H);
     turnFrame();
     if (selection != NULL)
     {
@@ -452,11 +457,6 @@ void Unit::showUnitTypePanel(QList<UnitType> types)
 void Unit::hideUnitTypePanel()
 {
     unitTypePanel->disappear();
-}
-
-void Unit::bigSelect()
-{
-
 }
 
 // выбранный приказ появляется на панели приказов, и оттуда едет к юниту

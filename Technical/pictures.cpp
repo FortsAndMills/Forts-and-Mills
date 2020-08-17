@@ -97,11 +97,16 @@ void Images::InitPictures()
 
     names << PictureNameFolder("Icons",
                  {"SandClock",
-                  "Breakfast",
-                  "Dinner",
-                  "Supper",
-                  "Night",
-                  "Sleep"},
+                  "Round1",
+                  "Round1 selected",
+                  "Round2",
+                  "Round2 selected",
+                  "Round3",
+                  "Round3 selected",
+                  "Round4",
+                  "Round4 selected",
+                  "Round5",
+                  "Round5 selected"},
                  ".png");
 
     names << PictureNameFolder("Buttons",
@@ -164,7 +169,8 @@ void Images::InitPictures()
                  "GoldenHex",
                  "GoldenHexFrame",
                  "BluePhantomHex",
-                 "RedPhantomHex"},
+                 "RedPhantomHex",
+                 "river"},
                 ".png");
 
     names << PictureNameFolder("Decorations",
@@ -179,8 +185,7 @@ void Images::InitPictures()
                  "Blast",
                  "DecorativeShield",
                  "OrdersFrame",
-                 "OrdersFrameRed",
-                 "BrokenGlass"},
+                 "OrdersFrameRed"},
                  ".png");
     picture_rows["DayTimeSelection"] = 6;
     picture_columns["DayTimeSelection"] = 5;
@@ -262,32 +267,42 @@ void Images::InitPictures()
                  ".png");
 
     names << PictureNameFolder("Orders",
-                {"Attack",
+                {"Agite",
+                 "Attack",
+                 "Build",
                  "Capture",
                  "Cure",
                  "Fire",
                  "Fortify",
                  "Go",
+                 "Liberate",
+                 "Pursue",
                  "Siege",
                  "Recruit",
-                 "Liberate",
                  "Retreat",
                  "Unknown",
                  DefaultOrder,
+                 "AgiteTurn",
                  "AttackTurn",
+                 "BuildTurn",
                  "CureTurn",
                  "CaptureTurn",
                  "FireTurn",
                  "FortifyTurn",
                  "GoTurn",
+                 "LiberateTurn",
+                 "PursueTurn",
                  "SiegeTurn",
                  "RecruitTurn",
-                 "LiberateTurn",
                  "RetreatTurn",
                  DefaultOrder + QString("Turn")},
                  ".png");
+    picture_rows["AgiteTurn"] = 3;
+    picture_columns["AgiteTurn"] = 7;
     picture_rows["AttackTurn"] = 3;
-    picture_columns["AttackTurn"] = 7;    
+    picture_columns["AttackTurn"] = 7;
+    picture_rows["BuildTurn"] = 3;
+    picture_columns["BuildTurn"] = 7;
     picture_rows["CureTurn"] = 3;
     picture_columns["CureTurn"] = 7;
     picture_rows["CaptureTurn"] = 3;
@@ -298,12 +313,14 @@ void Images::InitPictures()
     picture_columns["FortifyTurn"] = 7;
     picture_rows["GoTurn"] = 3;
     picture_columns["GoTurn"] = 7;
+    picture_rows["LiberateTurn"] = 3;
+    picture_columns["LiberateTurn"] = 7;
+    picture_rows["PursueTurn"] = 3;
+    picture_columns["PursueTurn"] = 7;
     picture_rows["SiegeTurn"] = 3;
     picture_columns["SiegeTurn"] = 7;
     picture_rows["RecruitTurn"] = 3;
     picture_columns["RecruitTurn"] = 7;
-    picture_rows["LiberateTurn"] = 3;
-    picture_columns["LiberateTurn"] = 7;
     picture_rows["RetreatTurn"] = 3;
     picture_columns["RetreatTurn"] = 7;
     picture_rows[DefaultOrder + QString("Turn")] = 3;
@@ -360,7 +377,7 @@ void Images::InitPictures()
                  "YellowUnitSelectionLayer",
                  "GreenUnitFrame",
                  "GreenUnitHealth",
-                 "GreenUnitSelectionLayer"
+                 "GreenUnitSelectionLayer",
                  "NeutralUnitFrame",
                  "NeutralUnitHealth",},
                  ".png");

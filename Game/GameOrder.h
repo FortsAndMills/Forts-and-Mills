@@ -3,6 +3,7 @@
 
 #include "Technical/Headers.h"
 #include "GameAction.h"
+#include "GameUnit.h"
 
 // Параметры приказов и их разбиение на действия (см. GameAction)
 // Зависят только от названия приказа, а также типа юнита, которому был отдан
@@ -21,9 +22,9 @@ public:
     GameOrderParameters(GameRules *rules, UnitType owner, OrderType type);
 
     // тех. функция для удобства
-    GameAction * AddAction()
+    GameAction * AddAction(int priority)
     {
-        return &((actions << GameAction()).last());
+        return &((actions << GameAction(priority)).last());
     }
     // проверка на наличие того или иного действия - для удобства
     bool containsAction(GameAction::GameActionType type)
@@ -39,65 +40,64 @@ public:
 class GameOrder : public GameOrderParameters
 {
 public:
-    qint16 priority;  // выставленный приоритет для определения порядка в спорных ситуациях
-
     // флаги
     bool wasInFight = false;
     bool realizationStarted = false;
     bool realizationFinished = false;
 
     // Навигация по непроставленным параметрам действий
-    int actionWithNoParameter;
+    int actionWithParameter;
     void findNextActionWithNoParameter()
     {
-        if (actionWithNoParameter == UNDEFINED)
+        if (actionWithParameter == UNDEFINED)
             return;
 
         do
         {
-            ++actionWithNoParameter;
+            ++actionWithParameter;
         }
-        while (actionWithNoParameter < actions.size() &&
-               actions[actionWithNoParameter].p_type == GameAction::NONE);
+        while (actionWithParameter < actions.size() &&
+               actions[actionWithParameter].parameter == GameAction::NONE);
 
-        if (actionWithNoParameter == actions.size())
-            actionWithNoParameter = UNDEFINED;
+        if (actionWithParameter == actions.size())
+            actionWithParameter = UNDEFINED;
     }
     // Какой параметр нужно выбрать
-    GameAction::GameActionParameterType nextParameterType()
+    GameAction::GameActionParameter nextParameterType()
     {
-        if (actionWithNoParameter == UNDEFINED)
+        if (actionWithParameter == UNDEFINED)
             return GameAction::NONE;
-        return actions[actionWithNoParameter].p_type;
+        return actions[actionWithParameter].parameter;
     }
     // Установка значений параметра
     void setParameter(Coord c)
     {
-        actions[actionWithNoParameter].target = c;
+        actions[actionWithParameter].target = c;
     }
     void setParameter(UnitType ut)
     {
-        actions[actionWithNoParameter].unitType = ut;
+        actions[actionWithParameter].unitType = ut;
+    }
+    void setParameter(GameUnit* unit)
+    {
+        actions[actionWithParameter].unit = unit;
     }
 
-    GameOrder(GameRules * rules, UnitType owner, OrderType type, int priority) :
+    GameOrder(GameRules * rules, UnitType owner, OrderType type) :
         GameOrderParameters(rules, owner, type)
     {
-        this->priority = priority;        
-
         if (actions.size() > 0)  // если приказ не бездельничать и там есть действия
         {
             // добавление действий "начал выполнять" и "закончил выполнять"
-
             int lp = actions[0].priority;
             int hp = actions.last().priority;
-            actions.push_front(GameAction());
-            actions[0].StartRealization(lp - 1);
-            AddAction()->FinishRealization(hp + 1);
+            actions.push_front(GameAction(lp - 1));
+            actions[0].StartRealization();
+            AddAction(hp + 1)->FinishRealization();
         }
 
         // поиск первого действия, для которого нужно выбрать параметр
-        actionWithNoParameter = -1;
+        actionWithParameter = -1;
         findNextActionWithNoParameter();
     }
 

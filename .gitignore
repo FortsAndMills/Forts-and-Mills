@@ -1,2 +1,16 @@
 
 Content/GameElements/
+
+Makefile
+
+Makefile.Debug
+
+Makefile.Release
+
+object_script.FortsAndMills-II.Debug
+
+object_script.FortsAndMills-II.Release
+
+Resources/Content/UNUSED/
+
+Resources/Content/Design.pptx

@@ -20,8 +20,8 @@ public:
     GameUnitParameters(GameRules *rules, UnitType type);
 };
 
-// Игровой класс юнита
 
+// Игровой класс юнита
 class GameUnit : public GameUnitParameters
 {
 public:

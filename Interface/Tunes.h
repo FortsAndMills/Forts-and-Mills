@@ -290,12 +290,12 @@ public:
     Unit * on, * off;
     UnitType type;
 
-    UnitsElement(GraphicObject * parent, UnitType type, bool isOn, bool active) :
+    UnitsElement(GraphicObject * parent, UnitType type, bool isOn, bool active, PlayerColor color = "") :
         GraphicObject(parent, (active * CLICKABLE) | RIGHT_CLICKABLE)
     {
         this->active = active;
         this->type = type;
-        on = new Unit(this, settings->rules->AllPlayers[rand() % settings->rules->AllPlayers.size()], type);
+        on = new Unit(this, color == "" ? settings->rules->AllPlayers[rand() % settings->rules->AllPlayers.size()] : color, type);
         off = new Unit(this, "Neutral", type);
 
         turnOn(isOn);
@@ -355,6 +355,16 @@ public:
             {
                 units.push_back(new UnitsElement(this, rules->AllUnits[i], on, active));
             }
+        }
+    }
+    explicit UnitsTune(GraphicObject * parent, GameRules * rules, PlayerColor color, UnitType active_unit) :
+        GraphicObject(parent)
+    {
+        this->active = true;
+        for (int i = 0; i < rules->unitsInGame.size(); ++i)
+        {
+            UnitType type = rules->unitsInGame[i];
+            units.push_back(new UnitsElement(this, type, type == active_unit, active, color));
         }
     }
     virtual void Delete()

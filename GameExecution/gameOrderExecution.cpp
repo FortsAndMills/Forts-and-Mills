@@ -27,6 +27,18 @@ bool GameOrderExecution::CheckIfActionBurns(Action a)
         }
     }
 
+    if (a.action.type == GameAction::RECRUIT)
+    {
+        // рекрут на агитированной территории не прокатывает
+        if (isAgitatedByEnemy(a.unit->position, a.unit->color))
+        {
+            players[a.unit->color]->resources[a.order->type]--;
+            a.order->realizationFinished = true;
+            AddEvent()->RecruitFailsBecauseOfAgite(a.unit, a.order->type, hex(a.unit->position));
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -46,6 +58,14 @@ void GameOrderExecution::Realize(QList<Action> act)
             AddEvent()->OrderRealizationStarted(a.unit, a.unit->color, a.order->type);
         }
     }
+    else if (T == GameAction::AGITE)
+    {
+        foreach (Action a, act)
+        {
+            hex(a.action.target)->agitated.insert(a.unit->color);
+            AddEvent()->Agitated(a.unit, hex(a.action.target));
+        }
+    }
     else if (T == GameAction::LEAVE_HEX)
     {
         foreach (Action a, act)
@@ -53,26 +73,24 @@ void GameOrderExecution::Realize(QList<Action> act)
             // "выход из клетки"
             a.unit->going_to = a.action.target;
             AddEvent()->UnitLeaves(a.unit, hex(a.action.target));
-
-            // если кто-то вышел навстречу, то они должны встретится и сразиться
-            while (a.unit->health > 0)
-            {
-                QList <GameUnit *> enemies = find(ENEMY, a.unit, a.action.target, a.unit->position);
-                if (enemies.size() == 0)
-                    break;
-
-                // сражение
-                enemies << a.unit;
-                AddEvent()->UnitsAreGoingToFight(enemies);
-                UnitsFight(enemies);
-            }
         }
-
-        // успешно вышедшие входят в целевую клетку
+    }
+    else if (T == GameAction::PURSUE)
+    {
+        // TODO: одновременный pursue друг в друга?
         foreach (Action a, act)
         {
-            if (a.unit->health > 0)
-                AddEvent()->UnitEnters(a.unit, hex(a.unit->going_to), findAll(ENEMY, a.unit, a.unit->going_to, ANY));
+            // "выход из клетки"
+            Coord target_pos = (a.action.unit->going_to == NOWHERE ? a.action.unit->position : a.action.unit->going_to);
+            if (!africa.contains(a.action.unit) && isAdjacent(a.unit->position, target_pos))
+            {
+                a.unit->going_to = target_pos;
+                AddEvent()->UnitLeaves(a.unit, hex(target_pos));
+            }
+            else
+            {
+                AddEvent()->PursueNotTriggered(a.unit, a.action.unit);
+            }
         }
     }
     else if (T == GameAction::AMBUSH)
@@ -82,18 +100,13 @@ void GameOrderExecution::Realize(QList<Action> act)
             // стреляем во врагов, которые входят в клетку
             a.unit->distantAttack = a.action.amount;
 
-            while (a.unit->distantAttack > 0)
+            if (a.unit->distantAttack > 0)
             {
-                QList <GameUnit *> targets;
-                targets = find(ENEMY, a.unit, ANY, a.unit->position);
-                if (targets.size() == 0)
+                QSet <GameUnit *> targets = find(ENEMY, a.unit, ANY, a.unit->position);
+                if (targets.size() > 0)
                 {
-                    break;
+                    UnitsFight(targets << a.unit);
                 }
-
-                QList <GameUnit *> enemies;
-                enemies << a.unit << targets;
-                UnitsFight(enemies, QList <FightStatus>() << FS_DISTANT);
             }
 
             a.unit->distantAttack = 0;
@@ -107,28 +120,24 @@ void GameOrderExecution::Realize(QList<Action> act)
 
             while (a.unit->distantAttack > 0)
             {
-                QList <GameUnit *> targets;
+                QSet <GameUnit *> targets;
                 // сначала стреляем в тех, кто входит в нашу клетку с правильной стороны
                 if (adjacentHexes(a.unit->position).contains(a.action.target))
                 {
                     targets = find(ENEMY, a.unit, a.action.target, a.unit->position);
                 }
-                if (targets.size() == 0)  // иначе в тех, кто стоит в целевой клетке
+                if (targets.size() == 0)  // иначе в тех, кто стоит в целевой клетке или входит
                 {
                     targets = find(ENEMY, a.unit, a.action.target, NOWHERE);
+                    targets += find(ENEMY, a.unit, ANY, a.action.target);
                 }
-                if (targets.size() == 0)  // иначе в тех, кто в неё входит
-                {
-                    targets = find(ENEMY, a.unit, ANY, a.action.target);
-                }
+
                 if (targets.size() == 0)
                 {
                     break;
                 }
 
-                QList <GameUnit *> enemies;
-                enemies << a.unit << targets;
-                UnitsFight(enemies, QList <FightStatus>() << FS_DISTANT);
+                UnitsFight(targets << a.unit);
             }
 
             // оставшиеся выстрелы должны отправиться в пустоту
@@ -140,27 +149,78 @@ void GameOrderExecution::Realize(QList<Action> act)
             a.unit->distantAttack = 0;
         }
     }
+    else if (T == GameAction::CROSS)
+    {
+        foreach (Action a, act)
+        {
+            // если кто-то вышел навстречу, то они должны встретится и сразиться
+            if (a.unit->health > 0)
+            {
+                QSet <GameUnit *> enemies = find(ENEMY, a.unit, a.unit->going_to, a.unit->position);
+
+                if (enemies.size() > 0)
+                {
+                    QSet <GameUnit *> allies = find(ALLY, a.unit, a.unit->position, a.unit->going_to);
+                    allies << a.unit;
+
+                    // сражение
+                    QSet <GameUnit *> fighters = enemies + allies;
+                    AddEvent()->UnitsAreGoingToFight(fighters);
+                    UnitsFight(fighters);
+                }
+            }
+        }
+
+        // успешно вышедшие входят в целевую клетку
+        foreach (Action a, act)
+        {
+            if (a.unit->health > 0)
+                AddEvent()->UnitEnters(a.unit, hex(a.unit->going_to), find(ENEMY, a.unit, a.unit->going_to, ANY));
+        }
+    }
     else if (T == GameAction::ENTER_HEX_WITH_FIGHT)
     {
         foreach (Action a, act)
         {
-            // проверка на то, что в клетке изначально нет союзников, которые будут сражаться раньше нас
-            if (find(ALLY, a.unit, a.unit->going_to, NOWHERE).size() == 0)
+            // не триггернутые перемещения
+            if (a.unit->going_to == NOWHERE)
+                continue;
+
+            if (a.unit->health > 0)
             {
-                while (a.unit->health > 0)
+                // ищем врагов в клетке
+                QSet <GameUnit *> enemies = find(ENEMY, a.unit, a.unit->going_to, NOWHERE);
+                // добавляем врагов, пришедших на подмогу
+                enemies += find(ENEMY, a.unit, ANY, a.unit->going_to);
+
+                if (enemies.size() > 0)
                 {
-                    // сражаемся с теми, кто уже находится в клетке
-                    QList <GameUnit *> enemies = find(ENEMY, a.unit, a.unit->going_to, NOWHERE);
-                    enemies << find(ENEMY, a.unit, ANY, a.unit->going_to);
-                    deleteAllies(enemies);
+                    // ищем союзников в клетке
+                    QSet <GameUnit *> allies = find(ALLY, a.unit, a.unit->going_to, NOWHERE);
+                    // ищем союзников, пришедших на подмогу
+                    allies += find(ALLY, a.unit, ANY, a.unit->going_to);
+                    allies << a.unit;
 
-                    if (enemies.size() == 0)
-                        break;
-
-                    enemies << a.unit;
-                    AddEvent()->UnitsAreGoingToFight(enemies);
-                    UnitsFight(enemies);
+                    QSet <GameUnit *> fighters = enemies + allies;
+                    AddEvent()->UnitsAreGoingToFight(fighters);
+                    UnitsFight(fighters);
                 }
+            }
+        }
+    }
+    else if (T == GameAction::RETURN)
+    {
+        foreach (Action a, act)
+        {
+            if (a.unit->going_to != NOWHERE)
+            {
+                Coord pos = a.unit->position;
+                a.unit->position = a.unit->going_to;
+                a.unit->going_to = pos;
+
+                AddEvent()->UnitFinishesEnter(a.unit, hex(a.unit->position));
+                AddEvent()->UnitLeaves(a.unit, hex(a.unit->going_to));
+                AddEvent()->UnitEnters(a.unit, hex(a.unit->going_to), find(ENEMY, a.unit, a.unit->going_to, ANY));
             }
         }
     }
@@ -168,14 +228,32 @@ void GameOrderExecution::Realize(QList<Action> act)
     {
         foreach (Action a, act)
         {
-            // заканчиваем вход в клетку
-            a.unit->position = a.unit->going_to;
-            a.unit->going_to = NOWHERE;
+            if (a.unit->going_to != NOWHERE)
+            {
+                // заканчиваем вход в клетку
+                a.unit->position = a.unit->going_to;
+                a.unit->going_to = NOWHERE;
 
-            // в этот момент убиваем "рекутируемых" юнитов
-            KillRecruited(hex(a.unit->position), a.unit);
+                GameHex * Hex = hex(a.unit->position);
 
-            AddEvent()->UnitFinishesEnter(a.unit, hex(a.unit->position));
+                // в этот момент убиваем "рекутируемых" юнитов
+                KillRecruited(Hex, a.unit);
+
+                // если есть укрепление, они исчезают
+                if (Hex->fortificationColor != "Neutral" &&
+                     Hex->fortificationColor != a.unit->color)
+                {
+                    if (Hex->fortification != 0)
+                    {
+                        Hex->fortification = 0;
+                        AddEvent()->FortificationDisappears(a.unit, Hex);
+                    }
+
+                    Hex->fortificationColor = "Neutral";
+                }
+
+                AddEvent()->UnitFinishesEnter(a.unit, Hex);
+            }
         }
     }
     else if (T == GameAction::LIBERATE)
@@ -183,19 +261,6 @@ void GameOrderExecution::Realize(QList<Action> act)
         foreach (Action a, act)
         {
             GameHex * Hex = hex(a.unit->position);
-
-            // если есть укрепление
-            if (Hex->fortificationColor != "Neutral" &&
-                 Hex->fortificationColor != a.unit->color)
-            {
-                if (Hex->fortification != 0)
-                {
-                    Hex->fortification = 0;
-                    AddEvent()->FortificationDisappears(a.unit, Hex);
-                }
-
-                Hex->fortificationColor = "Neutral";
-            }
 
             // нейтрализуем цвет гекса
             if (Hex->color != "Neutral" &&
@@ -209,21 +274,52 @@ void GameOrderExecution::Realize(QList<Action> act)
     {
         foreach (Action a, act)
         {
-            // если ещё можно захватить
-            if (hex(a.unit->position)->canBeCaptured &&
-                hex(a.unit->position)->color == "Neutral")
+            GameHex * Hex = hex(a.unit->position);
+
+            bool capture_is_used_as_liberate = false;
+            if (rules->captureIsLiberate && Hex->canBeCaptured)
             {
-                // появление бонуса в обороне при захвате
-                if (hex(a.unit->position)->defenceBonusWhenCaptured != 0)
+                // КОПИПАСТ КОДА ИЗ ОСВОБОЖДЕНИЯ
+                // если есть укрепление
+                if (Hex->fortificationColor != "Neutral" &&
+                     Hex->fortificationColor != a.unit->color)
                 {
-                    hex(a.unit->position)->defence = hex(a.unit->position)->defenceBonusWhenCaptured;
-                    AddEvent()->DefenceBonusAppears(a.unit, hex(a.unit->position), a.unit->color, hex(a.unit->position)->defence);
+                    if (Hex->fortification != 0)
+                    {
+                        Hex->fortification = 0;
+                        AddEvent()->FortificationDisappears(a.unit, Hex);
+                    }
+
+                    Hex->fortificationColor = "Neutral";
                 }
 
+                // нейтрализуем цвет гекса
+                if (Hex->color != "Neutral" &&
+                     Hex->color != a.unit->color)
+                {
+                    capture_is_used_as_liberate = true;
+                    DecaptureHex(Hex, a.unit);
+                }
+            }
+
+            // если ещё можно захватить
+            if (!capture_is_used_as_liberate &&
+                Hex->canBeCaptured && Hex->color == "Neutral")
+            {
+                // появление бонуса в обороне при захвате
+                if (Hex->defenceBonusWhenCaptured != 0)
+                {
+                    Hex->defence = Hex->defenceBonusWhenCaptured;
+                    AddEvent()->DefenceBonusAppears(a.unit, Hex, a.unit->color, Hex->defence);
+                }
+
+                // иконка "бездомных"
+                if (!rules->no_rebirth || !Hex->recruited.contains(a.unit->color))
+                    AddEvent()->HexIsNotAHomeAnymore(Hex, a.unit->color, QSet <GameUnit *>() << a.unit);
+
                 // перекрашиваем
-                hex(a.unit->position)->color = a.unit->color;
-                AddEvent()->HexIsNotAHomeAnymore(hex(a.unit->position), a.unit->color, QSet <GameUnit *>() << a.unit);
-                AddEvent()->UnitCapturesHex(a.unit, hex(a.unit->position), a.unit->color);
+                Hex->color = a.unit->color;
+                AddEvent()->UnitCapturesHex(a.unit, Hex, a.unit->color);
             }
         }
     }
@@ -234,10 +330,15 @@ void GameOrderExecution::Realize(QList<Action> act)
             // если клетка захвачена и к ней никто не привязан
             if (hex(a.unit->position)->color == a.unit->color)
             {
-                if (!isHexAHome(a.unit->position, a.unit->color))
+                // тестовая настройка с запретом воскрешений
+                if (!rules->no_rebirth || !hex(a.unit->position)->recruited.contains(a.unit->color))
                 {
-                    AddEvent()->UnitIsGoingToRecruit(a.unit, hex(a.unit->position), a.action.unitType);
-                    recruitedUnits << Recruited(a.unit->position, a.action.unitType, a.unit->color);
+                    // по базовым правилам, нельзя рекрутировать
+                    if (!isHexAHome(a.unit->position, a.unit->color))
+                    {
+                        AddEvent()->UnitIsGoingToRecruit(a.unit, hex(a.unit->position), a.action.unitType);
+                        recruitedUnits << Recruited(a.unit->position, a.action.unitType, a.unit->color);
+                    }
                 }
             }
         }

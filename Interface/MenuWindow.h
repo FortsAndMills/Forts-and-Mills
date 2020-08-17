@@ -57,10 +57,10 @@ public:
         connect(CreateNewGame, SIGNAL(leftClicked()), SLOT(leaveJoined()));
 
         HowToPlayFrame = new GraphicObject(this, CLICKABLE | HOVER, "LessonFrame", "LessonFrameSelection", "SimpleLayer");
-        HowToPlayFrame->setVisible(false);
+        //HowToPlayFrame->setVisible(false);
         connect(HowToPlayFrame, SIGNAL(leftClicked()), SLOT(leaveJoined()));
         HowToPlayLabel = new Object(this, "HowToPlayButton");
-        HowToPlayLabel->setVisible(false);
+        //HowToPlayLabel->setVisible(false);
 
         CheckForLessonsPassed();
     }
@@ -144,8 +144,8 @@ public slots:
         dialog->setVisible(false);
         client->sendWantNewsMessage();
         CreateNewGame->setVisible(true);
-        HowToPlayFrame->setVisible(true);
-        HowToPlayLabel->setVisible(true);
+        //HowToPlayFrame->setVisible(true);
+        //HowToPlayLabel->setVisible(true);
     }
     void recreateList()
     {

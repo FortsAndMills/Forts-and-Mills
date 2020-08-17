@@ -6,7 +6,54 @@ GameSteps::GameSteps(GameRules *rules, Random *rand) :
 
 }
 
-// обработка выбора мельниц в начале игры
+//void GameSteps::WavesStart()
+//{
+//    int captured = 0;
+
+//    do
+//    {
+//        QMap<PlayerColor, QSet<GameHex*> > wanted;
+//        QMap<GameHex*, int> wanted_by;
+//        foreach (QList<GameHex *> hex_row, hexes)
+//        {
+//            foreach (GameHex* h, hex_row)
+//            {
+//                if (h->color != "Neutral")
+//                {
+//                    foreach (Coord adj_coord, adjacentHexes(h->coord))
+//                    {
+//                        GameHex * adj = hex(adj_coord);
+//                        if (adj->color == "Neutral" && adj->canBeCaptured)
+//                        {
+//                            if (!wanted[h->color].contains(adj))
+//                            {
+//                                wanted[h->color].insert(adj);
+//                                ++wanted_by[adj];
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+
+//        captured = 0;
+//        foreach (PlayerColor color, rules->players)
+//        {
+//            foreach (GameHex* to_capture, wanted[color])
+//            {
+//                if (wanted_by[to_capture] < 2)
+//                {
+//                    CaptureHex(to_capture, color);
+//                    GatherResources(to_capture, color, to_capture->resources);
+//                    captured += 1;
+//                }
+//            }
+//        }
+//    }
+//    while (captured != 0);
+//}
+
+// обработка выбора стартовых клеток в начале игры
 void GameSteps::ProcessChosenHexes()
 {
     QSet <GameHex *> ch;
@@ -15,13 +62,14 @@ void GameSteps::ProcessChosenHexes()
     {
         if (player->GiveUp)
             ++giveupers;
-        else if (ch.contains(hex(chosenHex[player->color])))
-            hex(chosenHex[player->color])->canBeChosenAsStartPoint = false;
         else
+        {
+            hex(chosenHex[player->color])->canBeChosenAsStartPoint = false;
             ch << hex(chosenHex[player->color]);
+        }
     }
 
-    // если количество различных выбранных гексов не равно количеству игроков
+    // если количество различных выбранных гексов равно количеству игроков
     if (ch.size() == players.size() - giveupers)
     {
         foreach (GamePlayer * player, players)
@@ -33,11 +81,82 @@ void GameSteps::ProcessChosenHexes()
 
                 // перекрашиваем и даём юнита
                 GameHex * Hex = hex(chosenHex[player->color]);
-                GameUnit * New = NewUnit(player, Hex->livingNation, Hex->coord);
+                GameUnit * New = NewUnit(player, chosenUnitType[player->color], Hex->coord);
                 CaptureHex(Hex, player->color);
-                GatherResources(Hex, player->color, New->startResources);
+
+                // даём ресурсы за юнита
+                if (rules->everything_is_starting)
+                    GatherResources(Hex, player->color, Hex->resources);
+                else
+                    GatherResources(Hex, player->color, New->startResources);
             }
         }
+
+        // surround_start
+//        if (!rules->waves_start && rules->surround_start)
+//        {
+//            // переменные для surround_start-а:
+//            QMap<PlayerColor, QSet<GameHex*> > wanted;
+//            QMap<GameHex*, int> wanted_by;
+
+//            foreach (GamePlayer * player, players)
+//            {
+//                if (!player->GiveUp)
+//                {
+//                    GameHex * Hex = hex(chosenHex[player->color]);
+//                    foreach (Coord adj_coord, adjacentHexes(Hex->coord))
+//                    {
+//                        GameHex * adj = hex(adj_coord);
+//                        if (adj->color == "Neutral" && adj->canBeCaptured)
+//                        {
+//                            if (!wanted[player->color].contains(adj))
+//                            {
+//                                wanted[player->color].insert(adj);
+//                                ++wanted_by[adj];
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+
+//            foreach (PlayerColor color, rules->players)
+//            {
+//                foreach (GameHex* to_capture, wanted[color])
+//                {
+//                    if (wanted_by[to_capture] < 2)
+//                    {
+//                        CaptureHex(to_capture, color);
+//                        AddEvent()->HexIsNotAHomeAnymore(to_capture, color, QSet<GameUnit*>());
+//                        to_capture->canBeChosenAsStartPoint = false;
+//                    }
+//                }
+//            }
+//        }
+
+//        if (rules->regions_start)
+//        {
+//            // TODO заменить на цвет
+//            foreach (GamePlayer * player, players)
+//            {
+//                if (!player->GiveUp)
+//                {
+//                    Coord ChosenRegion = hex(chosenHex[player->color])->coord;
+//                    foreach (QList<GameHex*> hex_row, hexes)
+//                    {
+//                        foreach (GameHex * Hex, hex_row)
+//                        {
+//                            if (Hex->region_center == ChosenRegion &&
+//                                 Hex->coord != ChosenRegion)
+//                            {
+//                                CaptureHex(Hex, player->color);
+//                                AddEvent()->HexIsNotAHomeAnymore(Hex, player->color, QSet<GameUnit*>());
+//                                Hex->canBeChosenAsStartPoint = false;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 }
 
@@ -51,7 +170,7 @@ void GameSteps::RealizePlan()
             foreach (GameUnit * unit, player->units)
             {
                 if (unit->plan[time] == NULL)
-                    unit->plan[time] = new GameOrder(rules, unit->type, DefaultOrder, unit->id);
+                    unit->plan[time] = new GameOrder(rules, unit->type, DefaultOrder);
             }
         }
     }
@@ -77,12 +196,12 @@ void GameSteps::RealizePlan()
                         acts[p] << Action(unit, time, k);
 
                         // в рамках одного акта сортируем по приоритету приказа
-                        int j = acts[p].size() - 1;
-                        while (j > 0 && acts[p][j].order->priority < acts[p][j - 1].order->priority)
-                        {
-                            qSwap(acts[p][j], acts[p][j - 1]);
-                            --j;
-                        }
+//                        int j = acts[p].size() - 1;
+//                        while (j > 0 && acts[p][j].order->priority < acts[p][j - 1].order->priority)
+//                        {
+//                            qSwap(acts[p][j], acts[p][j - 1]);
+//                            --j;
+//                        }
                     }
                 }
             }
@@ -130,7 +249,7 @@ void GameSteps::destroyHomelessUnits()
         {
             if (hex(unit->home)->color != player->color)
             {
-                if (rules->damageToHomellesUnits > 6)
+                if (rules->damageToHomellesUnits > 10)
                     DestroyUnit(unit);
                 else
                 {
@@ -156,14 +275,13 @@ void GameSteps::killAllies()
     QSet <GameUnit *> toKill;
     foreach (GamePlayer * player, players)
     {
-        for (int j = 0; j < player->units.size(); ++j)
+        foreach (GameUnit * unit, player->units)
         {
-            if (player->units[j]->isDestroyingAllies)
+            if (unit->isDestroyingAllies)
             {
-                QSet <GameUnit *> boat = alliesOnTheSameHex(player->units[j]);
+                QSet <GameUnit *> boat = alliesOnTheSameHex(unit);
                 foreach (GameUnit * u, boat)
                 {
-                    //u->death_author = player->units[j];
                     toKill << u;
                 }
             }
@@ -196,7 +314,7 @@ void GameSteps::gatherResources()
     {
         foreach (GameHex * Hex, hex_row)
         {
-            if (Hex->color != "Neutral")
+            if (Hex->color != "Neutral" && !isAgitatedByEnemy(Hex->coord, Hex->color) && !isOccupied(Hex))
             {
                 GatherResources(Hex, Hex->color, Hex->resources);
             }
@@ -228,6 +346,21 @@ void GameSteps::defenceFill()
             {
                 AddEvent()->HexDefenceFilled(hexes[i][j], hexes[i][j]->defenceBonusWhenCaptured - hexes[i][j]->defence);
                 hexes[i][j]->defence = hexes[i][j]->defenceBonusWhenCaptured;
+            }
+        }
+    }
+}
+void GameSteps::agitationEnds()
+{
+    foreach (QList <GameHex *> hex_row, hexes)
+    {
+        foreach (GameHex * Hex, hex_row)
+        {
+            if (!Hex->agitated.empty())
+            {
+                foreach (PlayerColor color, Hex->agitated)
+                    AddEvent()->AgitationEnds(Hex, color);
+                Hex->agitated.clear();
             }
         }
     }

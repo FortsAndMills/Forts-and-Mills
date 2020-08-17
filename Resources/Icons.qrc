@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Content/Icons/SandClock.png</file>
+        <file>Content/Icons/Round1 selected.png</file>
+        <file>Content/Icons/Round1.png</file>
+        <file>Content/Icons/Round2 selected.png</file>
+        <file>Content/Icons/Round2.png</file>
+        <file>Content/Icons/Round3 selected.png</file>
+        <file>Content/Icons/Round3.png</file>
+        <file>Content/Icons/Round4 selected.png</file>
+        <file>Content/Icons/Round4.png</file>
+        <file>Content/Icons/Round5 selected.png</file>
+        <file>Content/Icons/Round5.png</file>
+    </qresource>
+</RCC>

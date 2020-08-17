@@ -30,8 +30,8 @@ GameLog::GameLog(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
             log << h->type;
             if (h->canHaveResources)
                 log << " : " << h->resources;
-            else if (h->canBeChosenAsStartPoint)
-                log << " : " << h->livingNation << "\n";
+            //else if (h->canBeChosenAsStartPoint)
+            //    log << " : " << h->livingNation << "\n";
             else
                 log << "\n";
         }
@@ -74,10 +74,9 @@ void GameLog::logPlan()
         {
             log << name << " plan:\n";
 
-            for (int j = 0; j < game->players[name]->units.size(); ++j)
+            foreach (GameUnit * unit, game->players[name]->units)
             {
-                GameUnit * unit = game->players[name]->units[j];
-                log << "  unit #" << j << "\n";
+                log << "  unit #" << unit->id << "\n";
                 for (int t = 0; t < game->rules->dayTimes; ++t)
                 {
                     log << "    daytime " << t << ": " << unit->plan[t];

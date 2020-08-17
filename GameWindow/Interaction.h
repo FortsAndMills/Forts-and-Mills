@@ -32,10 +32,10 @@ public slots:
 
     virtual void unitHoverEntered(GameUnit * unit);
     virtual void unitHoverLeft(GameUnit * unit);
-    virtual void unitRightClicked(GameUnit *unit);
     virtual void unitLeftClicked(GameUnit *unit);
 
     void dayTimeClicked(DayTime time);
+    void startUnitTypeClicked(bool on, QString type);
 
     void readFromOpponent(QByteArray in); // пришла посылка от противника
     void sendPlan();

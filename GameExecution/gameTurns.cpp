@@ -3,7 +3,8 @@
 GameTurns::GameTurns(GameRules *rules, Random * rand) :
     GameHelp(rules, rand)
 {
-
+    foreach (PlayerColor color, rules->players)
+        chosenUnitType[color] = rules->unitsInGame[0];
 }
 
 void GameTurns::playerGiveUp(int index)
@@ -41,9 +42,38 @@ QList<OrderType> GameTurns::whatCanUse(GameUnit * unit)
     ans << DefaultOrder;
     return ans;
 }
+bool GameTurns::must_be_last(GameUnit * unit, DayTime time)
+{
+    if (time == -1)
+        return false;
+
+    Coord where = unit->position;
+    for (DayTime t = 0; t <= time; ++t)
+    {
+        foreach (GameAction action, unit->plan[t]->actions)
+        {
+            if (action.type == GameAction::LEAVE_HEX)
+            {
+                if (t == time)
+                {
+                    Coord target = action.target;
+                    WAY way = whereIs(target, where);
+                    if (hex(where)->rivers[way])
+                        return true;
+                }
+                else
+                    where = action.target;
+            }
+        }
+    }
+    return false;
+}
 
 bool GameTurns::ChooseOneOfTheStartHexes()
 {
+    if (rules->start_choices <= 0) return false;
+    --rules->start_choices;
+
     // составляем список вариантов
     QList <Coord> variants;
     for (int x = 0; x < rules->fieldH; ++x)

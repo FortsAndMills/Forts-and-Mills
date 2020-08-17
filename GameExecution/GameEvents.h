@@ -1,14 +1,14 @@
 #ifndef GAMEEVENTS_H
 #define GAMEEVENTS_H
 
-#include "GameUnitsMoving.h"
+#include "GameField.h"
 
-class GameEvents : public GameUnitsMoving
+class GameEvents : public GameField
 {
-public:
+protected:
     qint16 basicId = 0;
 
-    QList <GameUnit *> africa;  // складываем сюда всех погибших юнитов
+    QSet <GameUnit *> africa;  // складываем сюда всех погибших юнитов
 
     explicit GameEvents(GameRules *rules, Random *rand);
 

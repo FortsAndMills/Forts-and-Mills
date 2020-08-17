@@ -126,9 +126,6 @@ public:
 
     void defenceTurn(int amount, bool on = true);
 
-private:
-    void bigSelect();
-
 public:
     void wheel(int delta) { emit wheeled(this->prototype, delta); }
     void rightClick() { emit help->HelpAsked(this->prototype->type); }

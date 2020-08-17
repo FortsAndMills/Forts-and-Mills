@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Content/UnitElements/BlueUnitFrame.png</file>
+        <file>Content/UnitElements/BlueUnitHealth.png</file>
+        <file>Content/UnitElements/BlueUnitSelectionLayer.png</file>
+        <file>Content/UnitElements/RedUnitFrame.png</file>
+        <file>Content/UnitElements/RedUnitHealth.png</file>
+        <file>Content/UnitElements/RedUnitSelectionLayer.png</file>
+        <file>Content/UnitElements/GreenUnitFrame.png</file>
+        <file>Content/UnitElements/GreenUnitHealth.png</file>
+        <file>Content/UnitElements/GreenUnitSelectionLayer.png</file>
+        <file>Content/UnitElements/YellowUnitFrame.png</file>
+        <file>Content/UnitElements/YellowUnitHealth.png</file>
+        <file>Content/UnitElements/YellowUnitSelectionLayer.png</file>
+        <file>Content/UnitElements/NeutralUnitFrame.png</file>
+        <file>Content/UnitElements/NeutralUnitHealth.png</file>
+    </qresource>
+</RCC>

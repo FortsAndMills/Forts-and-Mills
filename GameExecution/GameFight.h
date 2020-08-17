@@ -5,17 +5,17 @@
 
 class GameFight : public GameEvents
 {
-public:
+protected:
     GameFight(GameRules *rules, Random *rand);
 
-    FightStatus getFightStatus(GameUnit * unit);
-    QList <FightBrid> getStrikeTypes(QList <GameUnit *> unit, QList <FightStatus> fs, int &val);
+private:
+    QMap<GameUnit *, FightStatus> fs;
 
-    void checkIfGetToFight(GameUnit * unit, FightBrid fb);
-    int EstimateDamage(GameUnit * unit, FightBrid type, GameUnit * enemy);
-    void CountStrike(QList <GameUnit *> units, QList <FightBrid> types, int value);
+    Strike getStrike(QSet <GameUnit *> fighters);
+    void CountStrike(QSet <GameUnit *> units, Strike strike);
 
-    void UnitsFight(QList<GameUnit *> fighters, QList<FightStatus> fs = QList <FightStatus>());
+protected:
+    void UnitsFight(QSet<GameUnit *> fighters);
 };
 
 #endif // GAMEFIGHT_H

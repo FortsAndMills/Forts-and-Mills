@@ -149,14 +149,22 @@ public:
             hexes[4][6]->resources << "Attack" << "Attack";
             hexes[4][7]->resources << "Go";
 
-            hexes[3][0]->livingNation = "Karkun";
-            hexes[2][3]->livingNation = "Scrat";
-            hexes[2][0]->livingNation = "Scrat";
-            hexes[3][1]->livingNation = "Pig";
-            hexes[1][1]->livingNation = "Hippo";
+//            hexes[3][0]->livingNation = "Karkun";
+//            hexes[2][3]->livingNation = "Scrat";
+//            hexes[2][0]->livingNation = "Scrat";
+//            hexes[3][1]->livingNation = "Pig";
+//            hexes[1][1]->livingNation = "Hippo";
         }
     }
 
+private:
+    GameUnit * unit1;
+    GameUnit * unit2;
+    GameUnit * enemy_unit1;
+    GameUnit * enemy_unit2;
+    GameUnit * enemy_unit3;
+
+public:
     void StartGame()
     {
         if (N == 0)
@@ -164,9 +172,9 @@ public:
             rules->doesCaptureRecruits = false;
             rules->limitatingResources = false;
 
-            GameUnit * unit1 = NewUnit(players[rules->players[0]], "Scrat", Coord(4, 1));
-            GameUnit * unit2 = NewUnit(players[rules->players[0]], "Scrat", Coord(2, 3));
-            GameUnit * enemy_unit = NewUnit(players[rules->players[1]], "Pig", Coord(4, 7));
+            unit1 = NewUnit(players[rules->players[0]], "Scrat", Coord(4, 1));
+            unit2 = NewUnit(players[rules->players[0]], "Scrat", Coord(2, 3));
+            enemy_unit1 = NewUnit(players[rules->players[1]], "Pig", Coord(4, 7));
 
             players[rules->players[0]]->resources["Capture"] = 6;
             players[rules->players[0]]->resources["Attack"] = 6;
@@ -191,7 +199,7 @@ public:
 
             // Отдаём приказ атаки на завтрак
             AddEvent()->ReactionOnUnitClick(unit1, Reaction(BLOCK, "Давай-ка начнём с другого юнита..."));
-            AddEvent()->ReactionOnUnitClick(enemy_unit, Reaction(BLOCK, "Это вражеский юнит. Нужно щёлкнуть по своему"));
+            AddEvent()->ReactionOnUnitClick(enemy_unit1, Reaction(BLOCK, "Это вражеский юнит. Нужно щёлкнуть по своему"));
             AddEvent()->ReactionOnUnitClick(unit2, Reaction(NEXT_PHASE));
             AddEvent()->ShowMessage("Каждому юниту мы должны отдать три приказа – на завтрак, обед и ужин. Давайте отдадим первому юниту приказ атаки на завтрак – для этого по нему нужно кликнуть.", false);
 
@@ -236,7 +244,7 @@ public:
 
             AddEvent()->ReactionOnUnitClick(unit1, Reaction(NEXT_PHASE));
             AddEvent()->ReactionOnUnitClick(unit2, Reaction(BLOCK, "Этому юниту мы уже составили план. У нас есть ещё один юнит, план для которого пока не составлен."));
-            AddEvent()->ReactionOnUnitClick(enemy_unit, Reaction(DEFAULT, "Это вражеский юнит"));
+            AddEvent()->ReactionOnUnitClick(enemy_unit1, Reaction(DEFAULT, "Это вражеский юнит"));
             AddEvent()->ShowMessage("Щёлкните по другому нашему юниту. Поскольку ему ещё не отдан приказ на завтрак, произойдёт автоматическое переключение на завтрак", false);
 
             AddEvent()->DefaultHexChoiceReaction(Reaction(NEXT_PHASE));
@@ -258,8 +266,8 @@ public:
             rules->doesCaptureRecruits = false;
             rules->limitatingResources = false;
 
-            NewUnit(players[rules->players[0]], "Karkun", Coord(2, 1));
-            GameUnit * enemy_unit = NewUnit(players[rules->players[1]], "Pig", Coord(3, 5));
+            unit1 = NewUnit(players[rules->players[0]], "Karkun", Coord(2, 1));
+            enemy_unit1 = NewUnit(players[rules->players[1]], "Pig", Coord(3, 5));
 
             CaptureHex(hexes[0][0], rules->players[0]);
             GatherResources(hexes[2][1], rules->players[0], QList<QString>() << "Capture" << "Attack");
@@ -270,7 +278,7 @@ public:
             AddEvent()->DefaultOrderChoiceReaction(Reaction(DEFAULT));
             AddEvent()->DefaultHexChoiceReaction(Reaction(DEFAULT));
             AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(DEFAULT, "Приказ пропуска хода выставляется по умолчанию - его не обязательно выставлять вручную, если только юнит не собирается делать что-то другое после него"));
-            AddEvent()->ReactionOnUnitClick(enemy_unit, Reaction(DEFAULT, "Выбирая гекс, щёлкайте по гексу, а не по юниту!"));
+            AddEvent()->ReactionOnUnitClick(enemy_unit1, Reaction(DEFAULT, "Выбирая гекс, щёлкайте по гексу, а не по юниту!"));
 
             AddEvent()->HideGo();
             AddEvent()->HideHomes();
@@ -287,10 +295,10 @@ public:
         {
             rules->doesCaptureRecruits = false;
 
-            NewUnit(players[rules->players[0]], "Pig", Coord(2, 2));
-            NewUnit(players[rules->players[1]], "Hippo", Coord(3, 5));
-            NewUnit(players[rules->players[1]], "Hippo", Coord(3, 5));
-            NewUnit(players[rules->players[1]], "Hippo", Coord(4, 5));
+            unit1 = NewUnit(players[rules->players[0]], "Pig", Coord(2, 2));
+            enemy_unit1 = NewUnit(players[rules->players[1]], "Hippo", Coord(3, 5));
+            enemy_unit2 = NewUnit(players[rules->players[1]], "Hippo", Coord(3, 5));
+            enemy_unit3 = NewUnit(players[rules->players[1]], "Hippo", Coord(4, 5));
 
             CaptureHex(hexes[3][2], rules->players[0]);
             CaptureHex(hexes[2][1], rules->players[0]);
@@ -318,15 +326,15 @@ public:
         }
         if (N == 3)
         {
-            GameUnit * unit = NewUnit(players[rules->players[0]], "Hippo", Coord(3, 1));
-            unit->home = Coord(2, 1);
-            NewUnit(players[rules->players[0]], "Karkun", Coord(3, 2));
+            unit1 = NewUnit(players[rules->players[0]], "Hippo", Coord(3, 1));
+            unit1->home = Coord(2, 1);
+            unit2 = NewUnit(players[rules->players[0]], "Karkun", Coord(3, 2));
 
-            GameUnit * enemy_unit = NewUnit(players[rules->players[1]], "Hippo", Coord(3, 4));
-            enemy_unit->home = Coord(1, 2);
-            GameUnit * enemy_unit2 = NewUnit(players[rules->players[1]], "Pig", Coord(4, 2));
-            NewUnit(players[rules->players[1]], "Karkun", Coord(3, 5));
+            enemy_unit1 = NewUnit(players[rules->players[1]], "Hippo", Coord(3, 4));
+            enemy_unit1->home = Coord(1, 2);
+            enemy_unit2 = NewUnit(players[rules->players[1]], "Pig", Coord(4, 2));
             enemy_unit2->home = Coord(4, 5);
+            enemy_unit3 = NewUnit(players[rules->players[1]], "Karkun", Coord(3, 5));
 
             CaptureHex(hexes[3][2], rules->players[0]);
             CaptureHex(hexes[2][1], rules->players[0]);
@@ -546,7 +554,7 @@ public:
             {
                 if (checkIfCaptured(Coord(2, 3)))
                 {
-                    if (players[rules->players[0]]->units[0]->plan[1]->type == "Siege")
+                    if (unit1->plan[1]->type == "Siege")
                     {
                         return true;
                     }
@@ -637,7 +645,7 @@ public:
             {
                 if (checkIfCaptured(Coord(1, 2)))
                 {
-                    GameUnit * hippo = players[rules->players[0]]->units[0];
+                    GameUnit * hippo = unit1;
 
                     if (hippo->plan[0] == NULL ||
                         hippo->plan[0]->type == "Capture" ||
@@ -710,11 +718,10 @@ public:
     {
         if (N == 0)
         {
-            GameUnit * enemy_unit = players[rules->players[1]]->units[0];
-            enemy_unit->plan[0] = new GameOrder(rules, enemy_unit->type, "Attack", 0);
-            enemy_unit->plan[0]->actions[1].target = Coord(4, 6);
-            enemy_unit->plan[1] = new GameOrder(rules, enemy_unit->type, "Attack", 0);
-            enemy_unit->plan[1]->actions[1].target = Coord(3, 5);
+            enemy_unit1->plan[0] = new GameOrder(rules, enemy_unit1->type, "Attack");
+            enemy_unit1->plan[0]->actions[1].target = Coord(4, 6);
+            enemy_unit1->plan[1] = new GameOrder(rules, enemy_unit1->type, "Attack");
+            enemy_unit1->plan[1]->actions[1].target = Coord(3, 5);
 
             AddEvent()->ShowMessage("Наш противник уже спланировал свой ход. Что ж, теперь мы не можем повлиять на исход раунда. В пошаговом режиме мы можем посмотреть, что же получилось.", true, false, true);
 
@@ -722,11 +729,11 @@ public:
 
             int i = 0;
             while (events[i]->type != TIME_STARTED) {++i;}
-            AddEvent(i)->ShowMessage("Сначала юниты выполнят приказы на завтрак. Сделают они это как бы одновременно, но анимация произойдёт пошагово. Щёлкайте на кнопку перехода к следующему событию!", false, true, true, QList <GameUnit *>() << events[i]->unit, "BlueNext");
+            AddEvent(i)->ShowMessage("Сначала юниты выполнят приказы на завтрак. Сделают они это как бы одновременно, но анимация произойдёт пошагово. Щёлкайте на кнопку перехода к следующему событию!", false, true, true, QSet <GameUnit *>() << events[i]->unit, "BlueNext");
 
             i = 0;
             while (events[i]->type != UNIT_LEAVES || events[i]->unit->color != rules->players[1]) {++i;}
-            AddEvent(i)->ShowMessage("Вражеская хрюшка на завтрак тоже выполняет приказ атаки...", false, true, true, QList <GameUnit *>() << events[i]->unit);
+            AddEvent(i)->ShowMessage("Вражеская хрюшка на завтрак тоже выполняет приказ атаки...", false, true, true, QSet <GameUnit *>() << events[i]->unit);
 
             i = 0;
             while (events[i]->type != TIME_STARTED) {++i;}
@@ -735,25 +742,25 @@ public:
             AddEvent(i)->ShowMessage("Завтрак окончен. Начался обед.", false, true, true);
 
             while (events[i]->type != UNIT_LEAVES || events[i]->unit->color != rules->players[1]) {++i;}
-            AddEvent(i)->ShowMessage("Наш юнит столкнулся с вражеским юнитом! Между ними должен произойти бой.", false, true, true, QList <GameUnit *>() << events[i]->unit);
+            AddEvent(i)->ShowMessage("Наш юнит столкнулся с вражеским юнитом! Между ними должен произойти бой.", false, true, true, QSet <GameUnit *>() << events[i]->unit);
 
             while (events[i]->type != UNIT_ENTERS || events[i]->unit->color != rules->players[1]) {++i;}
-            AddEvent(i + 1)->ShowMessage("У каждого юнита есть один параметр – мощность юнита, что также является его здоровьем. У нашей белки, например, она равна 5, а у вражеской хрюшки всего лишь 3.", false, false, true, QList <GameUnit *>() << events[i]->unit);
-            AddEvent(i + 1)->EnableNext(QList <GameUnit *>() << events[i]->unit);
+            AddEvent(i + 1)->ShowMessage("У каждого юнита есть один параметр – мощность юнита, что также является его здоровьем. У нашей белки, например, она равна 5, а у вражеской хрюшки всего лишь 3.", false, false, true, QSet <GameUnit *>() << events[i]->unit);
+            AddEvent(i + 1)->EnableNext(QSet <GameUnit *>() << events[i]->unit);
 
             i = 0;
             while (events[i]->type != UNITS_FIGHT) {++i;}
-            AddEvent(i)->ShowMessage("Наш юнит побеждает и остаётся с 2 здоровья.", false, true, false, QList <GameUnit *>() << events[i]->fighters.toVector().toList());
+            AddEvent(i)->ShowMessage("Наш юнит побеждает и остаётся с 2 здоровья.", false, true, false, events[i]->fighters);
 
             i = 0;
             while (events[i]->type != UNIT_DIES) {++i;}
-            AddEvent(i)->ShowMessage("Вражеская хрюшка доблестно погибает.", false, true, false, QList <GameUnit *>() << events[i]->unit);
+            AddEvent(i)->ShowMessage("Вражеская хрюшка доблестно погибает.", false, true, false, QSet <GameUnit *>() << events[i]->unit);
 
             ++i;
             ++i;
-            GameUnit * hero = players[rules->players[0]]->units[1];
+            GameUnit * hero = unit2;
             while (!events[i]->involved().contains(hero)) {++i;}
-            AddEvent(i)->ShowMessage("Наш юнит продолжит выполнять отданные ему приказы.", false, true, true, QList <GameUnit *>() << hero);
+            AddEvent(i)->ShowMessage("Наш юнит продолжит выполнять отданные ему приказы.", false, true, true, QSet <GameUnit *>() << hero);
 
             AddEvent()->ShowMessage("Победа! Все форты захвачены, и мы выиграли игру! Поздравляем, вы сделали свой первый шаг в большой мир!", false, false, true);
             AddEvent()->Exit();
@@ -764,12 +771,11 @@ public:
             {
                 AddEvent()->ShowMessage("Вражеская хрюшка между тем использует свои последние ресурсы, чтобы захватить форт.", false, true, true);
 
-                GameUnit * enemy_unit = players[rules->players[1]]->units[0];
-                enemy_unit->plan[0] = new GameOrder(rules, enemy_unit->type, "Attack", 0);
-                enemy_unit->plan[0]->actions[1].target = Coord(3, 4);
-                enemy_unit->plan[1] = new GameOrder(rules, enemy_unit->type, "Attack", 0);
-                enemy_unit->plan[1]->actions[1].target = Coord(2, 3);
-                enemy_unit->plan[2] = new GameOrder(rules, enemy_unit->type, "Capture", 0);
+                enemy_unit1->plan[0] = new GameOrder(rules, enemy_unit1->type, "Attack");
+                enemy_unit1->plan[0]->actions[1].target = Coord(3, 4);
+                enemy_unit1->plan[1] = new GameOrder(rules, enemy_unit1->type, "Attack");
+                enemy_unit1->plan[1]->actions[1].target = Coord(2, 3);
+                enemy_unit1->plan[2] = new GameOrder(rules, enemy_unit1->type, "Capture");
 
                 RealizePlan();
                 gatherResources();
@@ -791,7 +797,7 @@ public:
             }
             else if (round == 1)
             {
-                AddEvent()->ShowMessage("У противника нету ресурсов, поэтому он не может ничего делать. Так что вражеская хрюшка \"исполняет\" приказ пропуска хода.", false, true, true, QList <GameUnit *>(), DefaultOrder);
+                AddEvent()->ShowMessage("У противника нету ресурсов, поэтому он не может ничего делать. Так что вражеская хрюшка \"исполняет\" приказ пропуска хода.", false, true, true, QSet <GameUnit *>(), DefaultOrder);
 
                 RealizePlan();
                 gatherResources();
@@ -812,12 +818,12 @@ public:
 
                 int i = 0;
                 while (events[i]->type != UNITS_FIGHT) {++i;}
-                AddEvent(i)->ShowMessage("Наш бонус от штурма +2 тратится на то, чтобы пробить оборону форта, также равную 2", false, true, true, events[i]->involved().toList());
-                AddEvent(i + 2)->ShowMessage("В результате, наш Каркун побеждает и остаётся с 1 здоровья.", false, true, false, events[i + 1]->involved().toList());
+                AddEvent(i)->ShowMessage("Наш бонус от штурма +2 тратится на то, чтобы пробить оборону форта, также равную 2", false, true, true, events[i]->involved());
+                AddEvent(i + 2)->ShowMessage("В результате, наш Каркун побеждает и остаётся с 1 здоровья.", false, true, false, events[i + 1]->involved());
 
                 i = 0;
                 while (events[i]->type != UNIT_DECAPTURES_HEX) {++i;}
-                AddEvent(i)->ShowMessage("Мы вошли в клетку противника, и поэтому она тут же перестала ему принадлежать.", false, true, true, QList <GameUnit *>() << events[i]->unit);
+                AddEvent(i)->ShowMessage("Мы вошли в клетку противника, и поэтому она тут же перестала ему принадлежать.", false, true, true, QSet <GameUnit *>() << events[i]->unit);
 
                 AddEvent()->ShowMessage("Победа!", false, false, true);
                 AddEvent()->Exit();
@@ -830,12 +836,11 @@ public:
                 AddEvent()->DefaultOrderChoiceReaction(Reaction(DEFAULT));
                 AddEvent()->ShowMessage("Противник между тем пытается захватить другой форт!..", false, true, true);
 
-                GameUnit * enemy_unit = players[rules->players[1]]->units[0];
-                enemy_unit->plan[0] = new GameOrder(rules, enemy_unit->type, "Go", 0);
-                enemy_unit->plan[0]->actions[1].target = Coord(3, 4);
-                enemy_unit->plan[1] = new GameOrder(rules, enemy_unit->type, "Attack", 0);
-                enemy_unit->plan[1]->actions[1].target = Coord(2, 3);
-                enemy_unit->plan[2] = new GameOrder(rules, enemy_unit->type, "Capture", 0);
+                enemy_unit1->plan[0] = new GameOrder(rules, enemy_unit1->type, "Go");
+                enemy_unit1->plan[0]->actions[1].target = Coord(3, 4);
+                enemy_unit1->plan[1] = new GameOrder(rules, enemy_unit1->type, "Attack");
+                enemy_unit1->plan[1]->actions[1].target = Coord(2, 3);
+                enemy_unit1->plan[2] = new GameOrder(rules, enemy_unit1->type, "Capture");
 
                 RealizePlan();
                 gatherResources();
@@ -844,11 +849,11 @@ public:
 
                 int i = 0;
                 while (events[i]->type != UNIT_LEAVES || events[i]->unit->color != rules->players[1]) {++i;}
-                AddEvent(i)->ShowMessage("Здесь противник использует приказ хода - перемещения, при котором юнит не ожидает угодить в сражение. Это означает, что в бою у него будет штраф -1. Однако, в данном случае было очевидно, что боя не произойдёт, и потому бегемот не опасался штрафа.", false, true, true, QList <GameUnit *>() << events[i]->unit, "Go");
+                AddEvent(i)->ShowMessage("Здесь противник использует приказ хода - перемещения, при котором юнит не ожидает угодить в сражение. Это означает, что в бою у него будет штраф -1. Однако, в данном случае было очевидно, что боя не произойдёт, и потому бегемот не опасался штрафа.", false, true, true, QSet <GameUnit *>() << events[i]->unit, "Go");
 
                 i = 0;
                 while (events[i]->type != CAPTURE_FAILS_BECAUSE_OF_CASTLE) {++i;}
-                AddEvent(i)->ShowMessage("Однако приказ захвата у вражеского бегемота сжигается - рядом с клеткой, которую он попытался захватить, есть захваченный нами форт, который не даёт врагу захватывать соседние с ним клетки!", false, true, true, QList <GameUnit *>() << events[i]->unit);
+                AddEvent(i)->ShowMessage("Однако приказ захвата у вражеского бегемота сжигается - рядом с клеткой, которую он попытался захватить, есть захваченный нами форт, который не даёт врагу захватывать соседние с ним клетки!", false, true, true, QSet <GameUnit *>() << events[i]->unit);
 
                 i = 0;
                 while (events[i]->type != GATHER_RESOURCES) {++i;}
@@ -874,8 +879,7 @@ public:
                 defenceFill();
 
                 AddEvent()->GetReadyToPlan();
-                GameUnit * enemy_unit = players[rules->players[1]]->units[0];
-                AddEvent()->ReactionOnUnitClick(enemy_unit, Reaction(DEFAULT, "Выбирая гекс, щёлкайте по гексу, а не по юниту!"));
+                AddEvent()->ReactionOnUnitClick(enemy_unit1, Reaction(DEFAULT, "Выбирая гекс, щёлкайте по гексу, а не по юниту!"));
                 AddEvent()->ReactionOnOrderChoice("Fire", Reaction(DEFAULT, "Стрелять можно не далее чем на две клетки по прямой, однако стрелять через горы, форты и мельницы нельзя."));
                 AddEvent()->ShowMessage("Теперь мы можем стрелять! Попадание в юнита отнимет у него 2 здоровья, но нужно учесть бонус бегемота в обороне +2! Поэтому на то, чтобы захватить форт, тут потребуется больше одного раунда.", false, false, true);
 
@@ -883,8 +887,6 @@ public:
             }
             else if (round == 2)
             {
-                GameUnit * hero = players[rules->players[0]]->units[0];
-
                 if (hexes[1][2]->color == "Neutral" && !checkIfCaptured(Coord(1,2)))
                     AddEvent()->ShowMessage("Подсказка: надо захватить вторую мельницу, чтобы за раунд можно было использовать сразу два приказа выстрела!", false, true);
 
@@ -907,7 +909,7 @@ public:
                     AddEvent()->ShowMessage("Победа!", false, false, true);
                     AddEvent()->Exit();
                 }
-                else if (africa.contains(hero))
+                else if (africa.contains(unit1))
                 {
                     AddEvent()->ShowMessage("Поражение!", false, false, true);
                     AddEvent()->Exit(false);
@@ -932,9 +934,8 @@ public:
             {
                 AddEvent()->ShowMessage("Да, так мы гарантированно защищаем свою мельницу!", false, true, true);
 
-                GameUnit * enemy = players[rules->players[1]]->units[1];
-                enemy->plan[0] = new GameOrder(rules, enemy->type, "Attack", 0);
-                enemy->plan[0]->actions[1].target = Coord(3, 2);
+                enemy_unit2->plan[0] = new GameOrder(rules, enemy_unit2->type, "Attack");
+                enemy_unit2->plan[0]->actions[1].target = Coord(3, 2);
 
                 RealizePlan();
                 destroyHomelessUnits();
@@ -946,19 +947,19 @@ public:
 
                 int i = 0;
                 while (events[i]->type != UNIT_LEAVES || events[i]->unit->color != rules->players[1]) {++i;}
-                AddEvent(i)->ShowMessage("Наш Каркун вышел из клетки в тот же момент, как в неё начала входить вражеская хрюшка, поэтому боя не произошло.", false, true, true, QList <GameUnit *>() << events[i]->unit);
+                AddEvent(i)->ShowMessage("Наш Каркун вышел из клетки в тот же момент, как в неё начала входить вражеская хрюшка, поэтому боя не произошло.", false, true, true, QSet <GameUnit *>() << events[i]->unit);
 
                 i = 0;
-                while (events[i]->type != UNIT_LEAVES || events[i]->unit != players[rules->players[0]]->units[0]) {++i;}
-                AddEvent(i)->ShowMessage("Бонус бегемота не работает, так как он передвигается в другую клетку, что не является обороной.", false, true, true, QList <GameUnit *>() << events[i]->unit);
+                while (events[i]->type != UNIT_LEAVES || events[i]->unit != unit1) {++i;}
+                AddEvent(i)->ShowMessage("Бонус бегемота не работает, так как он передвигается в другую клетку, что не является обороной.", false, true, true, QSet <GameUnit *>() << events[i]->unit);
 
                 i = 0;
                 while (events[i]->type != UNIT_IS_GOING_TO_RECRUIT) {++i;}
-                AddEvent(i)->ShowMessage("В конце раунда в этой клетке появится новый юнит выбранного типа.", false, true, true, QList <GameUnit *>() << events[i]->unit);
+                AddEvent(i)->ShowMessage("В конце раунда в этой клетке появится новый юнит выбранного типа.", false, true, true, QSet <GameUnit *>() << events[i]->unit);
 
                 i = 0;
                 while (events[i]->type != UNIT_DIES || events[i]->unit->home != Coord(1, 2)) {++i;}
-                AddEvent(i)->ShowMessage("Дом этого бегемота перестал принадлежать нашему оппоненту, поэтому он погибает в конце раунда.", false, true, true, QList <GameUnit *>() << events[i]->unit);
+                AddEvent(i)->ShowMessage("Дом этого бегемота перестал принадлежать нашему оппоненту, поэтому он погибает в конце раунда.", false, true, true, QSet <GameUnit *>() << events[i]->unit);
 
 
                 AddEvent()->GetReadyToPlan();
@@ -967,13 +968,12 @@ public:
             }
             else if (round == 1)
             {
-                AddEvent()->ShowMessage("Вражеская хрюшка, которая погибла в прошлом раунде, имела дом в клетке с ресурсами, всё ещё принадлежащей врагу. В этой клетке противник может снова использовать приказ захвата, чтобы получить нового юнита.", false, true, true, QList<GameUnit*>(), "NotRedUnitHome");
+                AddEvent()->ShowMessage("Вражеская хрюшка, которая погибла в прошлом раунде, имела дом в клетке с ресурсами, всё ещё принадлежащей врагу. В этой клетке противник может снова использовать приказ захвата, чтобы получить нового юнита.", false, true, true, QSet<GameUnit*>(), "NotRedUnitHome");
 
-                GameUnit * enemy = players[rules->players[1]]->units[0];
-                enemy->plan[0] = new GameOrder(rules, enemy->type, "Attack", 0);
-                enemy->plan[0]->actions[1].target = Coord(4, 5);
-                enemy->plan[1] = new GameOrder(rules, enemy->type, "Capture", 0);
-                enemy->plan[1]->actions[2].unitType = "Karkun";
+                enemy_unit1->plan[0] = new GameOrder(rules, enemy_unit1->type, "Attack");
+                enemy_unit1->plan[0]->actions[1].target = Coord(4, 5);
+                enemy_unit1->plan[1] = new GameOrder(rules, enemy_unit1->type, "Capture");
+                enemy_unit1->plan[1]->actions[2].unitType = "Karkun";
 
                 RealizePlan();
                 destroyHomelessUnits();

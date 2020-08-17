@@ -34,6 +34,8 @@ InterfaceOrganization::InterfaceOrganization(Game * game, qint8 PlayerIndex, Gra
     DayTimeTable = new DayTimePanel(this, game->rules->dayTimes);
     DayTimeTable->setVisible(false);
 
+    StartUnitsChoice = new UnitsTune(this, game->rules, mainPlayerColor, game->chosenUnitType[mainPlayerColor]);
+
     fieldControl = new FieldWindow(this, field);
 
     whiteFlag = new SpecialButton(this, "WhiteFlag");
@@ -52,6 +54,7 @@ void InterfaceOrganization::Delete()
     go->Delete();
     next->Delete();
     DayTimeTable->Delete();
+    StartUnitsChoice->Delete();
     fieldControl->Delete();
     whiteFlag->Delete();
     homeButton->Delete();
@@ -130,12 +133,12 @@ void InterfaceOrganization::resize(qreal W, qreal H)
 
     go->setGeometry(W * constants->goX,
                     H * constants->goY,
-                    W * constants->goSize,
+                    H * constants->goSize,
                     H * constants->goSize);
 
     next->setGeometry(W * constants->goX,
                     H * constants->goY,
-                    W * constants->goSize,
+                    H * constants->goSize,
                     H * constants->goSize);
 
     resizeDayTimeTable(W, H);
@@ -182,6 +185,15 @@ void InterfaceOrganization::resizeDayTimeTable(qreal W, qreal H)
     qreal width = constants->dayTimePictureWidth * (n + constants->dayTimeTableMargin * (n - 1));
 
     DayTimeTable->setGeometry(W * (1 - width) / 2,
+                              H * (1 - constants->downPanelSize + constants->downPanelSize * constants->dayTimeTableUpSpace),
+                              W * width,
+                              H * constants->downPanelSize * (1 - 2 * constants->dayTimeTableUpSpace));
+
+    // TODO нормально оформить
+    n = game->rules->unitsInGame.size();
+    width = constants->dayTimePictureWidth * (n + constants->dayTimeTableMargin * (n - 1));
+
+    StartUnitsChoice->setGeometry(W * (1 - width) / 2,
                               H * (1 - constants->downPanelSize + constants->downPanelSize * constants->dayTimeTableUpSpace),
                               W * width,
                               H * constants->downPanelSize * (1 - 2 * constants->dayTimeTableUpSpace));

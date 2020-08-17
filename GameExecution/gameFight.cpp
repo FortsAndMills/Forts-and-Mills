@@ -5,205 +5,281 @@ GameFight::GameFight(GameRules *rules, Random *rand) :
 {
 }
 
-// защищается ли юнит или обороняется
-FightStatus GameFight::getFightStatus(GameUnit *unit)
+int fb_priority(FightBrid fb)
 {
-    if (unit->going_to != NOWHERE)
-        return FS_ATTACK;
-    return FS_DEFEND;
+    if (fb == FORTIFICATION || fb == HEX_DEFENCE)
+        return 100;
+    if (fb == DISTANT)
+        return 10;
+    if (fb == ORDER_BONUS)
+        return 5;
+    return 1;
 }
-// чем сражается каждый юнит. При игре в несколько человек units.size() >= 2
-QList <FightBrid> GameFight::getStrikeTypes(QList <GameUnit *> units, QList <FightStatus> fs, int &val)
-{
-    // сначала нужно найти, кто будет сражаться "штрафами" противника
-    // например, если у кого-то был захват, то 1 единицу боевой силы
-    // технически получают все остальные игроки
 
-    QSet <int> Penalties;  // список игроков со штрафом
-    int min_penalty = 0;    // размер штрафа
-    for (int i = 0; i < units.size(); ++i)
+Strike GameFight::getStrike(QSet <GameUnit*> fighters)
+{
+    // определяем, есть ли игрок, который пока сражается укреплениями
+    PlayerColor defender = "none";
+    foreach (GameUnit * u, fighters)
+    {
+        if (fs[u] == FS_DEFEND &&
+            ((hex(u->position)->fortification > 0 && hex(u->position)->fortificationColor == u->color) ||
+            (hex(u->position)->defence > 0 && hex(u->position)->color == u->color)))
+        {
+            defender = u->color;
+            break;
+        }
+    }
+
+    Strike strike;
+
+    // сначала разберёмся со штрафами
+    bool was_penalty = false;
+    foreach (GameUnit * u, fighters)
     {
         // нужно проверить, что за игрока не сражаются щиты или бонусы гекса
         // в таком случае не считается, что юнит сражается сам, и штраф "не работает"
-        if (fs[i] != FS_DEFEND ||
-            ((hex(units[i]->position)->fortification <= 0 || hex(units[i]->position)->fortificationColor != units[i]->color) &&
-            (hex(units[i]->position)->defence <= 0)))
+        if (defender != u->color)
         {
-                // источником штрафа может являться только приказ
-                if (units[i]->plan[time]->fightInfluence < 0 && fs[i] != FS_DISTANT)
-                {
-                    int k = units[i]->plan[time]->fightInfluence;
-
-                    Penalties << i;
-                    min_penalty = min_penalty == 0 ? -k : qMin(min_penalty, -k);
-                }
-        }
-    }
-
-    // вопрос отображения: если штраф у всех, то все будут сражаться чужими штрафами
-    if (Penalties.size() == units.size())
-        Penalties.clear();
-
-    // теперь составляем ответ на задачу
-    QList <FightBrid> ans;
-    QList <int> v;
-    for (int i = 0; i < units.size(); ++i)
-    {
-        if (min_penalty != 0 && !Penalties.contains(i))
-        {  // сражающиеся "чужими приказами"
-            v << min_penalty;
-            ans << ENEMY_ORDER_PENALTY;
-        }
-        else if (fs[i] == FS_DEFEND && hex(units[i]->position)->fortification > 0 && hex(units[i]->position)->fortificationColor == units[i]->color)
-        {  // сражающиеся щитами
-            v << hex(units[i]->position)->fortification;
-            ans << FORTIFICATION;
-        }
-        else if (fs[i] == FS_DEFEND && hex(units[i]->position)->defence > 0)
-        {  // сражающиеся защитой на гексе
-            v << hex(units[i]->position)->defence;
-            ans << HEX_DEFENCE;
-        }
-        else if (fs[i] == FS_DISTANT && units[i]->distantAttack > 0)
-        {  // дистанционная атака
-            v << units[i]->distantAttack;
-            ans << DISTANT;
-        }
-        else if (fs[i] == FS_DISTANT)
-        {  // если силы для дистанционной атаки нет, то бой прекращается
-            v << 0;
-            ans << STOP_FIGHT;
-        }
-        else if (units[i]->plan[time]->fightInfluence > 0)
-        {  // бонус приказа
-            v << units[i]->plan[time]->fightInfluence;
-            ans << ORDER_BONUS;
-        }
-        else if (fs[i] == FS_DEFEND && units[i]->defenceBonus > 0)
-        {  // защита юнита (бегемота)
-            v << units[i]->defenceBonus;
-            ans << UNIT_DEFENCE;
-        }
-        else
-        {  // собственно, юнит
-            v << units[i]->health;
-            ans << UNIT_HEALTH;
-        }
-    }
-
-    // очередная итерация боя - пока у кого-либо из юнитов не исчерпается
-    // то, чем он сражается
-    val = INF;
-    foreach (int V, v)
-        if (V < val)
-            val = V;
-    return ans;
-}
-void GameFight::checkIfGetToFight(GameUnit * unit, FightBrid fb)
-{
-    // проверка на то, что юнит попал в бой с вытекающими последствиями
-    if (fb != FORTIFICATION && fb != HEX_DEFENCE)
-    {
-        if (!unit->plan[time]->wasInFight)  // на случай нескольких боёв за раунд
-        {
-            unit->plan[time]->wasInFight = true;
-
-            // сжигание мирных приказов
-            if (unit->plan[time]->burnsWhenFight)
+            // источником штрафа может являться только приказ
+            // вторая проверка актуальна для Ambush-приказа
+            if (u->plan[time]->fightInfluence < 0 && fs[u] != FS_DISTANT)
             {
-                players[unit->color]->resources[unit->plan[time]->type]--;
-                unit->plan[time]->realizationFinished = true;
-                AddEvent()->OrderBurnsInFight(unit, unit->color, unit->plan[time]->type);
+                was_penalty = true;
+
+                // сжигание мирных приказов
+                if (!u->plan[time]->wasInFight)
+                {
+                    u->plan[time]->wasInFight = true;
+
+                    if (u->plan[time]->burnsWhenFight)
+                    {
+                        players[u->color]->resources[u->plan[time]->type]--;
+                        u->plan[time]->realizationFinished = true;
+                        AddEvent()->OrderBurnsInFight(u, u->color, u->plan[time]->type);
+                    }
+                }
+
+                if (fs[u] == FS_DEFEND && u->defenceBonus > 0)
+                {
+                    strike.fb[u] = UNIT_DEFENCE;
+                    strike.amount[u] = qMin(u->defenceBonus, -u->plan[time]->fightInfluence);
+                }
+                else
+                {
+                    strike.fb[u] = UNIT_HEALTH;
+                    strike.amount[u] = -u->plan[time]->fightInfluence;
+                }
+                strike.penalty[u] = strike.amount[u];
             }
         }
     }
-}
-void GameFight::CountStrike(QList <GameUnit *> fighters, QList <FightBrid> types, int value)
-{
-    // Реализация боя (обмена ударами)
 
-    // Подсчёт, сколько игроков сражаются "штрафами" других
-    int penalty = 0;
-    for (int i = 0; i < types.size(); ++i)
+    if (was_penalty)
     {
-        if (types[i] == ENEMY_ORDER_PENALTY)
-            ++penalty;
+        // остальные юниты ничего не делают
+        return strike;
     }
 
-    for (int i = 0; i < fighters.size(); ++i)
+    // что делает каждый юнит
+    QMap<PlayerColor, int> priority;
+    foreach (GameUnit * u, fighters)
     {
-        // если кто-то сражается штрафами, но не этот юнит
-        // значит, у него есть штраф!
-        // и его надо восполнить, т.е. "использовать".
-        if ((types[i] != ENEMY_ORDER_PENALTY && penalty > 0) || penalty == fighters.size())
-            fighters[i]->plan[time]->fightInfluence += value;
+        if (u->color == defender && fs[u] == FS_DEFEND &&
+            hex(u->position)->fortification > 0 && hex(u->position)->fortificationColor == u->color)
+        {
+            // сражающиеся щитами
+            strike.fb[u] = FORTIFICATION;
+            strike.team_amount[u->color] = hex(u->position)->fortification;
+            strike.granularity[u->color] = 1;
+        }
+        else if (u->color == defender && fs[u] == FS_DEFEND &&
+                 hex(u->position)->defence > 0 && hex(u->position)->color == u->color)
+        {
+            // сражающиеся защитой на гексе
+            strike.fb[u] = HEX_DEFENCE;
+            strike.team_amount[u->color] = hex(u->position)->defence;
+            strike.granularity[u->color] = 1;
+        }
+        else if (fs[u] == FS_DISTANT && u->distantAttack > 0)
+        {
+            // дистанционная атака
+            strike.fb[u] = DISTANT;
+            strike.amount[u] = u->distantAttack;
+        }
+        else if (fs[u] != FS_DISTANT && u->plan[time]->fightInfluence > 0)
+        {
+            // бонус приказа
+            strike.fb[u] = ORDER_BONUS;
+            strike.amount[u] = u->plan[time]->fightInfluence;
+        }
+        else if (fs[u] == FS_DEFEND && u->defenceBonus > 0)
+        {
+            // защита юнита (бегемота)
+            strike.fb[u] = UNIT_DEFENCE;
+            strike.amount[u] = u->defenceBonus;
+        }
+        else if (fs[u] != FS_DISTANT)
+        {
+            // собственно, юнит
+            strike.fb[u] = UNIT_HEALTH;
+            strike.amount[u] = u->health;
+        }
+
+        priority[u->color] = qMax(priority[u->color], fb_priority(strike.fb[u]));
+    }
+
+    // менее приоритетные действия пока не выполняем
+    QMap<PlayerColor, int> amount_per_unit;
+    foreach (GameUnit * u, fighters)
+    {
+        if (fb_priority(strike.fb[u]) < priority[u->color])
+        {
+            strike.fb[u] = NOTHING;
+            strike.amount[u] = 0;
+        }
+        else
+        {
+            // если два юнита одной команды выполняют одинаковое действие
+            // нужно, чтобы объём тоже был одинаковый
+            if (amount_per_unit.count(u->color) > 0)
+                amount_per_unit[u->color] = qMin(amount_per_unit[u->color], strike.amount[u]);
+            else
+                amount_per_unit[u->color] = strike.amount[u];
+        }
+    }
+
+    // заодно считаем суммарную мощь и гранулярность
+    foreach (GameUnit * u, fighters)
+    {
+        strike.amount[u] = qMin(amount_per_unit[u->color], strike.amount[u]);
+        strike.team_amount[u->color] += strike.amount[u];
+        if (strike.amount[u] > 0)
+            strike.granularity[u->color] += 1;
+    }
+
+    // итого сколько в ходе этого обмена ударами будет получено урона
+    int val = INF;
+    foreach (PlayerColor color, strike.team_amount.keys())
+    {
+        val = qMin(strike.team_amount[color], val);
+    }
+
+    // завершение боя (например, дистанционного)
+    if (val == 0)
+    {
+        strike.fight_finished = true;
+        return strike;
+    }
+
+    // нормализуем, чтобы было более-менее равенство
+    foreach (PlayerColor color, strike.team_amount.keys())
+    {
+        while (strike.team_amount[color] - strike.granularity[color] >= val)
+        {
+            foreach (GameUnit * u, fighters)
+            {
+                if (u->color == color && strike.amount[u] > 0)
+                {
+                    strike.amount[u]--;
+                }
+            }
+
+            strike.team_amount[color] -= strike.granularity[color];
+        }
+    }
+
+    return strike;
+}
+void GameFight::CountStrike(QSet<GameUnit *> fighters, Strike strike)
+{
+    // Реализация боя (обмена ударами)
+    foreach (GameUnit * u, fighters)
+    {
+        // восполнение штрафов
+        if (strike.penalty[u] > 0)
+            u->plan[time]->fightInfluence += strike.penalty[u];
 
         // юзание различных бонусов
-        if (types[i] == FORTIFICATION)
-            hex(fighters[i]->position)->fortification -= value;
-        else if (types[i] == HEX_DEFENCE)
-           hex(fighters[i]->position)->defence -= value;
-        else if (types[i] == UNIT_DEFENCE)
-            fighters[i]->defenceBonus -= value;
-        else if (types[i] == ORDER_BONUS)
-            fighters[i]->plan[time]->fightInfluence -= value;
-        else if (types[i] == UNIT_HEALTH)
+        if (strike.fb[u] == FORTIFICATION)
+        {
+            hex(u->position)->fortification -= strike.team_amount[u->color];
+            strike.team_amount[u->color] = 0;
+        }
+        else if (strike.fb[u] == HEX_DEFENCE)
+        {
+           hex(u->position)->defence -= strike.team_amount[u->color];
+           strike.team_amount[u->color] = 0;
+        }
+        else if (strike.fb[u] == UNIT_DEFENCE)
+            u->defenceBonus -= strike.amount[u];
+        else if (strike.fb[u] == ORDER_BONUS)
+            u->plan[time]->fightInfluence -= strike.amount[u];
+        else if (strike.fb[u] == UNIT_HEALTH)
         {
             // для анимации требуется хранить список тех, кто "убил" данного юнита
             QSet <GameUnit *> authors;
-            foreach (GameUnit * u, fighters)
-                if (u != fighters[i])
+            foreach (GameUnit * u2, fighters)
+                if (u2->color != u->color)
                     authors << u;
 
             // этот список требуется функции нанесения юниту урона
-            Damage(fighters[i], value, authors);
+            Damage(u, strike.amount[u], authors);
         }
-        else if (types[i] == DISTANT)
-            fighters[i]->distantAttack -= value;
+        else if (strike.fb[u] == DISTANT)
+            u->distantAttack -= strike.amount[u];
     }
 }
 
-void GameFight::UnitsFight(QList <GameUnit *> fighters, QList <FightStatus> fs)
+void GameFight::UnitsFight(QSet <GameUnit *> fighters)
 {
-    while (fs.size() < fighters.size())
-        fs << getFightStatus(fighters[fs.size()]);
+    // заполняем FightStatus: защищается ли юнит, обороняется или он стреляет.
+    fs.clear();
+    foreach (GameUnit * u, fighters)
+    {
+        if (u->distantAttack > 0)
+            fs[u] = FS_DISTANT;
+        else if (u->going_to != NOWHERE)
+            fs[u] = FS_ATTACK;
+        else
+            fs[u] = FS_DEFEND;
+    }
 
     // пока бой не закончен явно
-    while (fighters.size() > 1)
+    QSet <PlayerColor> teams_alive;
+
+    do
     {
-        int val;
-        QList <FightBrid> fb = getStrikeTypes(fighters, fs, val);
+        Strike strike = getStrike(fighters);
 
         // неявное завершение боя (напр. при дистанционной атаке)
-        if (fb.contains(STOP_FIGHT))
-        {
+        if (strike.fight_finished)
             return;
-        }
 
-        // делаем поверку на то, не попал ли юнит в бой (не нужно ли ему приказ сжечь, наприер)
-        // и составляем список гексов, в которых находятся юниты, на случай бонуса в гексе
-        QList <GameHex *> positions;
-        for (int i = 0; i < fighters.size(); ++i)
+        // составляем список гексов, в которых находятся юниты, на случай бонуса в гексе (?)
+        foreach (GameUnit * u, fighters)
         {
-            checkIfGetToFight(fighters[i], fb[i]);
-            positions << hex(fighters[i]->position);
+            strike.positions[u] = hex(u->position);
         }
 
         // реализация итерации боя
-        AddEvent()->UnitsFight(fighters, fb, positions, val);
-        CountStrike(fighters, fb, val);
+        AddEvent()->UnitsFight(fighters, strike);
+        CountStrike(fighters, strike);
 
         // убираем мёртвых из списка бойцов
-        for (int i = 0; i < fighters.size(); ++i)
+        teams_alive.clear();
+        QSet <GameUnit *> alive;
+        foreach (GameUnit * u, fighters)
         {
-            if (fighters[i]->health <= 0)
+            if (u->health > 0)
             {
-                fighters.removeAt(i);
-                fs.removeAt(i);
-                --i;
+                alive << u;
+                teams_alive << u->color;
             }
         }
+        fighters = alive;
     }
+    while (teams_alive.size() > 1);
 }
 
 

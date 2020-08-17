@@ -10,7 +10,7 @@
 void Hex::recountPoints()
 {
     // Первый проход: ищем откуда идёт "движение"
-    WAY where_entered = "";
+    WAY where_entered = NO_WAY;
     // Заодно устанавливаем ответ для тех, кому явно указано, что он входит или выходит
     for (QSet<int>::iterator it = ids.begin(); it != ids.end(); ++it)
     {
@@ -28,12 +28,12 @@ void Hex::recountPoints()
 
     // если движения нет "ниоткуда", смотрим в какой они стороне
     // и назначаем эту сторону той, откуда "есть движение".
-    if (where_entered == "" && ids.size() > 1)
+    if (where_entered == NO_WAY && ids.size() > 1)
     {
         for (QSet<int>::iterator it = ids.begin(); it != ids.end(); ++it)
         {
             int i = (*it);
-            if (pointPositionState[i] == STAY && pointsWay[i] != "")
+            if (pointPositionState[i] == STAY && pointsWay[i] != NO_WAY)
             {
                 where_entered = pointsWay[i];
             }
@@ -46,11 +46,11 @@ void Hex::recountPoints()
         int i = (*it);
         if (pointPositionState[i] == STAY)
         {
-            if (where_entered == "")  // если движения таки нет, то центр
+            if (where_entered == NO_WAY)  // если движения таки нет, то центр
             {
                 points[i] = QPointF(width() / 2, height() / 2);
             }
-            else if (pointsWay[i] == "")  // если не совпадает с движением, то противоположное
+            else if (pointsWay[i] == NO_WAY)  // если не совпадает с движением, то противоположное
             {
                 points[i] = EnterPoint[game->oppositeWay(where_entered)];
             }

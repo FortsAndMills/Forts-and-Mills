@@ -18,6 +18,8 @@ public:
     void disableWholeField();
     void delightWholeField();
 
+    //void wantToCaptureRegion(Coord r, bool turn_on);
+
     virtual void unitConnections(Unit *) {}
     virtual void orderPicsConnections(OrderPic *) {}
     void newUnit(GameUnit * unit, Coord where);

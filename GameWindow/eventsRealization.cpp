@@ -124,6 +124,16 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
 
         return WaitingType();
     }
+    else if (e->type == AGITATED)
+    {
+        if (!units[e->unit]->isMainOrderOpenned())
+        {
+            units[e->unit]->openMainOrder();
+            return WaitingType(NO_WAIT, constants->mainOrderOpenTime, false);
+        }
+
+        return WaitingType();
+    }
     else if (e->type == UNIT_CAPTURES_HEX)
     {
         if (!units[e->unit]->isMainOrderOpenned())
@@ -153,6 +163,14 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
 
         return WaitingType(BUTTON, constants->stateObjectChangeTime);
     }
+    else if (e->type == RECRUIT_FAILS_BECAUSE_OF_AGITE)
+    {
+        units[e->unit]->mainOrderBurn();
+        player_windows[e->unit->color]->burnLighten(e->R);
+        leftPanelSwitcherClicked(e->unit->color);
+
+        return WaitingType(BUTTON, constants->stateObjectChangeTime);
+    }
     else if (e->type == UNIT_LEAVES)
     {
         if (!units[e->unit]->isMainOrderOpenned())
@@ -167,6 +185,15 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
         if (game->events[1]->type == UNIT_ENTERS)
             return WaitingType();
         return WaitingType(BUTTON, constants->unitReconfigureTime);
+    }
+    else if (e->type == PURSUE_NOT_TRIGGERED)
+    {
+        if (!units[e->unit]->isMainOrderOpenned())
+        {
+            units[e->unit]->openMainOrder();
+            return WaitingType(BUTTON, constants->mainOrderOpenTime);
+        }
+        return WaitingType();
     }
     else if (e->type == UNIT_ENTERS)
     {
@@ -214,15 +241,13 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
     }
     else if (e->type == UNITS_FIGHT)
     {
-        QList <QPointF> p = UnitsFightObject(e->fighters, e->fb, e->positions);
+        QMap <GameUnit *, QPointF > p;
+        QMap <PlayerColor, QSet<QPointF> > team_p;
 
-        bool imm = UnitsFight(e->fighters, e->fb, e->positions, e->amount, p);
+        UnitsFightObject(e->fighters, e->strike, p, team_p);
+        UnitsFight(e->fighters, e->strike, p, team_p);
 
-        if (!imm)
-        {
-            return WaitingType(BUTTON, constants->unitReconfigureTime);
-        }
-        return WaitingType();
+        return WaitingType(BUTTON, constants->unitReconfigureTime);
     }
     else if (e->type == HEX_IS_NOT_A_HOME_ANYMORE)
     {
@@ -366,6 +391,10 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
         units[e->unit]->healthChanged(-e->amount);
         return WaitingType();
     }
+    else if (e->type == AGITATION_ENDS)
+    {
+        return WaitingType();
+    }
     else if (e->type == BURN_RESOURCE)
     {
         player_windows[e->color]->burn(e->R);
@@ -410,104 +439,101 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
 }
 
 // ищем центр объекта, который представляет то, чем сражается юнит
-QList <QPointF> EventsRealization::UnitsFightObject(QList <GameUnit *> fighters, QList<FightBrid> fb, QList<GameHex *> positions)
+void EventsRealization::UnitsFightObject(QSet <GameUnit *> fighters, const Strike & strike,
+                                         QMap <GameUnit *, QPointF > & ans, QMap <PlayerColor, QSet<QPointF> > & team_ans)
 {
-    QList <QPointF> ans;
-
-    for (int i = 0; i < fighters.size(); ++i)
+    foreach (GameUnit * u, fighters)
     {
-        if (fb[i] == ENEMY_ORDER_PENALTY)
+        if (strike.fb[u] == FORTIFICATION)
         {
-            int j = 0;
-            while (j < fighters.size() && fb[j] == ENEMY_ORDER_PENALTY)
-                ++j;
-
-            if (j < fighters.size())
-                ans << units[fighters[j]]->mainOrderCenter(this);
-            ans << units[fighters[i]]->mainOrderCenter(this);
+            Hex * hex = hexes[strike.positions[u]];
+            ans[u] = hex->point(fortifications[hex][0]->point, this);
         }
-        else if (fb[i] == FORTIFICATION)
+        else if (strike.fb[u] == HEX_DEFENCE)
         {
-            ans << hexes[positions[i]]->point(fortifications[hexes[positions[i]]][0]->point, this);
+            ans[u] = hexes[strike.positions[u]]->shieldPoint(this);
         }
-        else if (fb[i] == HEX_DEFENCE)
+        else if (strike.fb[u] == ORDER_BONUS)
         {
-            ans << hexes[positions[i]]->shieldPoint(this);
+            ans[u] = units[u]->mainOrderCenter(this);
         }
-        else if (fb[i] == ORDER_BONUS)
+        else if (strike.fb[u] == UNIT_DEFENCE)
         {
-            ans << units[fighters[i]]->mainOrderCenter(this);
+            ans[u] = units[u]->shieldPoint(this);
         }
-        else if (fb[i] == UNIT_DEFENCE)
+        else if (strike.fb[u] == DISTANT)
         {
-            ans << units[fighters[i]]->shieldPoint(this);
+            ans[u] = units[u]->mainOrderCenter(this);
         }
-        else if (fb[i] == DISTANT)
+        else if (strike.fb[u] == UNIT_HEALTH)
         {
-            ans << units[fighters[i]]->mainOrderCenter(this);
-        }
-        else if (fb[i] == UNIT_HEALTH)
-        {
-            ans << units[fighters[i]]->center(this);
+            ans[u] = units[u]->center(this);
         }
         else
-            ans << QPointF(UNDEFINED, UNDEFINED);
-    }
+            ans[u] = QPointF(UNDEFINED, UNDEFINED);
 
-    return ans;
+        if (ans[u] != QPointF(UNDEFINED, UNDEFINED))
+            team_ans[u->color] << ans[u];
+    }
 }
-bool EventsRealization::UnitsFight(QList <GameUnit *> fighters, QList<FightBrid> fb, QList<GameHex *> positions, int value, QList <QPointF> points)
+void EventsRealization::UnitsFight(QSet <GameUnit *> fighters, const Strike & strike,
+                                   const QMap <GameUnit *, QPointF > & points, const QMap <PlayerColor, QSet<QPointF> > & team_points)
 {
-    int pens = 0;
-    for (int i = 0; i < fighters.size(); ++i)
-    {
-        if (fb[i] == ENEMY_ORDER_PENALTY)
-            ++pens;
-    }
+    QSet <PlayerColor> global_dones;
 
-    for (int i = 0; i < fighters.size(); ++i)
+    foreach (GameUnit * u, fighters)
     {
         // подсвечиваем красным штрафующие приказы
-        if ((fb[i] != ENEMY_ORDER_PENALTY && pens > 0) || pens == fighters.size())
+        if (strike.penalty[u] > 0)
         {
-            if (units[fighters[i]]->mainOrder != NULL)
-                units[fighters[i]]->mainOrder->light();
+            if (units[u]->mainOrder != NULL)
+                units[u]->mainOrder->light();
         }
 
-        if (fb[i] == FORTIFICATION)  // убираем использованные щиты
+        if (strike.fb[u] == FORTIFICATION && !global_dones.contains(u->color))  // убираем использованные щиты
         {
-            fortify(hexes[positions[i]], -value);
+            fortify(hexes[strike.positions[u]], -strike.team_amount[u->color]);
+            global_dones << u->color;
         }
-        else if (fb[i] == HEX_DEFENCE)  // деактивируем бонус гекса
+        else if (strike.fb[u] == HEX_DEFENCE && !global_dones.contains(u->color))  // деактивируем бонус гекса
         {
-            hexes[positions[i]]->defenceTurn(value, false);
+            hexes[strike.positions[u]]->defenceTurn(strike.team_amount[u->color], false);
+            global_dones << u->color;
         }
-        else if (fb[i] == ORDER_BONUS)  // стреляем бластом из приказа, дающего бонус, в точку, представляющую противника
+        else if (strike.fb[u] == ORDER_BONUS)  // стреляем бластом из приказа, дающего бонус, в точку, представляющую противника
         {
-            for (int j = 0; j < fighters.size(); ++j)
+            foreach (PlayerColor enemy_color, team_points.keys())
             {
-                if (fb[j] != DISTANT && j != i)
-                    shoot(fighters[i]->color, points[i], points[j], value, Rocket::BLAST);
+                if (u->color != enemy_color)
+                {
+                    foreach (QPointF p, team_points[enemy_color])
+                    {
+                        shoot(u->color, points[u], p, strike.amount[u], Rocket::BLAST);
+                    }
+                }
             }
         }
-        else if (fb[i] == UNIT_DEFENCE)
+        else if (strike.fb[u] == UNIT_DEFENCE)
         {
-            units[fighters[i]]->defenceTurn(value, false);
+            units[u]->defenceTurn(strike.amount[u], false);
         }
-        else if (fb[i] == DISTANT)  // смешно смотрится, если несколько участников боя
+        else if (strike.fb[u] == DISTANT)  // смешно смотрится, если несколько участников боя
         {
-            for (int j = 0; j < fighters.size(); ++j)
+            foreach (PlayerColor enemy_color, team_points.keys())
             {
-                if (i != j)
-                    shoot(fighters[i]->color, points[i], points[j], value);
+                if (u->color != enemy_color)
+                {
+                    foreach (QPointF p, team_points[enemy_color])
+                    {
+                        shoot(u->color, points[u], p, strike.amount[u]);
+                    }
+                }
             }
         }
-        else if (fb[i] == UNIT_HEALTH)
+        else if (strike.fb[u] == UNIT_HEALTH)
         {
-            units[fighters[i]]->healthChanged(-value);
+            units[u]->healthChanged(-strike.amount[u]);
         }
     }
-
-    return pens == fighters.size();
 }
 

@@ -21,6 +21,10 @@ public:
                    state = CHOOSING_HEX;
     State prev_state;
 
+protected:
+    bool isSelectingEnemyUnit = false;
+
+public:
     explicit StatesControl(Game * game, qint8 PlayerIndex, GraphicObject * parent);
 
     void getReadyToChooseHex(QList<Coord> variants);  // подготовить интерфейс к выбору стартовой позиции

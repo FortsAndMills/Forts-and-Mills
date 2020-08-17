@@ -1,7 +1,7 @@
 #include "GameEvents.h"
 
 GameEvents::GameEvents(GameRules *rules, Random *rand) :
-    GameUnitsMoving(rules, rand)
+    GameField(rules, rand)
 {
 
 }
@@ -70,6 +70,7 @@ GameUnit * GameEvents::NewUnit(GamePlayer * player, UnitType type, Coord where)
 {
     GameUnit * New = new GameUnit(rules, type, player->color, where, basicId);
     ++basicId;
+    hex(where)->recruited << player->color;
 
     player->units << New;
     AddEvent()->NewUnitAppear(New, hex(where));
@@ -93,7 +94,7 @@ void GameEvents::DestroyUnit(GameUnit *unit)
         }
     }
 
-    if (hex(unit->home)->color == unit->color)
+    if (hex(unit->home)->color == unit->color && !rules->no_rebirth)
         AddEvent()->HexIsNotAHomeAnymore(hex(unit->home), unit->color, unit->death_authors);
 
     AddEvent()->UnitDies(unit, burned, activeOrderBurns, unit->death_authors);

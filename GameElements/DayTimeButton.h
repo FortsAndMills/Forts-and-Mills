@@ -24,6 +24,8 @@ public:
     {
         this->time = time;
 
+        addPicture("selected", timeName + " selected");
+
         addGeometry("entered", QRectF(constants->specialButtonShiftX,
                                                               constants->specialButtonShiftY,
                                                               constants->specialButtonWidthShift,
@@ -61,8 +63,11 @@ public:
         selected = enable;
         if (enable)
         {
+            setPictureState("selected");
             if (cur_geometry == "default")
+            {
                 setGeometryState("selected");
+            }
 
             if (selection == NULL)
             {
@@ -79,8 +84,11 @@ public:
                 selection = NULL;
             }
 
+            setPictureState("default");
             if (cur_geometry == "selected")
+            {
                 setGeometryState("default");
+            }
         }
     }
 private:

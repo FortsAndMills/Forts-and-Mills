@@ -92,8 +92,8 @@ qreal Constants::dialogHeight = 0.3;
 
 qreal Constants::cancelButtonX = 0.05;
 qreal Constants::cancelButtonY = 0.875;
-qreal Constants::cancelButtonWidth = 0.05;
-qreal Constants::cancelButtonHeight = 0.05;
+//qreal Constants::cancelButtonWidth = 0.05;
+qreal Constants::cancelButtonHeight = 0.075;
 qreal Constants::createButtonX = 0.35;
 qreal Constants::createButtonY = 0.85;
 qreal Constants::createButtonWidth = 0.3;
@@ -208,9 +208,9 @@ qreal Constants::shiftBetweenGoAndFieldControl = 0.05;  // расстояние 
 qreal Constants::fieldControlWidth = 0.07;  // ширина от размера окна
 qreal Constants::fieldControlHeight = 0.7;  // высота от размера нижнего пространства
 
-qreal Constants::goX = 0.85;  // Искусственная контрольная панель
-qreal Constants::goY = 0.85;
-qreal Constants::goSize = 0.1;
+qreal Constants::goX = 0.875;  // Искусственная контрольная панель
+qreal Constants::goY = 0.8;
+qreal Constants::goSize = 0.165;
 
 
 // Гексы

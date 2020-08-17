@@ -8,6 +8,8 @@ class GameSteps : public GameOrderExecution
 protected:
     explicit GameSteps(GameRules * rules, Random * rand);
 
+    //void WavesStart();
+
     void ProcessChosenHexes();
 
     void RealizePlan();
@@ -18,6 +20,7 @@ protected:
     void gatherResources();
     void burnExtraResources();
     void defenceFill();
+    void agitationEnds();
     void addDayTime();
 };
 

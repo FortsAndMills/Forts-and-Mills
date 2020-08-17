@@ -12,17 +12,23 @@ enum GameEventType
     CHOOSE_HEX,
     NEW_UNIT_APPEAR,
     HEX_CAPTURED,
+    BUILDING_APPEAR,
+    RESOURCE_APPEAR,
     GATHER_RESOURCES,
     PLAN,
     HEX_DEFENCE_FILLED,
     UNIT_DEFENCE_FILLED,
     TIME_STARTED,
     ORDER_REALIZATION_STARTED,
+    AGITATED,
     UNIT_CAPTURES_HEX,
     DEFENCE_BONUS_APPEARS,
     UNIT_IS_GOING_TO_RECRUIT,
+    UNIT_IS_GOING_TO_BUILD,
     CAPTURE_FAILS_BECAUSE_OF_CASTLE,
+    RECRUIT_FAILS_BECAUSE_OF_AGITE,
     UNIT_LEAVES,
+    PURSUE_NOT_TRIGGERED,
     UNIT_ENTERS,
     UNITS_ARE_GOING_TO_FIGHT,
     ORDER_BURNS_IN_FIGHT,
@@ -42,6 +48,7 @@ enum GameEventType
     TIME_FINISHED,
     PLAN_REALIZATION_FINISHED,
     HOMELESS_UNIT_DAMAGED,
+    AGITATION_ENDS,
     BURN_RESOURCE,
     DAY_TIMES_CHANGED,
     WIN,
@@ -59,11 +66,10 @@ public:
     GameUnit * unit2 = NULL;
     GameUnit * bruter = NULL;
     QSet <GameUnit *> relevants;
-    QList <GameUnit *> fighters;
-    QList <FightBrid> fb;
+    QSet <GameUnit *> fighters;
+    Strike strike;
     int amount;
     GameHex * hex;
-    QList <GameHex *> positions;
     GameHex * fort;
     PlayerColor color;
     QList<Resource> resources;
@@ -72,6 +78,7 @@ public:
     DayTime time;
     Resource R;
     UnitType unitType;
+    BuildingType buildingType;
     QMap<GameUnit *, OrderType> plan;
 
     explicit GameMessage(){}
@@ -92,6 +99,18 @@ public:
         type = HEX_CAPTURED;
         this->hex = hex;
         this->color = color;
+    }
+    void NewBuildingAppear(BuildingType type, GameHex * hex)
+    {
+        type = BUILDING_APPEAR;
+        this->hex = hex;
+        this->buildingType = type;
+    }
+    void NewResource(Resource R, GameHex * hex)
+    {
+        type = RESOURCE_APPEAR;
+        this->hex = hex;
+        this->R = R;
     }
     void GatherResources(GameHex * hex, PlayerColor color, QList<Resource> resources, QList<bool> burn)
     {
@@ -130,6 +149,12 @@ public:
         this->color = color;
         this->R = R;
     }
+    void Agitated(GameUnit * unit, GameHex * hex)
+    {
+        type = AGITATED;
+        this->hex = hex;
+        this->unit = unit;
+    }
     void UnitCapturesHex(GameUnit * unit, GameHex * hex, PlayerColor color)
     {
         type = UNIT_CAPTURES_HEX;
@@ -152,6 +177,13 @@ public:
         this->unit = unit;
         this->unitType = unitType;
     }
+    void UnitIsGoingToBuild(GameUnit * unit, GameHex * hex, BuildingType type)
+    {
+        type = UNIT_IS_GOING_TO_BUILD;
+        this->hex = hex;
+        this->unit = unit;
+        this->buildingType = type;
+    }
     void CaptureFailsBecauseOfCastle(GameUnit * unit, OrderType R, GameHex * hex, GameHex * fort)
     {
         type = CAPTURE_FAILS_BECAUSE_OF_CASTLE;
@@ -160,11 +192,24 @@ public:
         this->fort = fort;
         this->R = R;
     }
+    void RecruitFailsBecauseOfAgite(GameUnit * unit, OrderType R, GameHex * hex)
+    {
+        type = RECRUIT_FAILS_BECAUSE_OF_AGITE;
+        this->hex = hex;
+        this->R = R;
+        this->unit = unit;
+    }
     void UnitLeaves(GameUnit * unit, GameHex * hex)
     {
         type = UNIT_LEAVES;
         this->hex = hex;
         this->unit = unit;
+    }
+    void PursueNotTriggered(GameUnit * unit, GameUnit * unit2)
+    {
+        type = PURSUE_NOT_TRIGGERED;
+        this->unit = unit;
+        this->unit2 = unit2;
     }
     void UnitEnters(GameUnit * unit, GameHex * hex, QSet <GameUnit *> relevants)
     {
@@ -173,7 +218,7 @@ public:
         this->unit = unit;
         this->relevants = relevants;
     }
-    void UnitsAreGoingToFight(QList <GameUnit *> fighters)
+    void UnitsAreGoingToFight(QSet <GameUnit *> fighters)
     {
         type = UNITS_ARE_GOING_TO_FIGHT;
         this->fighters = fighters;
@@ -185,13 +230,11 @@ public:
         this->color = color;
         this->R = R;
     }
-    void UnitsFight(QList <GameUnit *> fighters, QList <FightBrid> fb, QList <GameHex *> positions, int amount)
+    void UnitsFight(QSet <GameUnit *> fighters, Strike & strike)
     {
         type = UNITS_FIGHT;
         this->fighters = fighters;
-        this->fb = fb;
-        this->positions = positions;
-        this->amount = amount;
+        this->strike = strike;
     }
     void HexIsNotAHomeAnymore(GameHex * hex, PlayerColor color, QSet <GameUnit *> authors)
     {
@@ -286,6 +329,12 @@ public:
         type = HOMELESS_UNIT_DAMAGED;
         this->unit = unit;
         this->amount = damage;
+    }
+    void AgitationEnds(GameHex * hex, PlayerColor color)
+    {
+        type = AGITATION_ENDS;
+        this->hex = hex;
+        this->color = color;
     }
     void BurnResource(PlayerColor color, Resource R)
     {

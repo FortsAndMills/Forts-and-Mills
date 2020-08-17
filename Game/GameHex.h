@@ -14,9 +14,9 @@ public:
     bool canHaveResources;
     bool canBeChosenAsStartPoint;
     bool canGoHere;
-    bool isBuilding;
+    bool isTall;
     bool forbidsToCaptureAdjacentHexesWhenCaptured;
-    int highingResourceLimitWhenCaptured;
+    int increasesResourceLimitWhenCaptured;
     int defenceBonusWhenCaptured;
     bool mustBeCapturedToWin;
 
@@ -32,13 +32,18 @@ public:
     int fortification = 0;
     PlayerColor fortificationColor = "Neutral";
 
+    QSet<PlayerColor> agitated;
+    QSet<PlayerColor> recruited;
+    
     PlayerColor color = "Neutral";
 
     Coord coord;
+    QMap <WAY, bool> rivers;
 
     QList <Resource> resources;
 
-    UnitType livingNation = "";    // для старта игры
+    //UnitType livingNation = "";    // для старта игры
+    //Coord region_center = NOWHERE; // регион
 
     explicit GameHex(HexType type, Coord Pos) : GameHexParameters(type)
     {

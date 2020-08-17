@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Content/Numbers/FortDigit0.png</file>
+        <file>Content/Numbers/FortDigit1.png</file>
+        <file>Content/Numbers/FortDigit2.png</file>
+        <file>Content/Numbers/FortDigit3.png</file>
+        <file>Content/Numbers/FortDigit4.png</file>
+        <file>Content/Numbers/FortDigit5.png</file>
+        <file>Content/Numbers/FortDigit6.png</file>
+        <file>Content/Numbers/FortDigit7.png</file>
+        <file>Content/Numbers/FortDigit8.png</file>
+        <file>Content/Numbers/FortDigit9.png</file>
+        <file>Content/Numbers/MillDigit0.png</file>
+        <file>Content/Numbers/MillDigit1.png</file>
+        <file>Content/Numbers/MillDigit2.png</file>
+        <file>Content/Numbers/MillDigit3.png</file>
+        <file>Content/Numbers/MillDigit4.png</file>
+        <file>Content/Numbers/MillDigit5.png</file>
+        <file>Content/Numbers/MillDigit6.png</file>
+        <file>Content/Numbers/MillDigit7.png</file>
+        <file>Content/Numbers/MillDigit8.png</file>
+        <file>Content/Numbers/MillDigit9.png</file>
+        <file>Content/Numbers/x.png</file>
+    </qresource>
+</RCC>

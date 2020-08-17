@@ -2,8 +2,9 @@
 #include "GameUnit.h"
 
 QList <QString> GameRules::AllPlayers = {"Blue", "Red", "Green", "Yellow"};
-QList <QString> GameRules::AllOrders = {"Capture", "Recruit", "Liberate", "Attack", "Go", "Retreat", "Siege", "Fire", "Cure", "Fortify"};
+QList <QString> GameRules::AllOrders = {"Capture", "Recruit", "Liberate", "Agite", "Attack", "Go", "Retreat", "Siege", "Fire", "Pursue", "Cure", "Fortify"};
 QList <QString> GameRules::AllUnits = {"Scrat", "Pig", "Hippo", "Karkun", "Bruter", "Mumusha"};
+
 // вспомогательная функция: упорядочивает
 // элементы a в зависимости от их порядка в example
 void sort(QList <QString> & a, QList <QString> example)
@@ -25,24 +26,92 @@ void sort(QList <QString> & a, QList <QString> example)
 
 GameRules::GameRules()
 {
-    fieldW = 8;
-    fieldH = 5;
+    fieldW = 10;
+    fieldH = 6;
 
     NumOfPlayers = 2;
 
-    ordersInGame << "Capture" << "Attack" << "Go" << "Siege"
-                             << "Fire" << "Cure" << "Fortify";
+    ordersInGame << "Capture" << "Recruit"  << "Liberate"
+                 << "Attack" << "Go" << "Siege"
+                 << "Fire" << "Cure" << "Fortify";
 
     dayTimes = 3;
     changingDayTimes = false;
 
     unitsInGame << "Scrat" << "Pig" << "Karkun" << "Hippo";
 
-    damageToHomellesUnits = 179;
+    // настройка обучающей игры
     limitatingResources = true;
-    fortsAreCool = false;
 
+    setTestOptions();
     recountGenerationParameters();
+}
+void GameRules::setTestOptions()
+{
+    // тестовые настройки
+    damageToHomellesUnits = 179;
+    fortsBurnCaptures = false;
+    captureIsLiberate = false;
+    recruitsInMills = true;
+    capturesInForts = true;
+    peacefullOrdersBurns = false;
+    everything_is_starting = true;
+    start_choices = 7;
+    no_rebirth = true;
+    rivers = true;
+    fort_gp_min = 6;
+    fort_gp_max = 9;
+    mill_gp_min = 4;
+    mill_gp_max = 8;
+    K_change = 1;
+
+    QFile * hostFile = new QFile("Experiments_options.txt");
+    if (hostFile->open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream tstream(hostFile);
+        QString s;
+        tstream >> s >> damageToHomellesUnits
+                      >> s >> limitatingResources
+                      >> s >> fortsBurnCaptures
+                      >> s >> captureIsLiberate
+                      >> s >> capturesInForts
+                      >> s >> recruitsInMills
+                      >> s >> peacefullOrdersBurns
+                      >> s >> everything_is_starting
+                      >> s >> start_choices
+                      >> s >> no_rebirth
+                      >> s >> rivers
+                      >> s >> fort_gp_min >> fort_gp_max
+                      >> s >> mill_gp_min >> mill_gp_max
+                      >> s >> K_change;
+
+        if(tstream.status() != QTextStream::Ok)
+        {
+            qDebug() << "ERROR: Ошибка чтения файла особых настроек\n";
+        }
+        hostFile->close();
+    }
+
+    hostFile = new QFile("Experiments_options.txt");
+    if (hostFile->open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QTextStream tstream(hostFile);
+        tstream << "DamageToHomelessUnits: " << damageToHomellesUnits << endl
+                      << "MillsLimitResources: " << limitatingResources << endl
+                      << "FortsBurnEnemyCaptures: " << fortsBurnCaptures << endl
+                      << "CaptureIsAlsoLiberation: " << captureIsLiberate << endl
+                      << "CapturesAreInForts: " << capturesInForts << endl
+                      << "RecruitsAreInMills: " << recruitsInMills << endl
+                      << "PeacefullOrdersBurns: " << peacefullOrdersBurns << endl
+                      << "EverythingCanBeStart: " << everything_is_starting << endl
+                      << "NumOfStartingChoices: " << start_choices << endl
+                      << "NoRebirth: " << no_rebirth << endl
+                      << "Rivers: " << rivers << endl
+                      << "FortsGenerationLimits: " << fort_gp_min << " " << fort_gp_max << endl
+                      << "MillsGenerationLimits: " << mill_gp_min << " " << mill_gp_max << endl
+                      << "ResourcesAmountCoeff: " << K_change;
+        hostFile->close();
+    }
 }
 void GameRules::recountGenerationParameters()
 {
@@ -52,25 +121,23 @@ void GameRules::recountGenerationParameters()
     sort(unitsInGame, AllUnits);
 
     doesCaptureRecruits = !ordersInGame.contains("Recruit");
-    doesEnteringEnemyHexLiberates = !ordersInGame.contains("Liberate");
+    doesEnteringEnemyHexLiberates = !ordersInGame.contains("Liberate") && !captureIsLiberate;
     if (changingDayTimes)
         dayTimes = 1;
 
-    qreal K = (fieldW * fieldH) / 40.0;  // во сколько раз увеличить кол. всех ресурсов
+    qreal K = (fieldW * fieldH) / 60.0;  // во сколько раз увеличить кол. всех ресурсов
 
-
-    numOfHexTypes["Fort"] = Range(3, 5, K);
-    numOfHexTypes["Mountain"] = Range(4, 8, K);
-    numOfHexTypes["Mill"] = Range(6, 8, K);
+    // диапазоны генерации фортов, мельниц и гор
+    numOfHexTypes["Fort"] = Range(fort_gp_min, fort_gp_max, K);
+    numOfHexTypes["Mill"] = Range(mill_gp_min, mill_gp_max, K);
+    numOfHexTypes["Mountain"] = Range(5, 12, K);
 
     // для количества генерящихся приказов приходится использовать магию
     int cb = 0;
-    if (ordersInGame.contains("Recruit"))
-        --cb;
+    if (!ordersInGame.contains("Recruit"))
+        ++cb;
 
     int ab = 0;
-    if (ordersInGame.contains("Liberate"))
-        --ab;
     if (ordersInGame.contains("Retreat"))
         --ab;
 
@@ -78,16 +145,25 @@ void GameRules::recountGenerationParameters()
     if (ordersInGame.contains("Mumusha"))
         ++cub;
 
-    numOfResourcesOnField["Capture"] = Range(7 + cb, 11 + cb, K);
+    K *= K_change;
+
+    numOfResourcesOnField["Capture"] = Range(9 + cb, 13 + cb, K);
+    numOfResourcesOnField["Go"] = Range(6 + ab, 11 + ab, K);
     numOfResourcesOnField["Recruit"] = Range(6, 10, K);
-    numOfResourcesOnField["Attack"] = Range(5 + ab, 7 + ab, K);
-    numOfResourcesOnField["Liberate"] = Range(6, 12, K);
-    numOfResourcesOnField["Go"] = Range(7 + ab, 11 + ab, K);
-    numOfResourcesOnField["Retreat"] = Range(4, 6, K);
+    numOfResourcesOnField["Liberate"] = Range(6, 10, K);
+    numOfResourcesOnField["Attack"] = Range(5 + ab, 9 + ab, K);
+    numOfResourcesOnField["Agite"] = Range(3, 8, K);
+    numOfResourcesOnField["Retreat"] = Range(3, 6, K);
+    numOfResourcesOnField["Pursue"] = Range(3, 6, K);
     numOfResourcesOnField["Fire"] = Range(3, 5, K);
     numOfResourcesOnField["Fortify"] = Range(3, 5, K);
     numOfResourcesOnField["Siege"] = Range(3, 5, K);
     numOfResourcesOnField["Cure"] = Range(3 + cub, 5 + cub, K);
+
+    if (recruitsInMills)
+        numOfResourcesOnField["Recruit"] = Range(0, 0, K);
+    if (capturesInForts)
+        numOfResourcesOnField["Capture"] = Range(0, 0, K);
 }
 void GameRules::FormPlayersList(Random *rand)
 {
@@ -151,10 +227,7 @@ GameRules::GameRules(QList<qint32> hash)
     changingDayTimes = hash[5] == 179;
     dayTimes = hash[5] == 179 ? 1 : hash[5];
 
-    damageToHomellesUnits = 179;
-    limitatingResources = true;
-    fortsAreCool = false;
-
+    setTestOptions();
     recountGenerationParameters();
 }
 

@@ -5,7 +5,9 @@
 
 class GameField : public GameTurns
 {
-public:
+protected:
+    DayTime time;
+
     class Recruited
     {
     public:
@@ -22,13 +24,34 @@ public:
     };
     QList <Recruited> recruitedUnits;  // юниты для генерации в конце хода
 
+    class Built
+    {
+    public:
+        Coord where;
+        UnitType type;
+        PlayerColor color;
+
+        Built(Coord where, UnitType who, PlayerColor whos)
+        {
+            this->where = where;
+            type = who;
+            color = whos;
+        }
+    };
+    QList <Built> createdBuildings;  // построенные здания
+
     explicit GameField(GameRules * rules, Random * rand);
 
     virtual void GenerateField();
 
+public:
     bool isHexAHome(Coord which, QString color);
     Coord canBeCaptured(Coord which, PlayerColor color);
     int resourcesLimit(PlayerColor color);
+
+    enum SEARCH_TYPE {ENEMY, ALLY};
+    QSet<GameUnit *> find(SEARCH_TYPE ST, GameUnit * for_whom,
+                    Coord staying = ANY, Coord going_to = ANY);
 
     QString isGameFinished();
 };

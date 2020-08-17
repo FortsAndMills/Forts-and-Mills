@@ -90,7 +90,7 @@ public:
                                                  constants->dayTimesTuneHeight * H);
         cancel->setGeometry(constants->cancelButtonX * W,
                                              constants->cancelButtonY * H,
-                                             constants->cancelButtonWidth * W,
+                                             constants->cancelButtonHeight * H,
                                              constants->cancelButtonHeight * H);
         create->setGeometry(constants->createButtonX * W,
                                              constants->createButtonY * H,

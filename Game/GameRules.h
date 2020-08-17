@@ -55,15 +55,31 @@ public:
     QMap <HexType, Range> numOfHexTypes;
     QMap <OrderType, Range> numOfResourcesOnField;
 
+    // эти флаги выставляются в зависимости от настроек игры
     bool doesCaptureRecruits;
     bool doesEnteringEnemyHexLiberates;
 
+    // эти флаги нужны для режима обучения
+    int limitatingResources;
+
+    // тестовые настройки
     int damageToHomellesUnits;  // тестовая настройка: бездомные не умирают, а получают дамаг
-    bool fortsAreCool;                    // тестовая настройка: захват форта захватывает соседей
-    bool limitatingResources;        // что это?
+    int fortsBurnCaptures;      // тестовая настройка: замок не даёт врагу захватить соседние клетки
+    int captureIsLiberate;      // тестовая настройка: захват может работать как освобождение
+    int capturesInForts;        // тестовая настройка: ресурсы захватов - в фортах
+    int recruitsInMills;        // тестовая настройка: ресурсы рекрута - в мельницах
+    int peacefullOrdersBurns;   // тестовая настройка: мирные приказы сжигаются
+    int everything_is_starting; // тестовая настройка: каждая клетка может быть стартом!
+    int start_choices;          //                     сколько раз тогда выбираем
+    int no_rebirth;             // тестовая настройка: нельзя рекрутить с одной клетки дважды
+    int rivers;                 // тестовая настройка: реки
+    int fort_gp_min, fort_gp_max;
+    int mill_gp_min, mill_gp_max;
+    double K_change;
 
     explicit GameRules();
     explicit GameRules(QList <qint32> hash);
+    void setTestOptions();
     void recountGenerationParameters();
     friend QTextStream &operator << (QTextStream &stream, const GameRules *r);
     friend QTextStream &operator >>(QTextStream &stream, GameRules *r);

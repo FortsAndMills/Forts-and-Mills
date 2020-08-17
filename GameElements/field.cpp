@@ -7,6 +7,13 @@
 
 Field::Field(GraphicObject *parent, Game * game) : GraphicObject(parent)
 {
+    // ЭКСПЕРИМЕНТ
+    prepareGeometryChange();
+    yRotation = new QGraphicsRotation();
+    yRotation->setAxis(Qt::XAxis);
+    yRotation->setAngle(20);
+    //this->setTransformations(QList<QGraphicsTransform *>() << yRotation);
+
     this->setZValue(constants->fieldZPos);
 
     for (int i = 0; i < game->rules->fieldH; ++i)
@@ -61,6 +68,7 @@ QPointF Field::coordinates(int i, int j)
 void Field::resize(qreal W, qreal H)
 {
     GraphicObject::resize(W, H);
+    yRotation->setOrigin(QVector3D(W / 2, H / 2, 0));
 
     for (int i = 0; i < hexes.size(); ++i)
     {

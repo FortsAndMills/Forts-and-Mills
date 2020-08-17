@@ -14,6 +14,15 @@ GameUnit *GameHelp::whoHasHomeAt(Coord c)
                  return u;
     return NULL;
 }
+bool GameHelp::isOccupied(GameHex *hex)
+{
+    foreach (GamePlayer * p, players)
+        if (p->color != hex->color)
+            foreach (GameUnit * u, p->units)
+                 if (u->position == hex->coord)
+                     return true;
+    return false;
+}
 QSet <GameUnit *> GameHelp::alliesOnTheSameHex(GameUnit * tar)
 {
     QSet <GameUnit *> ans;
@@ -26,19 +35,26 @@ QSet <GameUnit *> GameHelp::alliesOnTheSameHex(GameUnit * tar)
     }
     return ans;
 }
-// в списке e оставить только первого юнита каждого цвета
-void GameHelp::deleteAllies(QList <GameUnit *> & e)
-{
-    for (int i = 1; i < e.size(); ++i)
-    {
-        int j = 0;
-        while (j < i && e[j]->color != e[i]->color)
-            ++j;
 
-        if (j < i)
+bool GameHelp::isAgitatedByEnemy(Coord which, QString me)
+{
+    foreach (PlayerColor color, hex(which)->agitated)
+        if (color != me)
+            return true;
+    return false;
+}
+
+GameUnit *GameHelp::getUnitById(qint16 id)
+{
+    foreach (GamePlayer * player, players)
+    {
+        foreach (GameUnit * unit, player->units)
         {
-            e.removeAt(i);
-            --i;
+            if (unit->id == id)
+                return unit;
         }
     }
+
+    qDebug() << "ERROR: unit not found by id" << endl;
+    return NULL;
 }

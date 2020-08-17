@@ -25,6 +25,10 @@ Interaction::Interaction(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
     for (int i = 0; i < game->rules->dayTimes; ++i)
         connect(DayTimeTable->DayTimePictures[i], SIGNAL(leftClicked(int)), SLOT(dayTimeClicked(int)));
 
+    for (int i = 0; i < game->rules->unitsInGame.size(); ++i)
+        connect(StartUnitsChoice->units[i], SIGNAL(whenClicked(bool,QString)), SLOT(startUnitTypeClicked(bool, QString)));
+
+
     connect(go, SIGNAL(leftClicked()), SLOT(GoButtonPushed()));
     connect(next, SIGNAL(leftClickStarted()), SLOT(NextButtonClicked()));
     connect(whiteFlag, SIGNAL(leftClicked()), SLOT(whiteFlagClicked()));
@@ -55,6 +59,40 @@ void Interaction::hexClicked(Coord c)
 {
     if (state == CHOOSING_HEX)
     {
+//        if (game->rules->regions_start)
+//        {
+//            Coord reg_c = game->hex(c)->region_center;
+//            if (reg_c != NOWHERE &&
+//                 game->hex(reg_c)->canBeChosenAsStartPoint)
+//            {
+//                if (game->chosenHex[mainPlayerColor] == reg_c)
+//                {
+//                    game->chosenHex[mainPlayerColor] = NOWHERE;
+
+//                    //hex(c)->select(false);
+//                    go->enable(false);
+
+//                    wantToCaptureRegion(reg_c, false);
+//                }
+//                else
+//                {
+//                    if (game->chosenHex[mainPlayerColor] != NOWHERE)
+//                    {
+//                        //hex(game->chosenHex[mainPlayerColor])->select(false);
+
+//                        wantToCaptureRegion(game->chosenHex[mainPlayerColor], false);
+//                    }
+
+//                    game->chosenHex[mainPlayerColor] = reg_c;
+
+//                    //hex(c)->select();
+//                    go->enable();
+
+//                    wantToCaptureRegion(reg_c, true);
+//                }
+//            }
+//        }
+//        else
         if (game->hex(c)->canBeChosenAsStartPoint)
         {
             if (game->chosenHex[mainPlayerColor] == c)
@@ -67,7 +105,11 @@ void Interaction::hexClicked(Coord c)
             else
             {
                 if (game->chosenHex[mainPlayerColor] != NOWHERE)
+                {
                     hex(game->chosenHex[mainPlayerColor])->select(false);
+
+                    //wantToCaptureRegion(game->chosenHex[mainPlayerColor], false);
+                }
 
                 game->chosenHex[mainPlayerColor] = c;
 
@@ -107,9 +149,22 @@ void Interaction::hexEntered(Coord c)
         {
             units[unit]->light();
         }
-    }
-}
+    }    
 
+    // региональный старт
+//    if (state == CHOOSING_HEX && game->rules->regions_start &&
+//            game->hex(c)->region_center != NOWHERE &&
+//            game->hex(game->hex(c)->region_center)->canBeChosenAsStartPoint)
+//    {
+//        foreach (Hex* hex, hexes)
+//        {
+//            if (hex->prototype->region_center == game->hex(c)->region_center)
+//            {
+//                hex->setState(mainPlayerColor, true);
+//            }
+//        }
+//    }
+}
 void Interaction::hexLeft(Coord c)
 {
     if (hexCopy != NULL &&
@@ -127,13 +182,30 @@ void Interaction::hexLeft(Coord c)
             units[unit]->light(false);
         }
     }
+
+    // региональный старт
+//    if (state == CHOOSING_HEX && game->rules->regions_start &&
+//            game->hex(c)->region_center != NOWHERE &&
+//            game->hex(game->hex(c)->region_center)->canBeChosenAsStartPoint)
+//    {
+//        foreach (Hex* hex, hexes)
+//        {
+//            if (hex->prototype->region_center == game->hex(c)->region_center)
+//            {
+//                hex->setState("Neutral", true);
+//            }
+//        }
+//    }
 }
 
 void Interaction::orderPicEntered(OrderType type, PlayerColor)
 {
-    foreach (Hex * hex, hexes)
+    if (state != CHOOSE_ORDER_PARAMETER)
     {
-        hex->highlight(type);
+        foreach (Hex * hex, hexes)
+        {
+            hex->highlight(type);
+        }
     }
 }
 void Interaction::orderPicLeft(OrderType type, PlayerColor)
@@ -158,7 +230,7 @@ void Interaction::orderVariantClicked(OrderType type)
     }
 
     // создаём новый приказ выбранного типа
-    GameOrder * order = new GameOrder(game->rules, selectedUnit->prototype->type, type, priorities[dayTime]);
+    GameOrder * order = new GameOrder(game->rules, selectedUnit->prototype->type, type);
     ++priorities[dayTime];
     selectedUnit->prototype->plan[dayTime] = order;
 
@@ -196,10 +268,6 @@ void Interaction::unitHoverLeft(GameUnit *unit)
 {
     if (unit->home != NOWHERE)
         hex(unit->home)->hideUnitHome();
-}
-void Interaction::unitRightClicked(GameUnit *unit)
-{
-    return;
 }
 void Interaction::unitLeftClicked(GameUnit * unit)
 {
@@ -240,8 +308,17 @@ void Interaction::unitLeftClicked(GameUnit * unit)
                 DayTime time = dayTime;  // ищем для него подходящее время
                 while (time != -1 && units[unit]->prototype->plan[time] == NULL)
                     time--;
-                if (time < dayTime - 1)
-                    setTime(time + 1);
+
+                if (game->must_be_last(units[unit]->prototype, time))
+                {
+                    if (time < dayTime)
+                        setTime(time);
+                }
+                else
+                {
+                    if (time + 1 < dayTime)
+                        setTime(time + 1);
+                }
 
                 selectedUnit = units[unit];  // новый выбранный юнит
                 selectedUnit->select();
@@ -256,6 +333,12 @@ void Interaction::unitLeftClicked(GameUnit * unit)
                 selectedUnit->showOrdersPanel(game->whatCanUse(unit));
             }
         }
+        else if (isSelectingEnemyUnit)
+        {
+            selectedUnit->prototype->plan[dayTime]->setParameter(unit);
+
+            finishedChoosingOrderParameter();
+        }
     }
 }
 
@@ -268,6 +351,22 @@ void Interaction::dayTimeClicked(DayTime time)
             setTime(time);
         else
             setTime(-1);
+    }
+}
+void Interaction::startUnitTypeClicked(bool on, QString type)
+{
+    if (state == CHOOSING_HEX && on)
+    {
+        int i = 0;
+        while (StartUnitsChoice->units[i]->type != type) { ++i; }
+
+        int to_turn_off = 0;
+        while (StartUnitsChoice->units[to_turn_off]->type != game->chosenUnitType[mainPlayerColor]) { ++to_turn_off; }
+
+        StartUnitsChoice->units[to_turn_off]->turnOn(false);
+        StartUnitsChoice->units[i]->turnOn(true);
+
+        game->chosenUnitType[mainPlayerColor] = type;
     }
 }
 
@@ -333,7 +432,8 @@ void Interaction::sendPlan()
         QDataStream write(&message, QIODevice::WriteOnly);
         write << MILLS_COORDINATES_MESSAGE
                   << PlayerIndex
-                  << game->chosenHex[mainPlayerColor];
+                  << game->chosenHex[mainPlayerColor]
+                  << game->rules->unitTypeIndex(game->chosenUnitType[mainPlayerColor]);
         emit writeToOpponent(message);
 
         game->ready[mainPlayerColor] = true;
@@ -351,26 +451,28 @@ void Interaction::sendPlan()
         write << PLAN
                   << PlayerIndex;
 
-        for (int i = 0; i < game->players[mainPlayerColor]->units.size(); ++i)
+        foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
         {
             for (int time = 0; time < game->rules->dayTimes; ++time)
             {
                 // забиваем пустые места приказами безделья
-                if (game->players[mainPlayerColor]->units[i]->plan[time] == NULL)
+                if (unit->plan[time] == NULL)
                 {
-                    game->players[mainPlayerColor]->units[i]->plan[time] = new GameOrder(game->rules, game->players[mainPlayerColor]->units[i]->type, DefaultOrder, priorities[time]);
+                    unit->plan[time] = new GameOrder(game->rules, unit->type, DefaultOrder);
                     ++priorities[time];
                 }
 
                 // отправляем план
-                GameOrder * order = game->players[mainPlayerColor]->units[i]->plan[time];
-                write << game->rules->orderIndex(order->type) << order->priority;
+                GameOrder * order = unit->plan[time];
+                write << game->rules->orderIndex(order->type);
 
                 foreach (GameAction a, order->actions)
                 {
-                    if (a.whatParameter() == 1)
+                    if (a.whatParameter() == GameAction::PT_UNIT_TYPE)
                         write << game->rules->unitTypeIndex(a.unitType);
-                    else if (a.whatParameter() == 2)
+                    else if (a.whatParameter() == GameAction::PT_UNIT)
+                        write << a.unit->id;
+                    else if (a.whatParameter() == GameAction::PT_HEX)
                         write << a.target;
                 }
             }
@@ -410,6 +512,10 @@ void Interaction::readFromOpponent(QByteArray message)
         PlayerColor sender = game->rules->players[sender_index];
 
         in >> game->chosenHex[sender];
+
+        qint8 unitTypeIndex;
+        in >> unitTypeIndex;
+        game->chosenUnitType[sender] = game->rules->unitsInGame[unitTypeIndex];
     }
     else if (Command == PLAN)
     {
@@ -420,23 +526,29 @@ void Interaction::readFromOpponent(QByteArray message)
             for (int time = 0; time < game->rules->dayTimes; ++time)
             {
                 qint8 orderTypeIndex;
-                qint16 priority;
-                in >> orderTypeIndex >> priority;
+                in >> orderTypeIndex;
 
-                sender->units[i]->plan[time] = new GameOrder(game->rules, sender->units[i]->type, game->rules->getOrderByIndex(orderTypeIndex), priority);
+                sender->units[i]->plan[time] = new GameOrder(game->rules, sender->units[i]->type,
+                                                             game->rules->getOrderByIndex(orderTypeIndex));
 
                 for (int k = 0; k < sender->units[i]->plan[time]->actions.size(); ++k)
                 {
                     GameAction * a = &sender->units[i]->plan[time]->actions[k];
 
-                    int additionalInfo = a->whatParameter();
-                    if (additionalInfo == 1)
+                    GameAction::GameActionParameterType additionalInfo = a->whatParameter();
+                    if (additionalInfo == GameAction::PT_UNIT_TYPE)
                     {
                         qint8 unitTypeIndex;
                         in >> unitTypeIndex;
                         a->unitType = game->rules->unitsInGame[unitTypeIndex];
                     }
-                    else if (additionalInfo == 2)
+                    else if (additionalInfo == GameAction::PT_UNIT)
+                    {
+                        qint16 unitId;
+                        in >> unitId;
+                        a->unit = game->getUnitById(unitId);
+                    }
+                    else if (additionalInfo == GameAction::PT_HEX)
                         in >> a->target;
                 }
             }

@@ -14,8 +14,8 @@ GameUnitParameters::GameUnitParameters(GameRules * rules, UnitType type)
 
     if (type == "Pig")
     {
-        max_health = 3;
-        init_health = 3;
+        max_health = 4;
+        init_health = 4;
         startResources[2] = "Fire";
 
         if (rules->ordersInGame.contains("Retreat"))
@@ -41,8 +41,8 @@ GameUnitParameters::GameUnitParameters(GameRules * rules, UnitType type)
     }
     if (type == "Mumusha")
     {
-        max_health = 7;
-        init_health = 4;
+        max_health = 6;
+        init_health = 3;
         startResources << "Cure" << "Cure";
     }
 }

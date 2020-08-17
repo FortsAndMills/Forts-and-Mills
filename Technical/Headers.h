@@ -58,19 +58,15 @@ class Client;
 
 #define HexType QString
 #define UnitType QString
+#define BuildingType QString
 #define OrderType QString
 #define DefaultOrder "Wait"
 #define PlayerColor QString
 #define Resource QString
 #define DayTime int
-#define WAY QString
-#define UP "UP"
-#define DOWN "DOWN"
-#define RIGHT_UP "RIGHT_UP"
-#define LEFT_UP "LEFT_UP"
-#define RIGHT_DOWN "RIGHT_DOWN"
-#define LEFT_DOWN "LEFT_DOWN"
-#define WAYS (QList<QString>() << "UP" << "DOWN" << "RIGHT_UP" << "RIGHT_DOWN" << "LEFT_UP" << "LEFT_DOWN")
+enum WAY {UP, RIGHT_UP, RIGHT_DOWN, DOWN, LEFT_DOWN, LEFT_UP, NO_WAY};
+#define WAYS (QList<WAY>() << UP << RIGHT_UP << RIGHT_DOWN << DOWN << LEFT_DOWN << LEFT_UP)
+
 class GameHex;
 class GameOrder;
 class GamePlayer;

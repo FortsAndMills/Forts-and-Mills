@@ -5,12 +5,16 @@
 
 class GameHelp : public GameBase
 {
-public:
+protected:
     explicit GameHelp(GameRules * rules, Random * rand);
 
-    GameUnit * whoHasHomeAt(Coord c);
     QSet <GameUnit *> alliesOnTheSameHex(GameUnit * tar);
-    void deleteAllies(QList<GameUnit *> &e);
+    bool isOccupied(GameHex * hex);
+    bool isAgitatedByEnemy(Coord which, PlayerColor me);
+
+public:
+    GameUnit * whoHasHomeAt(Coord c);
+    GameUnit * getUnitById(qint16 id);
 
     // проверка на сдавшихся игроков
     QString lastPlayerInGame()

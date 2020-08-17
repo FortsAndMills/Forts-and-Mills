@@ -99,7 +99,7 @@ public:
 
     static qreal cancelButtonX;
     static qreal cancelButtonY;
-    static qreal cancelButtonWidth;
+    //static qreal cancelButtonWidth;
     static qreal cancelButtonHeight;
     static qreal createButtonX;
     static qreal createButtonY;

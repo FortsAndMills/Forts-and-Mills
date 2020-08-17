@@ -18,11 +18,10 @@ public:
         GraphicObject(parent, (state == BUTTON) * (CLICKABLE | CHILD) | (state == FREEZE) * CHILD, "", "", "SimpleLayer")
     {
         this->MaximizeDayTimes = MaximizeDayTimes;
-        QList <QString> DayTimeNames = {"Breakfast", "Dinner", "Supper", "Night", "Sleep"};
 
         for (int time = 0; time < dt; ++time)
         {
-            DayTimePictures[time] = new DayTimeButton(this, time, DayTimeNames[time], state == GAME_STATE);
+            DayTimePictures[time] = new DayTimeButton(this, time, "Round" + QString::number(time + 1), state == GAME_STATE);
         }
     }
     virtual void Delete()

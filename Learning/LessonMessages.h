@@ -62,7 +62,7 @@ public:
 
     explicit LessonMessage() : GameMessage() {}
 
-    void ShowMessage(QString text, bool with_ok_button = true, bool isComment = false, bool clearHistory = false, QList <GameUnit *> involved = QList <GameUnit *>(), QString pictureName = "")
+    void ShowMessage(QString text, bool with_ok_button = true, bool isComment = false, bool clearHistory = false, QSet <GameUnit *> involved = QSet <GameUnit *>(), QString pictureName = "")
     {
         type = LESSON;
         ltype = SHOW_MESSAGE;
@@ -76,7 +76,7 @@ public:
     }
     void ShowMessageAndPicture(QString text, QString pictureName, bool with_ok_button = true, bool clearHistory = false)
     {
-        ShowMessage(text, with_ok_button, false, clearHistory, QList <GameUnit *>(), pictureName);
+        ShowMessage(text, with_ok_button, false, clearHistory, QSet <GameUnit *>(), pictureName);
     }
     void ShowErrorMessage(QString text, QString pictureName = "")
     {
@@ -133,7 +133,7 @@ public:
         type = LESSON;
         ltype = ENABLE_GO;
     }
-    void EnableNext(QList <GameUnit *> involved = QList <GameUnit *>())
+    void EnableNext(QSet <GameUnit *> involved = QSet <GameUnit *>())
     {
         type = LESSON;
         ltype = ENABLE_NEXT;

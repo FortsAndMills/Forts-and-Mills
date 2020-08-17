@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>Content/DayTimes/Breakfast.png</file>
-        <file>Content/DayTimes/Dinner.png</file>
-        <file>Content/DayTimes/Supper.png</file>
-    </qresource>
-</RCC>

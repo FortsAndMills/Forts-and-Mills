@@ -8,6 +8,7 @@
 #include "Interface/Dialog.h"
 #include "Interface/LeftPanelsSwitch.h"
 #include "Interface/SpecialButton.h"
+#include "Interface/Tunes.h"
 #include "Technical/Client.h"
 
 // Организация неигровых элементов интерфейса и их, фу-фу, геометрия
@@ -25,6 +26,7 @@ public:
     NextButton * next;
 
     DayTimePanel * DayTimeTable;
+    UnitsTune * StartUnitsChoice;
     FieldWindow * fieldControl;
 
     SpecialButton * whiteFlag;

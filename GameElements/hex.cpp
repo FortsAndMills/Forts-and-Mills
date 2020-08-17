@@ -28,18 +28,23 @@ Hex::Hex(GraphicObject *parent, Game *game, GameHex *prototype) :
     else
         HexPicture = NULL;
 
-    if (prototype->canHaveResources)
+    foreach (WAY way, WAYS)
     {
-        foreach (OrderType R, prototype->resources)
-        {
-            table.append(new ResourcePic(this, R));
-        }
+        if (prototype->rivers[way])
+            rivers[way] = new GraphicObject(this, 0, "river");
+        else
+            rivers[way] = NULL;
+    }
+
+    foreach (OrderType R, prototype->resources)
+    {
+        table.append(new ResourcePic(this, R));
     }
 
     UnitHomePicture = new Object(this, "");
     UnitHomePicture->setVisible(false);
 
-    livingNationPicture = new LivingNationPicture(this, prototype->livingNation);
+    //livingNationPicture = new LivingNationPicture(this, prototype->livingNation);
 
     information = NULL;
 }
@@ -53,8 +58,8 @@ Hex::Hex(Hex *another, GraphicObject * newParent) : Hex(newParent, another->game
     {
         shields << new Shield(another->shields[i], this);
     }
-    if (another->livingNationPicture->opacity() == 0)
-        this->livingNationPicture->setOpacity(0);
+    //if (another->livingNationPicture->opacity() == 0)
+    //    this->livingNationPicture->setOpacity(0);
 
     if (another->information != NULL)
         this->information = new MergingObject(this, another->information->name);
@@ -78,9 +83,12 @@ void Hex::Delete()
         Lighting->Delete();
     if (HexPicture != NULL)
         HexPicture->Delete();
+    foreach (WAY way, WAYS)
+        if (rivers[way] != NULL)
+            rivers[way]->Delete();
     foreach (ResourcePic * pic, table)
         pic->Delete();
-    livingNationPicture->Delete();
+    //livingNationPicture->Delete();
     if (information != NULL)
         information->Delete();
     foreach (Shield * s, shields)
@@ -179,10 +187,10 @@ void Hex::resizeChildren(qreal W, qreal H)
                                                     H * (1 - 2 * constants->hexPictureOffsetH));
     }
 
-    livingNationPicture->setGeometry(W * constants->livingNationPointX,
-                                                              H * constants->livingNationPointY,
-                                                              W * constants->livingNationWidth,
-                                                              H * constants->livingNationHeight);
+//    livingNationPicture->setGeometry(W * constants->livingNationPointX,
+//                                                              H * constants->livingNationPointY,
+//                                                              W * constants->livingNationWidth,
+//                                                              H * constants->livingNationHeight);
 
     if (information != NULL)
     {
@@ -190,6 +198,36 @@ void Hex::resizeChildren(qreal W, qreal H)
                                                      H * constants->informationPointY,
                                                      W * constants->informationWidth,
                                                      H * constants->informationHeight);
+    }
+
+    QMap<WAY, QPointF> river_centers;
+    river_centers[UP] = QPointF(W / 2, 0);
+    river_centers[RIGHT_UP] = QPointF(W * (1 - constants->hexShift / 2), H / 4);
+    river_centers[RIGHT_DOWN] = QPointF(W * (1 - constants->hexShift / 2), 3 * H / 4);
+    river_centers[DOWN] = QPointF(W / 2, H);
+    river_centers[LEFT_DOWN] = QPointF(W * constants->hexShift / 2, 3 * H / 4);
+    river_centers[LEFT_UP] = QPointF(W * constants->hexShift / 2, H / 4);
+
+    QMap<WAY, int> river_rotation;
+    river_rotation[UP] = -1;
+    river_rotation[RIGHT_UP] = 58;
+    river_rotation[RIGHT_DOWN] = 121;
+    river_rotation[DOWN] = 179;
+    river_rotation[LEFT_DOWN] = 238;
+    river_rotation[LEFT_UP] = 301;
+
+    foreach (WAY way, WAYS)
+    {
+        if (rivers[way] != NULL)
+        {
+            float width = W * (1 - 2 * constants->hexShift);
+            float height = H * 0.15;
+            rivers[way]->setGeometry(river_centers[way].x() - width / 2,
+                                     river_centers[way].y() - height / 2,
+                                     width,
+                                     height);
+            rivers[way]->setRotation(river_rotation[way]);
+        }
     }
 
     QList <QPointF> table_pos = countTableCoordinates(W, H, table.size());
@@ -338,7 +376,7 @@ void Hex::setState(QString state, bool isImmediate)
         {
             Lighting = new SpriteObject(this, 0, "MillSelection");
             Lighting->setZValue(constants->HexSelectionZpos);
-            resizeChildren(width(), height());
+            Lighting->setGeometry(0, 0, width(), height());
         }
     }
 }
@@ -418,10 +456,10 @@ void Hex::hideUnitHome()
     UnitHomePicture->setVisible(false);
 }
 
-void Hex::hideLivingNation()
-{
-    livingNationPicture->AnimationStart(OPACITY, 0, constants->gameMainPhaseStartPanelsAppearTime);
-}
+//void Hex::hideLivingNation()
+//{
+//    livingNationPicture->AnimationStart(OPACITY, 0, constants->gameMainPhaseStartPanelsAppearTime);
+//}
 void Hex::showInformation(QString pic_name, QString name)
 {
     if (information != NULL)

@@ -37,8 +37,10 @@ public:
     virtual WaitingType RealizeEvent();  // обработать игровое событие
 
     // реализации события сражения достойны выделения в отдельные функции
-    QList<QPointF> UnitsFightObject(QList<GameUnit *> fighters, QList<FightBrid> fb, QList<GameHex *> positions);
-    bool UnitsFight(QList<GameUnit *> fighters, QList<FightBrid> fb, QList<GameHex *> positions, int value, QList<QPointF> points);
+    void UnitsFightObject(QSet <GameUnit *> fighters, const Strike & strike,
+                          QMap <GameUnit *, QPointF > & ans, QMap <PlayerColor, QSet<QPointF> > & team_ans);
+    void UnitsFight(QSet <GameUnit *> fighters, const Strike & strike,
+                    const QMap <GameUnit *, QPointF > & points, const QMap <PlayerColor, QSet<QPointF> > & team_points);
 };
 
 #endif // EVENTSREALIZATION_H

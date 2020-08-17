@@ -40,7 +40,6 @@ SOURCES += main.cpp \
     GameExecution/gameSteps.cpp \
     GameExecution/gameFight.cpp \
     GameExecution/gameOrderExecution.cpp \
-    GameExecution/gameUnitsMoving.cpp \
     GameExecution/gameField.cpp \
     GameWindow/eventsRealization.cpp \
     GameWindow/gameLog.cpp \
@@ -115,7 +114,6 @@ HEADERS  += mainwindow.h \
     GameExecution/GameFight.h \
     GameExecution/GameEvents.h \
     GameExecution/GameOrderExecution.h \
-    GameExecution/GameUnitsMoving.h \
     GameExecution/GameField.h \
     GameExecution/GameHelp.h \
     GameExecution/GameMessages.h \
@@ -140,16 +138,16 @@ HEADERS  += mainwindow.h \
     Technical/HelpManager.h
 
 RESOURCES += \
-    Decorations.qrc \
-    Orders.qrc \
-    Buttons.qrc \
-    Field.qrc \
-    Icons.qrc \
-    InterfaceElements.qrc \
-    MainGameElements.qrc \
-    Panels.qrc \
-    Units.qrc \
-    UnitElements.qrc \
-    Fonts.qrc \
-    ColoredDecorations.qrc \
-    Numbers.qrc
+    Resources/Buttons.qrc \
+    Resources/ColoredDecorations.qrc \
+    Resources/Decorations.qrc \
+    Resources/Field.qrc \
+    Resources/Fonts.qrc \
+    Resources/Icons.qrc \
+    Resources/InterfaceElements.qrc \
+    Resources/MainGameElements.qrc \
+    Resources/Numbers.qrc \
+    Resources/Orders.qrc \
+    Resources/Panels.qrc \
+    Resources/UnitElements.qrc \
+    Resources/Units.qrc \
