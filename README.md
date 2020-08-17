@@ -1,3 +1,6 @@
+**Status:** creating new version \
+**Server:** https://github.com/FortsAndMills/Forts-and-Mills-Server
+
 # Forts and Mills
 ## [Ссылка для скачивания (Windows / Unix)](https://sourceforge.net/projects/fortsandmills/?source=directory)
 ![Партия в разгаре](http://www.imageup.ru/img292/2685567/skrin1.png)
