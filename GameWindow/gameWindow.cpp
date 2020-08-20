@@ -76,6 +76,11 @@ void GameWindow::MixEvents()
                     e = base;
                     hero.push(game->events[e]->unit);
                     heroEventLimit.push(lastDayTimeEvent(base));
+
+                    if (game->events[e]->unit == NULL)
+                    {
+                        qDebug() << "ERROR: Hero is NULL" << endl;
+                    }
                 }
 
                 // ищем событие, связанное с нашим героем

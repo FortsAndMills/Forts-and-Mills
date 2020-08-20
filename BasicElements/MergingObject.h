@@ -23,12 +23,18 @@ public:
     }    
 
     // при сигнале удаления этот объект удаляется при очередном исчезновении
-    bool wantToDelete = false;
     void DeleteOnMerging()
     {
         wantToDelete = true;
     }
+    void StopMerging()
+    {
+        stopMerging = true;
+    }
 
+private:
+    bool wantToDelete = false;
+    bool stopMerging = false;
 private slots:
     // мигание
     void merge()
@@ -39,7 +45,7 @@ private slots:
         // проверка на удаление
         if (wantToDelete && target == 1)
             Delete();
-        else
+        else if (!stopMerging || target == 1)
             connect(AnimationStart(OPACITY, target, constants->mergeTime), SIGNAL(finished()), SLOT(merge()));
     }
 };

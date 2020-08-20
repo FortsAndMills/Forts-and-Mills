@@ -241,7 +241,7 @@ public:
                 hexes[e->hex]->information->setVisible(false);
                 hexes[e->hex]->hideInformation();
             }
-            if (e->type == HEX_IS_NOT_A_HOME_ANYMORE)
+            if (e->type == HEX_STATUS_CHANGE)
             {
                 hexes[e->hex]->information->setVisible(false);
                 hexes[e->hex]->hideInformation();

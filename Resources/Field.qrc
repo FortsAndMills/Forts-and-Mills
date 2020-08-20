@@ -18,6 +18,6 @@
         <file>Content/Field/GreenHex.png</file>
         <file>Content/Field/StrangePurpleHex.png</file>
         <file>Content/Field/YellowHex.png</file>
-        <file>Content/Field/river.png</file>
+        <file>Content/Field/River.png</file>
     </qresource>
 </RCC>

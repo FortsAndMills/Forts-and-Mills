@@ -17,7 +17,6 @@ private:
     qreal (Object::*getValue)() const;  // Функции получения и изменения значения
     void (Object::*setValue)(qreal newValue);
 
-private:
     qreal V;  // Скорость
 
 public:
@@ -30,6 +29,7 @@ public:
 
     void stop();  // Останавливает анимацию и сразу переключает на конечное значение
     void start(qreal target_value, int time);  // Начинает анимацию с новым target
+
 private slots:
     void frame();  // Реализация одного кадра
 

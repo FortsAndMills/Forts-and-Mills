@@ -25,5 +25,7 @@
         <file>Content/MainGameElements/RedRocket.png</file>
         <file>Content/MainGameElements/YellowRocket.png</file>
         <file>Content/MainGameElements/NeutralShield.png</file>
+        <file>Content/MainGameElements/Tombstone.png</file>
+        <file>Content/MainGameElements/NotConnected.png</file>
     </qresource>
 </RCC>

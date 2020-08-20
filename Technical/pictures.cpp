@@ -170,7 +170,7 @@ void Images::InitPictures()
                  "GoldenHexFrame",
                  "BluePhantomHex",
                  "RedPhantomHex",
-                 "river"},
+                 "River"},
                 ".png");
 
     names << PictureNameFolder("Decorations",
@@ -263,7 +263,9 @@ void Images::InitPictures()
                  "RedFortification",
                  "GreenFortification",
                  "YellowFortification",
-                 "CureIcon"},
+                 "CureIcon",
+                 "Tombstone",
+                 "NotConnected"},
                  ".png");
 
     names << PictureNameFolder("Orders",

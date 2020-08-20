@@ -36,6 +36,43 @@ QSet <GameUnit *> GameHelp::alliesOnTheSameHex(GameUnit * tar)
     return ans;
 }
 
+QSet<GameHex *> GameHelp::Connected(QString color, bool consider_occupied, const QSet<Coord> & additional_captures)
+{
+    QSet<GameHex *> visited;
+    QVector<GameHex*> to_visit;
+
+    foreach (QList <GameHex *> hex_row, hexes)
+    {
+        foreach (GameHex * hex, hex_row)
+        {
+            if ((hex->color == color || additional_captures.contains(hex->coord)) &&
+                hex->type == "Mill" &&
+                (!consider_occupied || !isOccupied(hex)))
+            {
+                to_visit << hex;
+            }
+        }
+    }
+
+    for (int i = 0; i < to_visit.size(); ++i)
+    {
+        visited << to_visit[i];
+
+        QList<Coord> adj = adjacentHexes(to_visit[i]->coord);
+        foreach (Coord c, adj)
+        {
+            if ((hex(c)->color == color || additional_captures.contains(c)) &&
+                !visited.contains(hex(c)) &&
+                (!consider_occupied || !isOccupied(hex(c))))
+            {
+                to_visit << hex(c);
+            }
+        }
+    }
+
+    return visited;
+}
+
 bool GameHelp::isAgitatedByEnemy(Coord which, QString me)
 {
     foreach (PlayerColor color, hex(which)->agitated)

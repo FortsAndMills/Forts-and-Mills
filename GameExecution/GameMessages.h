@@ -12,7 +12,6 @@ enum GameEventType
     CHOOSE_HEX,
     NEW_UNIT_APPEAR,
     HEX_CAPTURED,
-    BUILDING_APPEAR,
     RESOURCE_APPEAR,
     GATHER_RESOURCES,
     PLAN,
@@ -24,7 +23,6 @@ enum GameEventType
     UNIT_CAPTURES_HEX,
     DEFENCE_BONUS_APPEARS,
     UNIT_IS_GOING_TO_RECRUIT,
-    UNIT_IS_GOING_TO_BUILD,
     CAPTURE_FAILS_BECAUSE_OF_CASTLE,
     RECRUIT_FAILS_BECAUSE_OF_AGITE,
     UNIT_LEAVES,
@@ -33,7 +31,7 @@ enum GameEventType
     UNITS_ARE_GOING_TO_FIGHT,
     ORDER_BURNS_IN_FIGHT,
     UNITS_FIGHT,
-    HEX_IS_NOT_A_HOME_ANYMORE,
+    HEX_STATUS_CHANGE,
     UNIT_DIES,
     UNIT_FINISHES_ENTER,
     RECRUITED_KILLED,
@@ -67,6 +65,7 @@ public:
     GameUnit * bruter = NULL;
     QSet <GameUnit *> relevants;
     QSet <GameUnit *> fighters;
+    GameHex::HexStatus hexStatus;
     Strike strike;
     int amount;
     GameHex * hex;
@@ -78,7 +77,6 @@ public:
     DayTime time;
     Resource R;
     UnitType unitType;
-    BuildingType buildingType;
     QMap<GameUnit *, OrderType> plan;
 
     explicit GameMessage(){}
@@ -99,12 +97,6 @@ public:
         type = HEX_CAPTURED;
         this->hex = hex;
         this->color = color;
-    }
-    void NewBuildingAppear(BuildingType type, GameHex * hex)
-    {
-        type = BUILDING_APPEAR;
-        this->hex = hex;
-        this->buildingType = type;
     }
     void NewResource(Resource R, GameHex * hex)
     {
@@ -177,13 +169,6 @@ public:
         this->unit = unit;
         this->unitType = unitType;
     }
-    void UnitIsGoingToBuild(GameUnit * unit, GameHex * hex, BuildingType type)
-    {
-        type = UNIT_IS_GOING_TO_BUILD;
-        this->hex = hex;
-        this->unit = unit;
-        this->buildingType = type;
-    }
     void CaptureFailsBecauseOfCastle(GameUnit * unit, OrderType R, GameHex * hex, GameHex * fort)
     {
         type = CAPTURE_FAILS_BECAUSE_OF_CASTLE;
@@ -236,11 +221,13 @@ public:
         this->fighters = fighters;
         this->strike = strike;
     }
-    void HexIsNotAHomeAnymore(GameHex * hex, PlayerColor color, QSet <GameUnit *> authors)
+    void HexStatusChanged(GameHex * hex, GameHex::HexStatus hexStatus, PlayerColor color, GameUnit * unit, QSet <GameUnit *> authors = QSet <GameUnit *>())
     {
-        type = HEX_IS_NOT_A_HOME_ANYMORE;
+        type = HEX_STATUS_CHANGE;
         this->hex = hex;
+        this->hexStatus = hexStatus;
         this->color = color;
+        this->unit = unit;
         this->relevants = authors;
     }
     void UnitDies(GameUnit * unit, QList <Resource> resources, bool isActiveOrderBurns, QSet <GameUnit *> relevants)

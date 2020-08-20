@@ -24,8 +24,8 @@ void Object::Delete()
             obj->Delete();
     }
 
-    foreach (Object * anchor, psevdo_parent)
-        anchor->psevdo_children.remove(this);
+    foreach (Object * anchor, pseudo_parent)
+        anchor->pseudo_children.remove(this);
 
     isDeleted = true;
     animations->stopAll(this);
@@ -39,20 +39,20 @@ void Object::Delete()
 // привязка и отвязка к другим объектам
 void Object::anchorTo(Object *anchor)
 {
-    anchor->psevdo_children << this;
-    this->psevdo_parent << anchor;
+    anchor->pseudo_children << this;
+    this->pseudo_parent << anchor;
 }
 void Object::deanchorFrom(Object *anchor)
 {
-    anchor->psevdo_children.remove(this);
-    if (this->psevdo_parent.contains(anchor))
-        this->psevdo_parent.remove(anchor);
+    anchor->pseudo_children.remove(this);
+    if (this->pseudo_parent.contains(anchor))
+        this->pseudo_parent.remove(anchor);
 }
 
 // при изменении позиции перемещаются и псевдодети
 void Object::setPos(qreal x, qreal y)
 {
-    foreach (Object * object, psevdo_children)
+    foreach (Object * object, pseudo_children)
         object->moveBy(x - this->x(), y - this->y());
     QGraphicsPixmapItem::setPos(x, y);
 }

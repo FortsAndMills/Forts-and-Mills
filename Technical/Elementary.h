@@ -89,6 +89,10 @@ inline uint qHash (const QPointF & key)
 {
     return qHash (QPair<float,float>(key.x(), key.y()) );
 }
+inline uint qHash (const Coord & key)
+{
+    return qHash (QPair<int,int>(key.x, key.y) );
+}
 #define ANY Coord(-2, -2)
 #define NOWHERE Coord()
 

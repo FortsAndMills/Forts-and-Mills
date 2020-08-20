@@ -101,6 +101,19 @@ public:
         findNextActionWithNoParameter();
     }
 
+    // куда перемещается юнит после исполнения
+    Coord moves(Coord current)
+    {
+        foreach (GameAction action, actions)
+        {
+            if (action.type == GameAction::LEAVE_HEX)
+            {
+                return action.target;
+            }
+        }
+        return current;
+    }
+
     friend QTextStream &operator << (QTextStream &stream, const GameOrder *r);
     friend QTextStream &operator >>(QTextStream &stream, GameOrder *r);
 };

@@ -37,15 +37,14 @@ public:
                            QString layerName = "");
     virtual void Delete();
 
-
-public:
     void resize(qreal w, qreal h);
 
     bool isClicked = false;  // находимся ли в состоянии нажатой клавиши
+
 private:
     bool dontRelease = false;  // нужно ли отпускать в момент отпускания мышки
     QPointF cursor_position;  // для драга
-private:
+
     // обработки сигналов
     void mousePressEvent(QGraphicsSceneMouseEvent *);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *);

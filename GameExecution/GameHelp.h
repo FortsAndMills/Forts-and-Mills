@@ -9,6 +9,7 @@ protected:
     explicit GameHelp(GameRules * rules, Random * rand);
 
     QSet <GameUnit *> alliesOnTheSameHex(GameUnit * tar);
+    QSet <GameHex *> Connected(PlayerColor color, bool consider_occupied = false, const QSet<Coord> &additional_captures = QSet<Coord>());
     bool isOccupied(GameHex * hex);
     bool isAgitatedByEnemy(Coord which, PlayerColor me);
 

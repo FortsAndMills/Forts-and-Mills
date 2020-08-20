@@ -17,18 +17,6 @@ void GameEvents::CaptureHex(GameHex *hex, PlayerColor color)
     hex->color = color;
     AddEvent()->HexCaptured(hex, color);
 }
-void GameEvents::KillRecruited(GameHex * hex, GameUnit * who)
-{
-    for (int i = 0; i < recruitedUnits.size(); ++i)
-    {
-        if (recruitedUnits[i].where == who->position)
-        {
-            recruitedUnits.removeAt(i);
-            --i;
-            AddEvent()->RecruitedKilled(who, hex);
-        }
-    }
-}
 void GameEvents::DecaptureHex(GameHex *hex, GameUnit *who)
 {
     if (hex->defenceBonusWhenCaptured != 0)
@@ -38,6 +26,12 @@ void GameEvents::DecaptureHex(GameHex *hex, GameUnit *who)
     }
 
     KillRecruited(hex, who);
+
+    if (hex->status == GameHex::NOT_A_HOME || hex->status == GameHex::NOT_CONNECTED)
+    {
+        hex->status = GameHex::TO_BE_CONQUERED;
+        AddEvent()->HexStatusChanged(hex, hex->status, hex->color, who);
+    }
 
     if (isHexAHome(hex->coord, hex->color))
     {
@@ -50,6 +44,52 @@ void GameEvents::DecaptureHex(GameHex *hex, GameUnit *who)
 
     hex->color = "Neutral";
     AddEvent()->UnitDecapturesHex(who, hex);
+}
+
+void GameEvents::KillRecruited(GameHex * hex, GameUnit * who)
+{
+    for (int i = 0; i < recruitedUnits.size(); ++i)
+    {
+        if (recruitedUnits[i].where == hex->coord)
+        {
+            recruitedUnits.removeAt(i);
+            hex->status = GameHex::NOT_CONNECTED;
+            AddEvent()->RecruitedKilled(who, hex);
+        }
+    }
+}
+void GameEvents::RecheckMillConnection(PlayerColor color, GameUnit * who)
+{
+    QSet<GameHex*> connected = Connected(color);
+
+    foreach (QList <GameHex *> hex_row, hexes)
+    {
+        foreach (GameHex * hex, hex_row)
+        {
+            if (connected.contains(hex) &&
+                (hex->status == GameHex::TO_BE_CONQUERED || hex->status == GameHex::NOT_CONNECTED))
+            {
+                // подсоединение клетки к мельнице
+                hex->status = GameHex::NOT_A_HOME;
+                AddEvent()->HexStatusChanged(hex, hex->status, color, who);
+            }
+            else if (!connected.contains(hex) && hex->color == color &&
+                     (hex->status == GameHex::TO_BE_CONQUERED || hex->status == GameHex::NOT_A_HOME || hex->status == GameHex::RECRUITING))
+            {
+                // отсоединение клетки от мельницы
+                KillRecruited(hex, who);
+                hex->status = GameHex::NOT_CONNECTED;
+                AddEvent()->HexStatusChanged(hex, hex->status, color, who);
+            }
+            else if (!connected.contains(hex) && hex->color == "Neutral" &&
+                     (hex->status == GameHex::NOT_CONNECTED || hex->status == GameHex::NOT_A_HOME))
+            {
+                // освобождение клетки
+                hex->status = GameHex::TO_BE_CONQUERED;
+                AddEvent()->HexStatusChanged(hex, hex->status, color, who);
+            }
+        }
+    }
 }
 
 void GameEvents::NewDayTimeStarted(DayTime time)
@@ -70,7 +110,9 @@ GameUnit * GameEvents::NewUnit(GamePlayer * player, UnitType type, Coord where)
 {
     GameUnit * New = new GameUnit(rules, type, player->color, where, basicId);
     ++basicId;
-    hex(where)->recruited << player->color;
+
+    hex(where)->provides_unit = false;
+    hex(where)->status = GameHex::HOME;
 
     player->units << New;
     AddEvent()->NewUnitAppear(New, hex(where));
@@ -94,8 +136,8 @@ void GameEvents::DestroyUnit(GameUnit *unit)
         }
     }
 
-    if (hex(unit->home)->color == unit->color && !rules->no_rebirth)
-        AddEvent()->HexIsNotAHomeAnymore(hex(unit->home), unit->color, unit->death_authors);
+    hex(unit->home)->status = GameHex::TOMBSTONE;
+    AddEvent()->HexStatusChanged(hex(unit->home), GameHex::TOMBSTONE, unit->color, unit, unit->death_authors);
 
     AddEvent()->UnitDies(unit, burned, activeOrderBurns, unit->death_authors);
     africa << unit;

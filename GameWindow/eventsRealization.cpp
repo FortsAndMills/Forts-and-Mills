@@ -249,9 +249,15 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
 
         return WaitingType(BUTTON, constants->unitReconfigureTime);
     }
-    else if (e->type == HEX_IS_NOT_A_HOME_ANYMORE)
+    else if (e->type == HEX_STATUS_CHANGE)
     {
-        hexes[e->hex]->showInformation("Not" + e->color + "UnitHome", "NotUnitHome");
+        hexes[e->hex]->hideInformation();
+        if (e->hexStatus == GameHex::NOT_CONNECTED)
+            hexes[e->hex]->showInformation("NotConnected", "NotConnected");
+        else if (e->hexStatus == GameHex::NOT_A_HOME)
+            hexes[e->hex]->showInformation("Not" + e->color + "UnitHome", "NotUnitHome");
+        else if (e->hexStatus == GameHex::TOMBSTONE)
+            hexes[e->hex]->showInformation("Tombstone", "Tombstone", false);
         return WaitingType();
     }
     else if (e->type == UNIT_DIES)
@@ -276,7 +282,6 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
         else
         {
             blowUnit(e->unit);
-            //hex(e->x2, e->y2)->showInformation("Not" + e->unit->color + "UnitHome");
 
             return WaitingType(BUTTON, constants->unitReconfigureTime);
         }
@@ -296,7 +301,8 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
     else if (e->type == UNIT_DECAPTURES_HEX)
     {
         hexes[e->hex]->setState("Neutral");
-        hexes[e->hex]->hideInformation();
+        if (hexes[e->hex]->information != NULL && hexes[e->hex]->information->name != "Tombstone")
+            hexes[e->hex]->hideInformation();
 
         return WaitingType(BUTTON, constants->stateObjectChangeTime);
     }

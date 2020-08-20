@@ -31,7 +31,7 @@ Hex::Hex(GraphicObject *parent, Game *game, GameHex *prototype) :
     foreach (WAY way, WAYS)
     {
         if (prototype->rivers[way])
-            rivers[way] = new GraphicObject(this, 0, "river");
+            rivers[way] = new River(this);
         else
             rivers[way] = NULL;
     }
@@ -460,7 +460,7 @@ void Hex::hideUnitHome()
 //{
 //    livingNationPicture->AnimationStart(OPACITY, 0, constants->gameMainPhaseStartPanelsAppearTime);
 //}
-void Hex::showInformation(QString pic_name, QString name)
+void Hex::showInformation(QString pic_name, QString name, bool merge)
 {
     if (information != NULL)
     {
@@ -472,6 +472,9 @@ void Hex::showInformation(QString pic_name, QString name)
 
     information = new Information(this, pic_name, name);
     resizeChildren(width(), height());
+
+    if (!merge)
+        information->StopMerging();
 }
 void Hex::hideInformation()
 {

@@ -57,12 +57,14 @@ void GameRules::setTestOptions()
     peacefullOrdersBurns = false;
     everything_is_starting = true;
     start_choices = 7;
-    no_rebirth = true;
+    mill_connections = true;
     rivers = true;
     fort_gp_min = 6;
     fort_gp_max = 9;
     mill_gp_min = 4;
     mill_gp_max = 8;
+    river_gp_min = 2;
+    river_gp_max = 4;
     K_change = 1;
 
     QFile * hostFile = new QFile("Experiments_options.txt");
@@ -79,10 +81,11 @@ void GameRules::setTestOptions()
                       >> s >> peacefullOrdersBurns
                       >> s >> everything_is_starting
                       >> s >> start_choices
-                      >> s >> no_rebirth
+                      >> s >> mill_connections
                       >> s >> rivers
                       >> s >> fort_gp_min >> fort_gp_max
                       >> s >> mill_gp_min >> mill_gp_max
+                      >> s >> river_gp_min >> river_gp_max
                       >> s >> K_change;
 
         if(tstream.status() != QTextStream::Ok)
@@ -105,10 +108,11 @@ void GameRules::setTestOptions()
                       << "PeacefullOrdersBurns: " << peacefullOrdersBurns << endl
                       << "EverythingCanBeStart: " << everything_is_starting << endl
                       << "NumOfStartingChoices: " << start_choices << endl
-                      << "NoRebirth: " << no_rebirth << endl
+                      << "RecruitWhenConnectedToMill: " << mill_connections << endl
                       << "Rivers: " << rivers << endl
                       << "FortsGenerationLimits: " << fort_gp_min << " " << fort_gp_max << endl
                       << "MillsGenerationLimits: " << mill_gp_min << " " << mill_gp_max << endl
+                      << "RiversGenerationLimits: " << river_gp_min << " " << river_gp_max << endl
                       << "ResourcesAmountCoeff: " << K_change;
         hostFile->close();
     }
@@ -128,6 +132,7 @@ void GameRules::recountGenerationParameters()
     qreal K = (fieldW * fieldH) / 60.0;  // во сколько раз увеличить кол. всех ресурсов
 
     // диапазоны генерации фортов, мельниц и гор
+    numOfRivers = Range(river_gp_min, river_gp_max, K);
     numOfHexTypes["Fort"] = Range(fort_gp_min, fort_gp_max, K);
     numOfHexTypes["Mill"] = Range(mill_gp_min, mill_gp_max, K);
     numOfHexTypes["Mountain"] = Range(5, 12, K);

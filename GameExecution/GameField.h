@@ -24,22 +24,6 @@ protected:
     };
     QList <Recruited> recruitedUnits;  // юниты для генерации в конце хода
 
-    class Built
-    {
-    public:
-        Coord where;
-        UnitType type;
-        PlayerColor color;
-
-        Built(Coord where, UnitType who, PlayerColor whos)
-        {
-            this->where = where;
-            type = who;
-            color = whos;
-        }
-    };
-    QList <Built> createdBuildings;  // построенные здания
-
     explicit GameField(GameRules * rules, Random * rand);
 
     virtual void GenerateField();

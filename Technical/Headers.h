@@ -58,7 +58,6 @@ class Client;
 
 #define HexType QString
 #define UnitType QString
-#define BuildingType QString
 #define OrderType QString
 #define DefaultOrder "Wait"
 #define PlayerColor QString

@@ -54,6 +54,7 @@ public:
     // диапазон для генерации каждого из типов клеток и приказов
     QMap <HexType, Range> numOfHexTypes;
     QMap <OrderType, Range> numOfResourcesOnField;
+    Range numOfRivers;
 
     // эти флаги выставляются в зависимости от настроек игры
     bool doesCaptureRecruits;
@@ -71,10 +72,11 @@ public:
     int peacefullOrdersBurns;   // тестовая настройка: мирные приказы сжигаются
     int everything_is_starting; // тестовая настройка: каждая клетка может быть стартом!
     int start_choices;          //                     сколько раз тогда выбираем
-    int no_rebirth;             // тестовая настройка: нельзя рекрутить с одной клетки дважды
+    int mill_connections;       // тестовая настройка: для рекрута нужно соединение с мельницей
     int rivers;                 // тестовая настройка: реки
     int fort_gp_min, fort_gp_max;
     int mill_gp_min, mill_gp_max;
+    int river_gp_min, river_gp_max;
     double K_change;
 
     explicit GameRules();

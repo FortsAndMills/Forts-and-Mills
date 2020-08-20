@@ -33,7 +33,14 @@ public:
     PlayerColor fortificationColor = "Neutral";
 
     QSet<PlayerColor> agitated;
-    QSet<PlayerColor> recruited;
+    bool provides_unit = true;
+    enum HexStatus {TO_BE_CONQUERED,   // нейтральна, есть юнит
+                    NOT_CONNECTED,     // захвачена, нет соединения с мельницей
+                    NOT_A_HOME,        // захвачена, можно рекрутировать
+                    RECRUITING,        // проведено рекрутирование
+                    HOME,              // является чьим-то домом
+                    TOMBSTONE}         // юнит мёртв
+                   status = TO_BE_CONQUERED;
     
     PlayerColor color = "Neutral";
 
@@ -41,9 +48,6 @@ public:
     QMap <WAY, bool> rivers;
 
     QList <Resource> resources;
-
-    //UnitType livingNation = "";    // для старта игры
-    //Coord region_center = NOWHERE; // регион
 
     explicit GameHex(HexType type, Coord Pos) : GameHexParameters(type)
     {

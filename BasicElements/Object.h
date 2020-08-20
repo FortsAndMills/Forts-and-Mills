@@ -41,8 +41,8 @@ public:
 // Псевдодети должны перемещаться вместе с этим объектом, но
 // не должны обрезаться её фигурой, как qt-шные дети.
 private:
-    QSet <Object *> psevdo_children;
-    QSet <Object *> psevdo_parent;
+    QSet <Object *> pseudo_children;
+    QSet <Object *> pseudo_parent;
 public:
     void deanchorFrom(Object * anchor);
     void anchorTo(Object * anchor);

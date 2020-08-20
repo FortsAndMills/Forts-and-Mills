@@ -37,6 +37,15 @@ bool GameOrderExecution::CheckIfActionBurns(Action a)
             AddEvent()->RecruitFailsBecauseOfAgite(a.unit, a.order->type, hex(a.unit->position));
             return true;
         }
+
+        // рекрут на отсоединённой территории
+        if (rules->mill_connections && !Connected(a.unit->color, true).contains(hex(a.unit->position)))
+        {
+            players[a.unit->color]->resources[a.order->type]--;
+            a.order->realizationFinished = true;
+            AddEvent()->RecruitFailsBecauseOfAgite(a.unit, a.order->type, hex(a.unit->position));
+            return true;
+        }
     }
 
     return false;
@@ -261,6 +270,7 @@ void GameOrderExecution::Realize(QList<Action> act)
         foreach (Action a, act)
         {
             GameHex * Hex = hex(a.unit->position);
+            PlayerColor color = Hex->color;
 
             // нейтрализуем цвет гекса
             if (Hex->color != "Neutral" &&
@@ -268,6 +278,9 @@ void GameOrderExecution::Realize(QList<Action> act)
             {
                 DecaptureHex(Hex, a.unit);
             }
+
+            if (rules->mill_connections)
+                RecheckMillConnection(color, a.unit);
         }
     }
     else if (T == GameAction::CAPTURE_HEX)
@@ -279,19 +292,7 @@ void GameOrderExecution::Realize(QList<Action> act)
             bool capture_is_used_as_liberate = false;
             if (rules->captureIsLiberate && Hex->canBeCaptured)
             {
-                // КОПИПАСТ КОДА ИЗ ОСВОБОЖДЕНИЯ
-                // если есть укрепление
-                if (Hex->fortificationColor != "Neutral" &&
-                     Hex->fortificationColor != a.unit->color)
-                {
-                    if (Hex->fortification != 0)
-                    {
-                        Hex->fortification = 0;
-                        AddEvent()->FortificationDisappears(a.unit, Hex);
-                    }
-
-                    Hex->fortificationColor = "Neutral";
-                }
+                PlayerColor color = Hex->color;
 
                 // нейтрализуем цвет гекса
                 if (Hex->color != "Neutral" &&
@@ -300,6 +301,9 @@ void GameOrderExecution::Realize(QList<Action> act)
                     capture_is_used_as_liberate = true;
                     DecaptureHex(Hex, a.unit);
                 }
+
+                if (rules->mill_connections)
+                    RecheckMillConnection(color, a.unit);
             }
 
             // если ещё можно захватить
@@ -313,12 +317,15 @@ void GameOrderExecution::Realize(QList<Action> act)
                     AddEvent()->DefenceBonusAppears(a.unit, Hex, a.unit->color, Hex->defence);
                 }
 
-                // иконка "бездомных"
-                if (!rules->no_rebirth || !Hex->recruited.contains(a.unit->color))
-                    AddEvent()->HexIsNotAHomeAnymore(Hex, a.unit->color, QSet <GameUnit *>() << a.unit);
-
                 // перекрашиваем
                 Hex->color = a.unit->color;
+
+                // иконка "бездомных"
+                if (rules->mill_connections)
+                    RecheckMillConnection(a.unit->color, a.unit);
+                else if (Hex->provides_unit)
+                    AddEvent()->HexStatusChanged(Hex, GameHex::NOT_A_HOME, a.unit->color, a.unit);
+
                 AddEvent()->UnitCapturesHex(a.unit, Hex, a.unit->color);
             }
         }
@@ -331,12 +338,13 @@ void GameOrderExecution::Realize(QList<Action> act)
             if (hex(a.unit->position)->color == a.unit->color)
             {
                 // тестовая настройка с запретом воскрешений
-                if (!rules->no_rebirth || !hex(a.unit->position)->recruited.contains(a.unit->color))
+                if (hex(a.unit->position)->provides_unit)
                 {
                     // по базовым правилам, нельзя рекрутировать
                     if (!isHexAHome(a.unit->position, a.unit->color))
                     {
                         AddEvent()->UnitIsGoingToRecruit(a.unit, hex(a.unit->position), a.action.unitType);
+                        hex(a.unit->position)->status = GameHex::RECRUITING;
                         recruitedUnits << Recruited(a.unit->position, a.action.unitType, a.unit->color);
                     }
                 }

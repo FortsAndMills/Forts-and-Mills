@@ -6,53 +6,6 @@ GameSteps::GameSteps(GameRules *rules, Random *rand) :
 
 }
 
-//void GameSteps::WavesStart()
-//{
-//    int captured = 0;
-
-//    do
-//    {
-//        QMap<PlayerColor, QSet<GameHex*> > wanted;
-//        QMap<GameHex*, int> wanted_by;
-//        foreach (QList<GameHex *> hex_row, hexes)
-//        {
-//            foreach (GameHex* h, hex_row)
-//            {
-//                if (h->color != "Neutral")
-//                {
-//                    foreach (Coord adj_coord, adjacentHexes(h->coord))
-//                    {
-//                        GameHex * adj = hex(adj_coord);
-//                        if (adj->color == "Neutral" && adj->canBeCaptured)
-//                        {
-//                            if (!wanted[h->color].contains(adj))
-//                            {
-//                                wanted[h->color].insert(adj);
-//                                ++wanted_by[adj];
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-
-//        captured = 0;
-//        foreach (PlayerColor color, rules->players)
-//        {
-//            foreach (GameHex* to_capture, wanted[color])
-//            {
-//                if (wanted_by[to_capture] < 2)
-//                {
-//                    CaptureHex(to_capture, color);
-//                    GatherResources(to_capture, color, to_capture->resources);
-//                    captured += 1;
-//                }
-//            }
-//        }
-//    }
-//    while (captured != 0);
-//}
-
 // обработка выбора стартовых клеток в начале игры
 void GameSteps::ProcessChosenHexes()
 {
@@ -265,7 +218,15 @@ void GameSteps::recruitNewUnits()
 {
     foreach (Recruited r, recruitedUnits)
     {
-        NewUnit(players[r.color], r.type, r.where);
+        if (!rules->mill_connections || Connected(r.color, true).contains(hex(r.where)))
+            NewUnit(players[r.color], r.type, r.where);
+        else
+        {
+            GameHex * Hex = hex(r.where);
+            KillRecruited(Hex, NULL);
+            Hex->status = GameHex::NOT_CONNECTED;
+            AddEvent()->HexStatusChanged(Hex, Hex->status, Hex->color, NULL);
+        }
     }
 
     recruitedUnits.clear();

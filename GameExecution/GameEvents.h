@@ -15,8 +15,10 @@ protected:
     void NewDayTimeStarted(DayTime time);
 
     void CaptureHex(GameHex * hex, PlayerColor color);
-    void KillRecruited(GameHex * hex, GameUnit * who);
     void DecaptureHex(GameHex * hex, GameUnit * who);
+
+    void KillRecruited(GameHex * hex, GameUnit * who);
+    void RecheckMillConnection(QString color, GameUnit * who);
 
     GameUnit * NewUnit(GamePlayer * player, UnitType type, Coord where);
     void DestroyUnit(GameUnit * unit);

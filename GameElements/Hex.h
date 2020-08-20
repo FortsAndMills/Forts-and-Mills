@@ -10,24 +10,19 @@
 #include "UnitWay.h"
 #include "Shield.h"
 
-// Картинка нации для старта игры
+// Картинка речки
 // Отличие от обычной картинки в том, что по правой кнопке мыши
 // она должна выдавать подсказку
-//class LivingNationPicture : public GraphicObject
-//{
-//    Q_OBJECT
+class River : public GraphicObject
+{
+    Q_OBJECT
 
-//    UnitType type;
+public:
+    River(GraphicObject * parent) :
+        GraphicObject(parent, RIGHT_CLICKABLE, "River") {}
 
-//public:
-//    LivingNationPicture(GraphicObject * parent, UnitType type) :
-//        GraphicObject(parent, RIGHT_CLICKABLE, type)
-//    {
-//        this->type = type;
-//    }
-
-//    void rightClick() { emit help->HelpAsked(type); }
-//};
+    void rightClick() { emit help->HelpAsked("River"); }
+};
 
 // Какая-либо мигающая информация вверху гекса
 // Такая может быть только одна единовременно
@@ -55,7 +50,7 @@ public:
     Game * game;
 
     GraphicObject * HexPicture;  // мельница, форт, гора или ничего
-    QMap <WAY, GraphicObject *> rivers;  // реки
+    QMap <WAY, River *> rivers;  // реки
     QList <ResourcePic *> table;  // таблица ресурсов гекса
 
     SpriteObject * Lighting;  // подсветка при выделении перед стартом
@@ -156,7 +151,7 @@ public:
     void highlight(OrderType type, bool light = true);
 
     //void hideLivingNation();
-    void showInformation(QString pic_name, QString name);
+    void showInformation(QString pic_name, QString name, bool merge = true);
     void hideInformation();
 
     // добавление и удаление объектов
