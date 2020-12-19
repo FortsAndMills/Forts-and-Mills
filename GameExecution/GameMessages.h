@@ -23,7 +23,6 @@ enum GameEventType
     UNIT_CAPTURES_HEX,
     DEFENCE_BONUS_APPEARS,
     UNIT_IS_GOING_TO_RECRUIT,
-    CAPTURE_FAILS_BECAUSE_OF_CASTLE,
     RECRUIT_FAILS_BECAUSE_OF_AGITE,
     UNIT_LEAVES,
     PURSUE_NOT_TRIGGERED,
@@ -168,14 +167,6 @@ public:
         this->hex = hex;
         this->unit = unit;
         this->unitType = unitType;
-    }
-    void CaptureFailsBecauseOfCastle(GameUnit * unit, OrderType R, GameHex * hex, GameHex * fort)
-    {
-        type = CAPTURE_FAILS_BECAUSE_OF_CASTLE;
-        this->hex = hex;
-        this->unit = unit;
-        this->fort = fort;
-        this->R = R;
     }
     void RecruitFailsBecauseOfAgite(GameUnit * unit, OrderType R, GameHex * hex)
     {

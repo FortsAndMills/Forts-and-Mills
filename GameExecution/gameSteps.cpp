@@ -38,10 +38,7 @@ void GameSteps::ProcessChosenHexes()
                 CaptureHex(Hex, player->color);
 
                 // даём ресурсы за юнита
-                if (rules->everything_is_starting)
-                    GatherResources(Hex, player->color, Hex->resources);
-                else
-                    GatherResources(Hex, player->color, New->startResources);
+                GatherResources(Hex, player->color, Hex->resources);
             }
         }
 
@@ -233,24 +230,24 @@ void GameSteps::recruitNewUnits()
 }
 void GameSteps::killAllies()
 {
-    QSet <GameUnit *> toKill;
-    foreach (GamePlayer * player, players)
-    {
-        foreach (GameUnit * unit, player->units)
-        {
-            if (unit->isDestroyingAllies)
-            {
-                QSet <GameUnit *> boat = alliesOnTheSameHex(unit);
-                foreach (GameUnit * u, boat)
-                {
-                    toKill << u;
-                }
-            }
-        }
-    }
+//    QSet <GameUnit *> toKill;
+//    foreach (GamePlayer * player, players)
+//    {
+//        foreach (GameUnit * unit, player->units)
+//        {
+//            if (unit->isDestroyingAllies)
+//            {
+//                QSet <GameUnit *> boat = alliesOnTheSameHex(unit);
+//                foreach (GameUnit * u, boat)
+//                {
+//                    toKill << u;
+//                }
+//            }
+//        }
+//    }
 
-    foreach (GameUnit * unit, toKill)
-        DestroyUnit(unit);
+//    foreach (GameUnit * unit, toKill)
+//        DestroyUnit(unit);
 }
 void GameSteps::burnExtraResources()
 {

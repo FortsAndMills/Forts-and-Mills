@@ -143,7 +143,7 @@ void GameWindow::MixEvents()
 GameMessage *GameWindow::lastDayTimeEvent(int base)
 {
     int i = base;
-    while (!game->events[i]->involved().isEmpty())
+    while (game->events[i]->type != TIME_FINISHED) //involved().isEmpty())
         ++i;
     return game->events[i];
 }

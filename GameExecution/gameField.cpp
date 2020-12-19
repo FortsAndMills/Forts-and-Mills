@@ -20,7 +20,7 @@ void GameField::GenerateField()
         }
     }
 
-    // генерим форты, мельницы и горы
+    // генерим форты, мельницы, озёра и горы
     for (QMap <HexType, Range>::iterator it = rules->numOfHexTypes.begin();
                                          it != rules->numOfHexTypes.end(); ++it)
     {
@@ -58,27 +58,20 @@ void GameField::GenerateField()
                 mountains << hexes[x][y];
             }
 
-            if (hexes[x][y]->type == "Mill" && rules->recruitsInMills &&
-                     rules->ordersInGame.contains("Recruit"))
+            if (hexes[x][y]->type == "Mill" && rules->ordersInGame.contains("Recruit"))
             {
                 hexes[x][y]->resources << "Recruit";
             }
-
-            if (hexes[x][y]->type == "Fort" && rules->capturesInForts &&
-                     rules->ordersInGame.contains("Capture"))
+            if (hexes[x][y]->type == "Fort")
             {
                 hexes[x][y]->resources << "Capture";
-            }
-
-            if (hexes[x][y]->canGoHere && rules->everything_is_starting)
-            {
-                hexes[x][y]->canBeChosenAsStartPoint = true;
             }
         }
     }
 
     // реки
     int num_rivers = rules->numOfRivers.get_rand(rand);
+    int incorrect_attempts = 10;
     for (int i = 0; i < num_rivers; ++i)
     {
         // выбираем случайную стартовую гору
@@ -128,11 +121,14 @@ void GameField::GenerateField()
                 way = WAY((int(way) + 5) % 6);
             }
         }
-        while (hex3->type != "Mountain");
+        while (hex3->type != "Mountain" && hex3->type != "Lake");
 
         // нулевая речка не в счёт.
-        if (river_length == 0)
+        if (river_length == 0 && incorrect_attempts > 0)
+        {
             --i;
+            --incorrect_attempts;
+        }
     }
 
     // расставляем ресурсы
@@ -161,16 +157,7 @@ bool GameField::isHexAHome(Coord which, PlayerColor color)
 }
 Coord GameField::canBeCaptured(Coord which, PlayerColor color)
 {
-    foreach (Coord p, adjacentHexes(which))
-    {
-        if (hex(p)->forbidsToCaptureAdjacentHexesWhenCaptured &&
-            (rules->fortsBurnCaptures || hex(p)->type != "Fort") &&
-            hex(p)->color != "Neutral" &&
-            hex(p)->color != color)
-        {
-            return p;
-        }
-    }
+    // когда-то форт не позволял захватывать соседние клетки
     return NOWHERE;
 }
 int GameField::resourcesLimit(PlayerColor color)
@@ -216,22 +203,7 @@ QSet <GameUnit *> GameField::find(SEARCH_TYPE ST, GameUnit * for_whom,
 // проверка на окончание игры!
 PlayerColor GameField::isGameFinished()
 {
+    // TODO
     PlayerColor winner = "Neutral";
-    for (int i = 0; i < rules->fieldH; ++i)
-    {
-        for (int j = 0; j < rules->fieldW; ++j)
-        {
-            if (hexes[i][j]->mustBeCapturedToWin)
-            {
-                if (hexes[i][j]->color == "Neutral")
-                    return "Neutral";
-                if (winner != "Neutral" && hexes[i][j]->color != winner)
-                    return "Neutral";
-
-                winner = hexes[i][j]->color;
-            }
-        }
-    }
-
     return winner;
 }

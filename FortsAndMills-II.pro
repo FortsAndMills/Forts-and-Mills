@@ -18,6 +18,7 @@ RC_FILE = icon.rc
 
 
 SOURCES += main.cpp \
+    Learning/LessonGame.cpp \
     Technical/headers.cpp \
     GameElements/field.cpp \
     GameElements/hex.cpp \

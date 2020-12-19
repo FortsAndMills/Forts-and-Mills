@@ -7,6 +7,8 @@
 #include "BasicElements/GraphicObject.h"
 #include "SpecialButton.h"
 
+const int NUM_LESSONS = 4;
+
 class LessonLabel : public GraphicObject
 {
     Q_OBJECT
@@ -61,7 +63,7 @@ public:
         setOpacity(0);
         logo = new Object(this, "Logo");
 
-        for (int i = 0; i < 5; ++i)
+        for (int i = 0; i < NUM_LESSONS; ++i)
             lessons.push_back(new LessonLabel(this, i));
 
         HomeButton = new SpecialButton(this, "HomeButton");

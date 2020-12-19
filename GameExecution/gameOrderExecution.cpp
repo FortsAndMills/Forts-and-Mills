@@ -15,17 +15,17 @@ bool GameOrderExecution::CheckIfActionBurns(Action a)
         return true;
 
     // если есть запрет на захват
-    if (a.action.type == GameAction::CAPTURE_HEX)
-    {
-        Coord reason = canBeCaptured(a.unit->position, a.unit->color);
-        if (reason != NOWHERE)
-        {
-            players[a.unit->color]->resources[a.order->type]--;
-            a.order->realizationFinished = true;
-            AddEvent()->CaptureFailsBecauseOfCastle(a.unit, a.order->type, hex(a.unit->position), hex(reason));
-            return true;
-        }
-    }
+//    if (a.action.type == GameAction::CAPTURE_HEX)
+//    {
+//        Coord reason = canBeCaptured(a.unit->position, a.unit->color);
+//        if (reason != NOWHERE)
+//        {
+//            players[a.unit->color]->resources[a.order->type]--;
+//            a.order->realizationFinished = true;
+//            AddEvent()->CaptureFailsBecauseOfCastle(a.unit, a.order->type, hex(a.unit->position), hex(reason));
+//            return true;
+//        }
+//    }
 
     if (a.action.type == GameAction::RECRUIT)
     {
@@ -289,26 +289,7 @@ void GameOrderExecution::Realize(QList<Action> act)
         {
             GameHex * Hex = hex(a.unit->position);
 
-            bool capture_is_used_as_liberate = false;
-            if (rules->captureIsLiberate && Hex->canBeCaptured)
-            {
-                PlayerColor color = Hex->color;
-
-                // нейтрализуем цвет гекса
-                if (Hex->color != "Neutral" &&
-                     Hex->color != a.unit->color)
-                {
-                    capture_is_used_as_liberate = true;
-                    DecaptureHex(Hex, a.unit);
-                }
-
-                if (rules->mill_connections)
-                    RecheckMillConnection(color, a.unit);
-            }
-
-            // если ещё можно захватить
-            if (!capture_is_used_as_liberate &&
-                Hex->canBeCaptured && Hex->color == "Neutral")
+            if (Hex->canBeCaptured && Hex->color == "Neutral")
             {
                 // появление бонуса в обороне при захвате
                 if (Hex->defenceBonusWhenCaptured != 0)

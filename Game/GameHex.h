@@ -12,13 +12,10 @@ public:
 
     bool canBeCaptured;
     bool canHaveResources;
-    bool canBeChosenAsStartPoint;
     bool canGoHere;
     bool isTall;
-    bool forbidsToCaptureAdjacentHexesWhenCaptured;
     int increasesResourceLimitWhenCaptured;
     int defenceBonusWhenCaptured;
-    bool mustBeCapturedToWin;
 
     GameHexParameters(HexType type);
 };
@@ -31,6 +28,8 @@ public:
     int defence = 0;
     int fortification = 0;
     PlayerColor fortificationColor = "Neutral";
+
+    bool canBeChosenAsStartPoint;
 
     QSet<PlayerColor> agitated;
     bool provides_unit = true;
@@ -52,6 +51,7 @@ public:
     explicit GameHex(HexType type, Coord Pos) : GameHexParameters(type)
     {
         coord = Pos;
+        canBeChosenAsStartPoint = canGoHere;
     }
 };
 

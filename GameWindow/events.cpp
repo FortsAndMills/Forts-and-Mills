@@ -26,23 +26,6 @@ void Events::delightWholeField()
     }
 }
 
-//void Events::wantToCaptureRegion(Coord r, bool turn_on)
-//{
-//    for (int i = 0; i < game->rules->fieldH; ++i)
-//    {
-//        for (int j = 0; j < game->rules->fieldW; ++j)
-//        {
-//            if (game->hexes[i][j]->region_center == r || r == ANY)
-//            {
-//                if (turn_on)
-//                    hex(i, j)->planCapturing(mainPlayerColor);
-//                else
-//                    hex(i, j)->deplanCapturing(mainPlayerColor);
-//            }
-//        }
-//    }
-//}
-
 void Events::newUnit(GameUnit * unit, Coord where)
 {
     units[unit] = new Unit(unit, game, this, unit->color == mainPlayerColor);

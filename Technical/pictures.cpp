@@ -242,6 +242,7 @@ void Images::InitPictures()
                 {"Fort",
                  "Mill",
                  "Mountain",
+                 "Lake",
                  "BlueUnitHome",
                  "RedUnitHome",
                  "GreenUnitHome",
@@ -409,17 +410,20 @@ void Images::InitDesignPictures()
     designPictures["MillHex"] = "DarkYellowHex";
     designPictures["FortHex"] = "StrangePurpleHex";
     designPictures["MountainHex"] = "NeutralHex";
+    designPictures["LakeHex"] = "NeutralHex";
 
     designPictures["SimpleHexFrame"] = "GreenHexFrame";
     designPictures["MillHexFrame"] = "GreenHexFrame";
     designPictures["FortHexFrame"] = "GreenHexFrame";
     designPictures["MountainHexFrame"] = "GreenHexFrame";
+    designPictures["LakeHexFrame"] = "NeutralHex";
     designPictures["ForbiddenSelectionHexFrame"] = "RedHexFrame";
 
     designPictures["SimpleHexClickedFrame"] = "RedHexFrame";
     designPictures["MillHexClickedFrame"] = "RedHexFrame";
     designPictures["FortHexClickedFrame"] = "RedHexFrame";
     designPictures["MountainHexClickedFrame"] = "RedHexFrame";
+    designPictures["LakeHexClickedFrame"] = "RedHexFrame";
 
     designPictures["SelectedHex"] = "BrightYellowHex";
     designPictures["LightedHex"] = "GoldenHex";

@@ -27,5 +27,6 @@
         <file>Content/MainGameElements/NeutralShield.png</file>
         <file>Content/MainGameElements/Tombstone.png</file>
         <file>Content/MainGameElements/NotConnected.png</file>
+        <file>Content/MainGameElements/Lake.png</file>
     </qresource>
 </RCC>

@@ -65,15 +65,9 @@ public:
 
     // тестовые настройки
     int damageToHomellesUnits;  // тестовая настройка: бездомные не умирают, а получают дамаг
-    int fortsBurnCaptures;      // тестовая настройка: замок не даёт врагу захватить соседние клетки
-    int captureIsLiberate;      // тестовая настройка: захват может работать как освобождение
-    int capturesInForts;        // тестовая настройка: ресурсы захватов - в фортах
-    int recruitsInMills;        // тестовая настройка: ресурсы рекрута - в мельницах
     int peacefullOrdersBurns;   // тестовая настройка: мирные приказы сжигаются
-    int everything_is_starting; // тестовая настройка: каждая клетка может быть стартом!
-    int start_choices;          //                     сколько раз тогда выбираем
+    int start_choices;          // сколько раз выбираем стартовые клетки
     int mill_connections;       // тестовая настройка: для рекрута нужно соединение с мельницей
-    int rivers;                 // тестовая настройка: реки
     int fort_gp_min, fort_gp_max;
     int mill_gp_min, mill_gp_max;
     int river_gp_min, river_gp_max;

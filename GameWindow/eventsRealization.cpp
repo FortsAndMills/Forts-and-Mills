@@ -155,14 +155,6 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
 
         return WaitingType(BUTTON, 0);
     }
-    else if (e->type == CAPTURE_FAILS_BECAUSE_OF_CASTLE)
-    {
-        units[e->unit]->mainOrderBurn();
-        player_windows[e->unit->color]->burnLighten(e->R);
-        leftPanelSwitcherClicked(e->unit->color);
-
-        return WaitingType(BUTTON, constants->stateObjectChangeTime);
-    }
     else if (e->type == RECRUIT_FAILS_BECAUSE_OF_AGITE)
     {
         units[e->unit]->mainOrderBurn();

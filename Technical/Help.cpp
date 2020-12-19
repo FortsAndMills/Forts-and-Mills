@@ -106,6 +106,8 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
             << "<u>Мельница</u>. На соединённых с мельницами территориях можно проводить рекрутирование.";
     if (name == "Mountain") return QVector<QString>()
             << "<u>Гора</u>. По этой клетке нельзя перемещаться.";
+    if (name == "Lake") return QVector<QString>()
+            << "<u>Озеро</u>. По этой клетке нельзя перемещаться.";
     if (name == "Simple") return QVector<QString>()
             << "<u>Клетка с ресурсами</u>. Владелец этой клетки получает указанные на ней ресурсы в конце каждого раунда.";
     if (name == "River") return QVector<QString>()
@@ -181,6 +183,7 @@ QString HelpManager::HelpPicture(QString name)
     if (name == "Fort") return "Fort";
     if (name == "Mill") return "Mill";
     if (name == "Mountain") return "Mountain";
+    if (name == "Lake") return "Lake";
     if (name == "River") return "River";
     if (name == "Simple") return "NeutralHex";
 

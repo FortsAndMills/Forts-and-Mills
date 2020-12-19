@@ -59,40 +59,6 @@ void Interaction::hexClicked(Coord c)
 {
     if (state == CHOOSING_HEX)
     {
-//        if (game->rules->regions_start)
-//        {
-//            Coord reg_c = game->hex(c)->region_center;
-//            if (reg_c != NOWHERE &&
-//                 game->hex(reg_c)->canBeChosenAsStartPoint)
-//            {
-//                if (game->chosenHex[mainPlayerColor] == reg_c)
-//                {
-//                    game->chosenHex[mainPlayerColor] = NOWHERE;
-
-//                    //hex(c)->select(false);
-//                    go->enable(false);
-
-//                    wantToCaptureRegion(reg_c, false);
-//                }
-//                else
-//                {
-//                    if (game->chosenHex[mainPlayerColor] != NOWHERE)
-//                    {
-//                        //hex(game->chosenHex[mainPlayerColor])->select(false);
-
-//                        wantToCaptureRegion(game->chosenHex[mainPlayerColor], false);
-//                    }
-
-//                    game->chosenHex[mainPlayerColor] = reg_c;
-
-//                    //hex(c)->select();
-//                    go->enable();
-
-//                    wantToCaptureRegion(reg_c, true);
-//                }
-//            }
-//        }
-//        else
         if (game->hex(c)->canBeChosenAsStartPoint)
         {
             if (game->chosenHex[mainPlayerColor] == c)
@@ -107,8 +73,6 @@ void Interaction::hexClicked(Coord c)
                 if (game->chosenHex[mainPlayerColor] != NOWHERE)
                 {
                     hex(game->chosenHex[mainPlayerColor])->select(false);
-
-                    //wantToCaptureRegion(game->chosenHex[mainPlayerColor], false);
                 }
 
                 game->chosenHex[mainPlayerColor] = c;
@@ -149,21 +113,7 @@ void Interaction::hexEntered(Coord c)
         {
             units[unit]->light();
         }
-    }    
-
-    // региональный старт
-//    if (state == CHOOSING_HEX && game->rules->regions_start &&
-//            game->hex(c)->region_center != NOWHERE &&
-//            game->hex(game->hex(c)->region_center)->canBeChosenAsStartPoint)
-//    {
-//        foreach (Hex* hex, hexes)
-//        {
-//            if (hex->prototype->region_center == game->hex(c)->region_center)
-//            {
-//                hex->setState(mainPlayerColor, true);
-//            }
-//        }
-//    }
+    }
 }
 void Interaction::hexLeft(Coord c)
 {
@@ -182,20 +132,6 @@ void Interaction::hexLeft(Coord c)
             units[unit]->light(false);
         }
     }
-
-    // региональный старт
-//    if (state == CHOOSING_HEX && game->rules->regions_start &&
-//            game->hex(c)->region_center != NOWHERE &&
-//            game->hex(game->hex(c)->region_center)->canBeChosenAsStartPoint)
-//    {
-//        foreach (Hex* hex, hexes)
-//        {
-//            if (hex->prototype->region_center == game->hex(c)->region_center)
-//            {
-//                hex->setState("Neutral", true);
-//            }
-//        }
-//    }
 }
 
 void Interaction::orderPicEntered(OrderType type, PlayerColor)

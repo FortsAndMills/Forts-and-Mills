@@ -3,7 +3,7 @@
 
 QList <QString> GameRules::AllPlayers = {"Blue", "Red", "Green", "Yellow"};
 QList <QString> GameRules::AllOrders = {"Capture", "Recruit", "Liberate", "Agite", "Attack", "Go", "Retreat", "Siege", "Fire", "Pursue", "Cure", "Fortify"};
-QList <QString> GameRules::AllUnits = {"Scrat", "Pig", "Hippo", "Karkun", "Bruter", "Mumusha"};
+QList <QString> GameRules::AllUnits = {"Scrat", "Pig", "Hippo", "Karkun", "Mumusha"};
 
 // вспомогательная функция: упорядочивает
 // элементы a в зависимости от их порядка в example
@@ -50,15 +50,9 @@ void GameRules::setTestOptions()
 {
     // тестовые настройки
     damageToHomellesUnits = 179;
-    fortsBurnCaptures = false;
-    captureIsLiberate = false;
-    recruitsInMills = true;
-    capturesInForts = true;
     peacefullOrdersBurns = false;
-    everything_is_starting = true;
     start_choices = 7;
     mill_connections = true;
-    rivers = true;
     fort_gp_min = 6;
     fort_gp_max = 9;
     mill_gp_min = 4;
@@ -74,15 +68,9 @@ void GameRules::setTestOptions()
         QString s;
         tstream >> s >> damageToHomellesUnits
                       >> s >> limitatingResources
-                      >> s >> fortsBurnCaptures
-                      >> s >> captureIsLiberate
-                      >> s >> capturesInForts
-                      >> s >> recruitsInMills
                       >> s >> peacefullOrdersBurns
-                      >> s >> everything_is_starting
                       >> s >> start_choices
                       >> s >> mill_connections
-                      >> s >> rivers
                       >> s >> fort_gp_min >> fort_gp_max
                       >> s >> mill_gp_min >> mill_gp_max
                       >> s >> river_gp_min >> river_gp_max
@@ -101,15 +89,9 @@ void GameRules::setTestOptions()
         QTextStream tstream(hostFile);
         tstream << "DamageToHomelessUnits: " << damageToHomellesUnits << endl
                       << "MillsLimitResources: " << limitatingResources << endl
-                      << "FortsBurnEnemyCaptures: " << fortsBurnCaptures << endl
-                      << "CaptureIsAlsoLiberation: " << captureIsLiberate << endl
-                      << "CapturesAreInForts: " << capturesInForts << endl
-                      << "RecruitsAreInMills: " << recruitsInMills << endl
                       << "PeacefullOrdersBurns: " << peacefullOrdersBurns << endl
-                      << "EverythingCanBeStart: " << everything_is_starting << endl
                       << "NumOfStartingChoices: " << start_choices << endl
                       << "RecruitWhenConnectedToMill: " << mill_connections << endl
-                      << "Rivers: " << rivers << endl
                       << "FortsGenerationLimits: " << fort_gp_min << " " << fort_gp_max << endl
                       << "MillsGenerationLimits: " << mill_gp_min << " " << mill_gp_max << endl
                       << "RiversGenerationLimits: " << river_gp_min << " " << river_gp_max << endl
@@ -125,7 +107,7 @@ void GameRules::recountGenerationParameters()
     sort(unitsInGame, AllUnits);
 
     doesCaptureRecruits = !ordersInGame.contains("Recruit");
-    doesEnteringEnemyHexLiberates = !ordersInGame.contains("Liberate") && !captureIsLiberate;
+    doesEnteringEnemyHexLiberates = !ordersInGame.contains("Liberate");
     if (changingDayTimes)
         dayTimes = 1;
 
@@ -135,40 +117,32 @@ void GameRules::recountGenerationParameters()
     numOfRivers = Range(river_gp_min, river_gp_max, K);
     numOfHexTypes["Fort"] = Range(fort_gp_min, fort_gp_max, K);
     numOfHexTypes["Mill"] = Range(mill_gp_min, mill_gp_max, K);
-    numOfHexTypes["Mountain"] = Range(5, 12, K);
+    numOfHexTypes["Mountain"] = Range(3, 7, K);
+    numOfHexTypes["Lake"] = Range(3, 7, K);
 
     // для количества генерящихся приказов приходится использовать магию
-    int cb = 0;
-    if (!ordersInGame.contains("Recruit"))
-        ++cb;
+//    int cb = 0;
+//    if (!ordersInGame.contains("Recruit"))
+//        ++cb;
 
     int ab = 0;
     if (ordersInGame.contains("Retreat"))
         --ab;
 
-    int cub = 0;
-    if (ordersInGame.contains("Mumusha"))
-        ++cub;
-
     K *= K_change;
 
-    numOfResourcesOnField["Capture"] = Range(9 + cb, 13 + cb, K);
+    numOfResourcesOnField["Capture"] = Range(0, 0, K); //Range(9 + cb, 13 + cb, K);
     numOfResourcesOnField["Go"] = Range(6 + ab, 11 + ab, K);
-    numOfResourcesOnField["Recruit"] = Range(6, 10, K);
+    numOfResourcesOnField["Recruit"] = Range(0, 0, K); //Range(6, 10, K);
     numOfResourcesOnField["Liberate"] = Range(6, 10, K);
     numOfResourcesOnField["Attack"] = Range(5 + ab, 9 + ab, K);
     numOfResourcesOnField["Agite"] = Range(3, 8, K);
-    numOfResourcesOnField["Retreat"] = Range(3, 6, K);
-    numOfResourcesOnField["Pursue"] = Range(3, 6, K);
+    numOfResourcesOnField["Retreat"] = Range(3, 5, K);
+    numOfResourcesOnField["Pursue"] = Range(3, 5, K);
     numOfResourcesOnField["Fire"] = Range(3, 5, K);
     numOfResourcesOnField["Fortify"] = Range(3, 5, K);
     numOfResourcesOnField["Siege"] = Range(3, 5, K);
-    numOfResourcesOnField["Cure"] = Range(3 + cub, 5 + cub, K);
-
-    if (recruitsInMills)
-        numOfResourcesOnField["Recruit"] = Range(0, 0, K);
-    if (capturesInForts)
-        numOfResourcesOnField["Capture"] = Range(0, 0, K);
+    numOfResourcesOnField["Cure"] = Range(3, 5, K);
 }
 void GameRules::FormPlayersList(Random *rand)
 {
