@@ -23,7 +23,8 @@ void Animation::start(qreal target_value, int time)  // TODO анимации с
     qreal value = (work_object->*getValue)();
     V = (target - value) / time * constants->framesPerSecond;
 
-    if (qAbs(V) < constants->minAnimationVelocity)  // проверка на то, что анимация уже завершена
+      // проверка на то, что анимация уже завершена
+    if (qAbs(V) < constants->minAnimationVelocity)
     {
         (work_object->*setValue)(target_value);
         emit finished();  // посылаем сигнал завершения
@@ -43,11 +44,11 @@ void Animation::stop()
 void Animation::frame()
 {
     qreal newValue;
-    try
-    {
-        newValue = (work_object->*getValue)() + V;  // новое значение
-    }
-    catch (...) { animations->stop(this); return; }
+    //try
+    //{
+    newValue = (work_object->*getValue)() + V;  // новое значение
+    //}
+    //catch (...) { animations->stop(this); return; }
 
     if ((V >= 0 && newValue >= target) ||  // проверка на завершение
          (V <= 0 && newValue <= target))

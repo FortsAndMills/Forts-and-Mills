@@ -1,12 +1,6 @@
-#include "GameEvents.h"
+#include "Game.h"
 
-GameEvents::GameEvents(GameRules *rules, Random *rand) :
-    GameField(rules, rand)
-{
-
-}
-
-void GameEvents::CaptureHex(GameHex *hex, PlayerColor color)
+void Game::CaptureHex(GameHex *hex, PlayerColor color)
 {
     if (hex->defenceBonusWhenCaptured != 0)
     {
@@ -17,7 +11,7 @@ void GameEvents::CaptureHex(GameHex *hex, PlayerColor color)
     hex->color = color;
     AddEvent()->HexCaptured(hex, color);
 }
-void GameEvents::DecaptureHex(GameHex *hex, GameUnit *who)
+void Game::DecaptureHex(GameHex *hex, GameUnit *who)
 {
     if (hex->defenceBonusWhenCaptured != 0)
     {
@@ -46,7 +40,7 @@ void GameEvents::DecaptureHex(GameHex *hex, GameUnit *who)
     AddEvent()->UnitDecapturesHex(who, hex);
 }
 
-void GameEvents::KillRecruited(GameHex * hex, GameUnit * who)
+void Game::KillRecruited(GameHex * hex, GameUnit * who)
 {
     for (int i = 0; i < recruitedUnits.size(); ++i)
     {
@@ -58,7 +52,7 @@ void GameEvents::KillRecruited(GameHex * hex, GameUnit * who)
         }
     }
 }
-void GameEvents::RecheckMillConnection(PlayerColor color, GameUnit * who)
+void Game::RecheckMillConnection(PlayerColor color, GameUnit * who)
 {
     QSet<GameHex*> connected = Connected(color);
 
@@ -92,7 +86,7 @@ void GameEvents::RecheckMillConnection(PlayerColor color, GameUnit * who)
     }
 }
 
-void GameEvents::NewDayTimeStarted(DayTime time)
+void Game::NewDayTimeStarted(DayTime time)
 {
     QMap<GameUnit *, OrderType> today_plan;
     foreach (GamePlayer * player, players)
@@ -106,7 +100,7 @@ void GameEvents::NewDayTimeStarted(DayTime time)
     AddEvent()->TimeStarted(time, today_plan);
 }
 
-GameUnit * GameEvents::NewUnit(GamePlayer * player, UnitType type, Coord where)
+GameUnit * Game::NewUnit(GamePlayer * player, UnitType type, Coord where)
 {
     GameUnit * New = new GameUnit(rules, type, player->color, where, basicId);
     ++basicId;
@@ -118,7 +112,7 @@ GameUnit * GameEvents::NewUnit(GamePlayer * player, UnitType type, Coord where)
     AddEvent()->NewUnitAppear(New, hex(where));
     return New;
 }
-void GameEvents::DestroyUnit(GameUnit *unit)
+void Game::DestroyUnit(GameUnit *unit)
 {
     players[unit->color]->units.removeAll(unit);
 
@@ -142,7 +136,7 @@ void GameEvents::DestroyUnit(GameUnit *unit)
     AddEvent()->UnitDies(unit, burned, activeOrderBurns, unit->death_authors);
     africa << unit;
 }
-bool GameEvents::Damage(GameUnit *unit, int dam, QSet <GameUnit *> authors)
+bool Game::Damage(GameUnit *unit, int dam, QSet <GameUnit *> authors)
 {
     unit->health -= dam;
     if (unit->health <= 0)
@@ -153,7 +147,7 @@ bool GameEvents::Damage(GameUnit *unit, int dam, QSet <GameUnit *> authors)
     return true;
 }
 
-void GameEvents::GatherResources(GameHex * hex, PlayerColor color, QList <Resource> resources)
+void Game::GatherResources(GameHex * hex, PlayerColor color, QList <Resource> resources)
 {
     QList <bool> burn;
     foreach (Resource R, resources)

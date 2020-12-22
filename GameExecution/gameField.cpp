@@ -1,12 +1,6 @@
-#include "GameField.h"
+#include "Game.h"
 
-GameField::GameField(GameRules *rules, Random *rand) :
-    GameTurns(rules, rand)
-{
-
-}
-
-void GameField::GenerateField()
+void Game::GenerateField()
 {
     // Сначала всё наше поле - "пустое".
     QList <HexType *> vars;
@@ -143,7 +137,7 @@ void GameField::GenerateField()
     }
 }
 
-bool GameField::isHexAHome(Coord which, PlayerColor color)
+bool Game::isHexAHome(Coord which, PlayerColor color)
 {
     foreach (GameUnit * unit, players[color]->units)
         if (unit->home == which)
@@ -155,12 +149,12 @@ bool GameField::isHexAHome(Coord which, PlayerColor color)
 
     return false;
 }
-Coord GameField::canBeCaptured(Coord which, PlayerColor color)
+Coord Game::canBeCaptured(Coord which, PlayerColor color)
 {
     // когда-то форт не позволял захватывать соседние клетки
     return NOWHERE;
 }
-int GameField::resourcesLimit(PlayerColor color)
+int Game::resourcesLimit(PlayerColor color)
 {
     int count = 0;
     for (int i = 0; i < rules->fieldH; ++i)
@@ -176,7 +170,7 @@ int GameField::resourcesLimit(PlayerColor color)
     return count;
 }
 
-QSet <GameUnit *> GameField::find(SEARCH_TYPE ST, GameUnit * for_whom,
+QSet <GameUnit *> Game::find(SEARCH_TYPE ST, GameUnit * for_whom,
                           Coord staying, Coord going_to)
 {
     QSet <GameUnit *> ans;
@@ -201,7 +195,7 @@ QSet <GameUnit *> GameField::find(SEARCH_TYPE ST, GameUnit * for_whom,
 }
 
 // проверка на окончание игры!
-PlayerColor GameField::isGameFinished()
+PlayerColor Game::isGameFinished()
 {
     // TODO
     PlayerColor winner = "Neutral";

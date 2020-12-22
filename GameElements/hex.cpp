@@ -10,11 +10,8 @@
 Hex::Hex(GraphicObject *parent, Game *game, GameHex *prototype) :
     StateObject(parent, "Neutral", prototype->type + "Hex", CLICKABLE | HOVER | RIGHT_CLICKABLE, prototype->type + "HexFrame", "SimpleLayer")
 {
-    // TODO переделать через AllPlayers в GameRules
-    addPicture("Blue", "BlueHex");
-    addPicture("Red", "RedHex");
-    addPicture("Green", "GreenHex");
-    addPicture("Yellow", "YellowHex");
+    foreach (GamePlayer * player, game->players)
+        addPicture(player->color, player->color + "Hex");
     addPicture("selected", "SelectedHex");
     addPicture("lighted", "LightedHex");
 
@@ -44,8 +41,6 @@ Hex::Hex(GraphicObject *parent, Game *game, GameHex *prototype) :
     UnitHomePicture = new Object(this, "");
     UnitHomePicture->setVisible(false);
 
-    //livingNationPicture = new LivingNationPicture(this, prototype->livingNation);
-
     information = NULL;
 }
 // создание копии-призрака для анимации сдвига поля
@@ -58,8 +53,6 @@ Hex::Hex(Hex *another, GraphicObject * newParent) : Hex(newParent, another->game
     {
         shields << new Shield(another->shields[i], this);
     }
-    //if (another->livingNationPicture->opacity() == 0)
-    //    this->livingNationPicture->setOpacity(0);
 
     if (another->information != NULL)
         this->information = new MergingObject(this, another->information->name);
@@ -88,7 +81,6 @@ void Hex::Delete()
             rivers[way]->Delete();
     foreach (ResourcePic * pic, table)
         pic->Delete();
-    //livingNationPicture->Delete();
     if (information != NULL)
         information->Delete();
     foreach (Shield * s, shields)
@@ -187,11 +179,6 @@ void Hex::resizeChildren(qreal W, qreal H)
                                                     H * (1 - 2 * constants->hexPictureOffsetH));
     }
 
-//    livingNationPicture->setGeometry(W * constants->livingNationPointX,
-//                                                              H * constants->livingNationPointY,
-//                                                              W * constants->livingNationWidth,
-//                                                              H * constants->livingNationHeight);
-
     if (information != NULL)
     {
         information->setGeometry(W * constants->informationPointX,
@@ -208,6 +195,7 @@ void Hex::resizeChildren(qreal W, qreal H)
     river_centers[LEFT_DOWN] = QPointF(W * constants->hexShift / 2, 3 * H / 4);
     river_centers[LEFT_UP] = QPointF(W * constants->hexShift / 2, H / 4);
 
+    // TODO: всё должно быть кратно 60, но из-за странностей картинки гекса...
     QMap<WAY, int> river_rotation;
     river_rotation[UP] = -1;
     river_rotation[RIGHT_UP] = 58;
@@ -221,7 +209,7 @@ void Hex::resizeChildren(qreal W, qreal H)
         if (rivers[way] != NULL)
         {
             float width = W * (1 - 2 * constants->hexShift);
-            float height = H * 0.15;
+            float height = H * constants->riverHeight;
             rivers[way]->setGeometry(river_centers[way].x() - width / 2,
                                      river_centers[way].y() - height / 2,
                                      width,
@@ -432,7 +420,6 @@ void Hex::deplanCapturing(PlayerColor color)
     }
 }
 
-// TODO а как так вышло, что нужно заполнять поле order->anchor_point?
 void Hex::addOrder(Order *order)
 {
     order->anchorTo(this);
@@ -456,15 +443,12 @@ void Hex::hideUnitHome()
     UnitHomePicture->setVisible(false);
 }
 
-//void Hex::hideLivingNation()
-//{
-//    livingNationPicture->AnimationStart(OPACITY, 0, constants->gameMainPhaseStartPanelsAppearTime);
-//}
 void Hex::showInformation(QString pic_name, QString name, bool merge)
 {
     if (information != NULL)
     {
         debug << "PANIC! information on information!\n";
+
         // может, лучше плавно заставить её исчезнуть?
         // вроде эта "ошибка" встречается по разумным причинам!
         information->Delete();

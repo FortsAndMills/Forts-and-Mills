@@ -16,15 +16,13 @@ public:
                               ADJACENT_HEX_WHERE_CAN_GO,
                               VISIBLE_HEX_IN_RADIUS_2,
                               ENEMY_UNIT,
-                              TYPE_OF_UNIT} parameter;
+                              TYPE_OF_UNIT} parameter;    
 
+    // что по сути параметр: ничего, тип юнита, юнит или гекс.
     enum GameActionParameterType {PT_NOTHING,
                                   PT_HEX,
                                   PT_UNIT,
                                   PT_UNIT_TYPE} p_type;
-
-
-    // что по сути параметр: ничего, тип юнита, юнит или гекс.
     GameActionParameterType whatParameter()
     {
         if (parameter == NONE)

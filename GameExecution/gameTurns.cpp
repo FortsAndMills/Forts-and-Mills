@@ -1,18 +1,11 @@
-#include "GameTurns.h"
+#include "Game.h"
 
-GameTurns::GameTurns(GameRules *rules, Random * rand) :
-    GameHelp(rules, rand)
-{
-    foreach (PlayerColor color, rules->players)
-        chosenUnitType[color] = rules->unitsInGame[0];
-}
-
-void GameTurns::playerGiveUp(int index)
+void Game::playerGiveUp(int index)
 {
     players[rules->players[index]]->GiveUp = true;
 }
 
-bool GameTurns::CanUse(GameUnit *unit, OrderType order)
+bool Game::CanUse(GameUnit *unit, OrderType order)
 {
     // если этот приказ технически не может использоваться юнитом, сразу нет
     if (!GameOrderParameters(rules, unit->type, order).canUse)
@@ -91,7 +84,7 @@ bool GameTurns::CanUse(GameUnit *unit, OrderType order)
 
     return true;
 }
-QList<OrderType> GameTurns::whatCanUse(GameUnit * unit)
+QList<OrderType> Game::whatCanUse(GameUnit * unit)
 {
     // перебираем все варианты и запускаем CanUse
     QList <OrderType> ans;
@@ -103,7 +96,7 @@ QList<OrderType> GameTurns::whatCanUse(GameUnit * unit)
     ans << DefaultOrder;
     return ans;
 }
-bool GameTurns::must_be_last(GameUnit * unit, DayTime time)
+bool Game::must_be_last(GameUnit * unit, DayTime time)
 {
     if (time == -1)
         return false;
@@ -130,7 +123,7 @@ bool GameTurns::must_be_last(GameUnit * unit, DayTime time)
     return false;
 }
 
-bool GameTurns::ChooseOneOfTheStartHexes()
+bool Game::ChooseOneOfTheStartHexes()
 {
     if (rules->start_choices <= 0) return false;
     --rules->start_choices;
@@ -154,7 +147,7 @@ bool GameTurns::ChooseOneOfTheStartHexes()
     return true;
 }
 
-void GameTurns::StartPlanning()
+void Game::StartPlanning()
 {
     // очистка от предыдущих планов
     foreach (GamePlayer * player, players)

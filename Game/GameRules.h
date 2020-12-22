@@ -17,7 +17,7 @@ public:
     int fieldW;
     int fieldH;
 
-    int NumOfPlayers;
+    int numOfPlayers;
     QList <PlayerColor> players;
     void FormPlayersList(Random * rand);
 
@@ -61,7 +61,7 @@ public:
     bool doesEnteringEnemyHexLiberates;
 
     // эти флаги нужны для режима обучения
-    int limitatingResources;
+    int limitatingResources = true;
 
     // тестовые настройки
     int damageToHomellesUnits;  // тестовая настройка: бездомные не умирают, а получают дамаг

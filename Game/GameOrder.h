@@ -36,7 +36,6 @@ public:
 };
 
 // Класс игрового приказа
-
 class GameOrder : public GameOrderParameters
 {
 public:

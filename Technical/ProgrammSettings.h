@@ -99,8 +99,8 @@ public:
         if (hostFile->open(QIODevice::WriteOnly | QIODevice::Text))
         {
             QTextStream tstream(hostFile);
-            tstream << "PORT = " << PORT << endl <<
-                               "HOST NAME = " << HOST_NAME << endl;
+            tstream << "PORT = " << PORT << Qt::endl <<
+                               "HOST NAME = " << HOST_NAME << Qt::endl;
             hostFile->close();
         }
 

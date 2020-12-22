@@ -6,7 +6,7 @@ Object::Object(Object *parent, QString pictureName) :
     this->setTransformationMode(Qt::SmoothTransformation);  // просто настроечки
     this->setCacheMode(QGraphicsItem::NoCache);  // вроде так лучше
     this->setAcceptHoverEvents(false);  // по умолчанию, не интерактивен
-    this->setAcceptedMouseButtons(0);
+    this->setAcceptedMouseButtons(Qt::MouseButtons());
 
     original = pixmap();  // сохранение картинки
     Width = original.width();
@@ -17,6 +17,7 @@ Object::Object(Object *parent, QString pictureName) :
 }
 void Object::Delete()
 {
+    // удаляем детей
     foreach (QGraphicsItem * child, this->childItems())
     {
         Object * obj = dynamic_cast<Object *>(child);
@@ -24,12 +25,15 @@ void Object::Delete()
             obj->Delete();
     }
 
+    // отсоединяем псевдодетей
     foreach (Object * anchor, pseudo_parent)
         anchor->pseudo_children.remove(this);
 
+    // останавливаем все анимации
     isDeleted = true;
     animations->stopAll(this);
 
+    // удаляем из сцены
     prepareGeometryChange();
     if (this->scene())
         this->scene()->removeItem(this);
@@ -95,9 +99,9 @@ void Object::moveBy(qreal dx, qreal dy)
     Animation * Y_Animation = animations->contains(this, Y_POS);
 
     if (X_Animation != NULL)
-        X_Animation->target += dx;
+        X_Animation->move_by(dx, dy);
     if (Y_Animation != NULL)
-        Y_Animation->target += dy;
+        Y_Animation->move_by(dx, dy);
 
     setPos(x() + dx, y() + dy);
 }
@@ -175,6 +179,7 @@ Animation * Object::AnimationStart(ANIMATION_TYPE type,
     {
         a->start(target_value, time);  // перезагрузка старой
     }
+
     // пересчитываем, анимируется ли сейчас объект
     RecheckIsAnimated();
 

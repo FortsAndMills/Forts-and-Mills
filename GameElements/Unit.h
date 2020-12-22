@@ -75,6 +75,7 @@ public:
     explicit Unit(Unit * another);
     virtual void Delete();
 
+    // геометрия
     QPointF mainOrderCenter(Object * obj);
 private:
     QRectF mainOrderGeometry();
@@ -108,7 +109,7 @@ private slots:
 public:
     void healthChanged(int change);
     void broke();  // разбить юнит
-    void blow();        // взорвать юнит
+    void blow();   // взорвать юнит
 
     void mainOrderAppear(OrderType prototype);  // образовать основной приказ
     void mainOrderDisappear();
@@ -119,9 +120,9 @@ public:
     void select();  // подсветить юнит
     void deselect();
     void light(bool on = true);
-    void showOrdersPanel(QList <OrderType> orders);  // панель
+    void showOrdersPanel(QList <OrderType> orders);  // панель приказов
     void hidePanel();
-    void showUnitTypePanel(QList <UnitType> types);  // панель
+    void showUnitTypePanel(QList <UnitType> types);  // панель выбора типа юнитов
     void hideUnitTypePanel();
 
     void defenceTurn(int amount, bool on = true);

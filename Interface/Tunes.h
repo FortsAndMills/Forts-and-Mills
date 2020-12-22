@@ -53,7 +53,7 @@ public:
         Label = new GraphicObject(this, 0, "PlayersLabel");
         for (int i = 0; i < settings->rules->AllPlayers.size(); ++i)
         {
-            players.push_back(new PlayersElement(this, i < settings->rules->NumOfPlayers, true));
+            players.push_back(new PlayersElement(this, i < settings->rules->numOfPlayers, true));
             connect(players[i], SIGNAL(whenClicked(bool)), SLOT(whenClicked(bool)));
         }
     }
@@ -110,7 +110,7 @@ private slots:
             if (i < players.size())
             {
                 players[i]->turnOn(true);
-                ++settings->rules->NumOfPlayers;
+                ++settings->rules->numOfPlayers;
             }
         }
         else
@@ -122,7 +122,7 @@ private slots:
             if (i >= 2)
             {
                 players[i]->turnOn(false);
-                --settings->rules->NumOfPlayers;
+                --settings->rules->numOfPlayers;
             }
         }
     }

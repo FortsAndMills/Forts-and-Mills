@@ -55,6 +55,7 @@ SOURCES += main.cpp \
     Technical/Help.cpp
 
 HEADERS  += mainwindow.h \
+    GameExecution/GameStructures.h \
     Programm/Basic/headers.h \
     Basic/ProgrammSettings.h \
     Product/MainWindow.h \
@@ -108,15 +109,7 @@ HEADERS  += mainwindow.h \
     Technical/Elementary.h \
     Game/GameAction.h \
     GameExecution/Game.h \
-    GameExecution/GameTurns.h \
-    GameExecution/GameBase.h \
-    GameExecution/GameSteps.h \
     Game/GameMessages.h \
-    GameExecution/GameFight.h \
-    GameExecution/GameEvents.h \
-    GameExecution/GameOrderExecution.h \
-    GameExecution/GameField.h \
-    GameExecution/GameHelp.h \
     GameExecution/GameMessages.h \
     GameWindow/GameWindow.h \
     GameWindow/GameElementsOrganization.h \

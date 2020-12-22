@@ -25,14 +25,15 @@ public:
 class GameHex : public GameHexParameters
 {
 public:
-    int defence = 0;
-    int fortification = 0;
+    int defence = 0;  // бонус в обороне
+    int fortification = 0;  // щиты и их цвет
     PlayerColor fortificationColor = "Neutral";
 
-    bool canBeChosenAsStartPoint;
+    bool canBeChosenAsStartPoint; // ещё может быть выбрана в качестве старта
 
-    QSet<PlayerColor> agitated;
-    bool provides_unit = true;
+    QSet<PlayerColor> agitated;  // игроки, которые агитировали эту клетку
+
+    bool provides_unit = true;   // ещё может предоставить юнита
     enum HexStatus {TO_BE_CONQUERED,   // нейтральна, есть юнит
                     NOT_CONNECTED,     // захвачена, нет соединения с мельницей
                     NOT_A_HOME,        // захвачена, можно рекрутировать
@@ -41,12 +42,10 @@ public:
                     TOMBSTONE}         // юнит мёртв
                    status = TO_BE_CONQUERED;
     
-    PlayerColor color = "Neutral";
-
-    Coord coord;
-    QMap <WAY, bool> rivers;
-
-    QList <Resource> resources;
+    PlayerColor color = "Neutral";  // владелец
+    Coord coord;                    // координаты
+    QMap <WAY, bool> rivers;        // с каких сторон есть речки
+    QList <Resource> resources;     // какие ресурсы предоставляет
 
     explicit GameHex(HexType type, Coord Pos) : GameHexParameters(type)
     {

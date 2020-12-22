@@ -127,7 +127,7 @@ private slots:
 
         SpriteObject * exp = new SpriteObject(this, 0, "SmallExplosion", constants->rocketExplosionTime, true);
         exp->resize(constants->smallExpWidth * constants->unitsSize,
-                            constants->smallExpHeight * constants->unitsSize);
+                    constants->smallExpHeight * constants->unitsSize);
         exp->setPos(QPointF(width() / 2, 0) - exp->center());
         connect(exp, SIGNAL(looped()), exp, SLOT(Delete()));
     }

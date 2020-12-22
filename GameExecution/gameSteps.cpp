@@ -1,13 +1,7 @@
-#include "GameSteps.h"
-
-GameSteps::GameSteps(GameRules *rules, Random *rand) :
-    GameOrderExecution(rules, rand)
-{
-
-}
+#include "Game.h"
 
 // обработка выбора стартовых клеток в начале игры
-void GameSteps::ProcessChosenHexes()
+void Game::ProcessChosenHexes()
 {
     QSet <GameHex *> ch;
     int giveupers = 0;
@@ -41,76 +35,10 @@ void GameSteps::ProcessChosenHexes()
                 GatherResources(Hex, player->color, Hex->resources);
             }
         }
-
-        // surround_start
-//        if (!rules->waves_start && rules->surround_start)
-//        {
-//            // переменные для surround_start-а:
-//            QMap<PlayerColor, QSet<GameHex*> > wanted;
-//            QMap<GameHex*, int> wanted_by;
-
-//            foreach (GamePlayer * player, players)
-//            {
-//                if (!player->GiveUp)
-//                {
-//                    GameHex * Hex = hex(chosenHex[player->color]);
-//                    foreach (Coord adj_coord, adjacentHexes(Hex->coord))
-//                    {
-//                        GameHex * adj = hex(adj_coord);
-//                        if (adj->color == "Neutral" && adj->canBeCaptured)
-//                        {
-//                            if (!wanted[player->color].contains(adj))
-//                            {
-//                                wanted[player->color].insert(adj);
-//                                ++wanted_by[adj];
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-
-//            foreach (PlayerColor color, rules->players)
-//            {
-//                foreach (GameHex* to_capture, wanted[color])
-//                {
-//                    if (wanted_by[to_capture] < 2)
-//                    {
-//                        CaptureHex(to_capture, color);
-//                        AddEvent()->HexIsNotAHomeAnymore(to_capture, color, QSet<GameUnit*>());
-//                        to_capture->canBeChosenAsStartPoint = false;
-//                    }
-//                }
-//            }
-//        }
-
-//        if (rules->regions_start)
-//        {
-//            // TODO заменить на цвет
-//            foreach (GamePlayer * player, players)
-//            {
-//                if (!player->GiveUp)
-//                {
-//                    Coord ChosenRegion = hex(chosenHex[player->color])->coord;
-//                    foreach (QList<GameHex*> hex_row, hexes)
-//                    {
-//                        foreach (GameHex * Hex, hex_row)
-//                        {
-//                            if (Hex->region_center == ChosenRegion &&
-//                                 Hex->coord != ChosenRegion)
-//                            {
-//                                CaptureHex(Hex, player->color);
-//                                AddEvent()->HexIsNotAHomeAnymore(Hex, player->color, QSet<GameUnit*>());
-//                                Hex->canBeChosenAsStartPoint = false;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 }
 
-void GameSteps::RealizePlan()
+void Game::RealizePlan()
 {
     // заполняем пропуски приказами безделья
     for (time = 0; time < rules->dayTimes; ++time)
@@ -144,14 +72,6 @@ void GameSteps::RealizePlan()
                         int p = unit->plan[time]->actions[k].priority;
 
                         acts[p] << Action(unit, time, k);
-
-                        // в рамках одного акта сортируем по приоритету приказа
-//                        int j = acts[p].size() - 1;
-//                        while (j > 0 && acts[p][j].order->priority < acts[p][j - 1].order->priority)
-//                        {
-//                            qSwap(acts[p][j], acts[p][j - 1]);
-//                            --j;
-//                        }
                     }
                 }
             }
@@ -189,7 +109,7 @@ void GameSteps::RealizePlan()
     AddEvent()->PlanRealizationFinished();
 }
 
-void GameSteps::destroyHomelessUnits()
+void Game::destroyHomelessUnits()
 {
     // разборки с бездомными юнитами в конце раунда
     foreach (GamePlayer * player, players)
@@ -211,7 +131,7 @@ void GameSteps::destroyHomelessUnits()
         }
     }
 }
-void GameSteps::recruitNewUnits()
+void Game::recruitNewUnits()
 {
     foreach (Recruited r, recruitedUnits)
     {
@@ -228,7 +148,7 @@ void GameSteps::recruitNewUnits()
 
     recruitedUnits.clear();
 }
-void GameSteps::killAllies()
+void Game::killAllies()
 {
 //    QSet <GameUnit *> toKill;
 //    foreach (GamePlayer * player, players)
@@ -249,7 +169,7 @@ void GameSteps::killAllies()
 //    foreach (GameUnit * unit, toKill)
 //        DestroyUnit(unit);
 }
-void GameSteps::burnExtraResources()
+void Game::burnExtraResources()
 {
     if (!rules->limitatingResources)
         return;
@@ -266,7 +186,7 @@ void GameSteps::burnExtraResources()
         }
     }
 }
-void GameSteps::gatherResources()
+void Game::gatherResources()
 {
     foreach (QList <GameHex *> hex_row, hexes)
     {
@@ -279,7 +199,7 @@ void GameSteps::gatherResources()
         }
     }
 }
-void GameSteps::defenceFill()
+void Game::defenceFill()
 {
     // восполнение оборонительного бонуса для юнитов
     foreach (GamePlayer * player, players)
@@ -308,7 +228,7 @@ void GameSteps::defenceFill()
         }
     }
 }
-void GameSteps::agitationEnds()
+void Game::agitationEnds()
 {
     foreach (QList <GameHex *> hex_row, hexes)
     {
@@ -323,7 +243,7 @@ void GameSteps::agitationEnds()
         }
     }
 }
-void GameSteps::addDayTime()
+void Game::addDayTime()
 {
     if (rules->changingDayTimes)
     {

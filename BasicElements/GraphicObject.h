@@ -6,6 +6,7 @@
 #include "BasicElements/Object.h"
 
 // Базовый класс для интерактивных объектов
+// Также хранит картинки рамки frame (отображается при наведении мыши) и layer (при нажатии)
 
 #define Properties unsigned int
 #define DRAGABLE 1
@@ -23,7 +24,6 @@ class GraphicObject : public Object
 public:
     void setProperties(Properties newFlags);
 
-public:
     Object * frame;  // Выводится при наведении мыши
     Object * layer;  // Выводится при клике
     void setFrame(QString frameName)
@@ -54,7 +54,7 @@ private:
     void wheelEvent(QGraphicsSceneWheelEvent *);
 
 protected:
-    virtual void leftClick() {}  // Для переопределения
+    virtual void leftClick() {}  // Для переопределения в наследниках
     virtual void leftClickStart() {}
     virtual void rightClick() {}
     virtual void enter() {}

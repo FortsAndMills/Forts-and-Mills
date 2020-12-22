@@ -47,9 +47,9 @@ public:
         if (selection != NULL)
         {
             selection->setGeometry(W * constants->dayTimeSelectionX,
-                                                    H * constants->dayTimeSelectionY,
-                                                    W * constants->dayTimeSelectionWidth,
-                                                    H * constants->dayTimeSelectionHeight);
+                                   H * constants->dayTimeSelectionY,
+                                   W * constants->dayTimeSelectionWidth,
+                                   H * constants->dayTimeSelectionHeight);
         }
     }
 

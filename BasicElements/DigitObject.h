@@ -10,7 +10,7 @@ class DigitObject : public GraphicObject
 {
 public:
     int n;
-    QString type;
+    QString type;  // стиль: "Mill" или "Fort"
 
     // отображает одну цифру или 'x'
     DigitObject(GraphicObject * parent, int n, QString type, Properties prop) :

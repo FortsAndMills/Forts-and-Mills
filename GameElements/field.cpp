@@ -7,13 +7,6 @@
 
 Field::Field(GraphicObject *parent, Game * game) : GraphicObject(parent)
 {
-    // ЭКСПЕРИМЕНТ
-    prepareGeometryChange();
-    yRotation = new QGraphicsRotation();
-    yRotation->setAxis(Qt::XAxis);
-    yRotation->setAngle(20);
-    //this->setTransformations(QList<QGraphicsTransform *>() << yRotation);
-
     this->setZValue(constants->fieldZPos);
 
     for (int i = 0; i < game->rules->fieldH; ++i)
@@ -63,12 +56,11 @@ QPointF Field::coordinates(int i, int j)
     j = (j + x_shift) % hexes[0].size();
 
     return QPointF((constants->hexWidth * (1 - constants->hexShift)) * j,
-                                constants->hexHeight * (i + (org_j % 2) / 2.0));
+                    constants->hexHeight * (i + (org_j % 2) / 2.0));
 }
 void Field::resize(qreal W, qreal H)
 {
     GraphicObject::resize(W, H);
-    yRotation->setOrigin(QVector3D(W / 2, H / 2, 0));
 
     for (int i = 0; i < hexes.size(); ++i)
     {
@@ -78,17 +70,6 @@ void Field::resize(qreal W, qreal H)
            hexes[i][j]->resize(constants->hexWidth, constants->hexHeight);
         }
     }
-
-    oneHexShift[UP] = QPointF(0, constants->hexHeight);
-    oneHexShift[DOWN] = QPointF(0, -constants->hexHeight);
-    oneHexShift[LEFT_UP] = QPointF(constants->hexWidth * (1 - constants->hexShift),
-                                                                    constants->hexHeight / 2);
-    oneHexShift[LEFT_DOWN] = QPointF(constants->hexWidth * (1 - constants->hexShift),
-                                                                    -constants->hexHeight / 2);
-    oneHexShift[RIGHT_UP] = QPointF(-constants->hexWidth * (1 - constants->hexShift),
-                                                                    constants->hexHeight / 2);
-    oneHexShift[RIGHT_DOWN] = QPointF(-constants->hexWidth * (1 - constants->hexShift),
-                                                                    -constants->hexHeight / 2);
 }
 
 Hex *Field::HexAt(QPointF point)

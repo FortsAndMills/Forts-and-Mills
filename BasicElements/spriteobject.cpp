@@ -36,7 +36,7 @@ void SpriteObject::setPixmap(QString name)
 {
     // для спрайтов предполагаем, что размеры исходных картинок одинаковы
     FullPicture = images->get(name);
-    setFrame(frame);
+    setFrame(frame_index);
 }
 
 void SpriteObject::start()
@@ -49,22 +49,22 @@ void SpriteObject::start()
 void SpriteObject::setFrame(int frameIndex)
 {
     // установка конкретного кадра
-    this->frame = frameIndex % (columns * rows);
-    GraphicObject::setPixmap(FullPicture.copy((frame % columns) * FrameWidth,
-                                                                             (frame / columns) * FrameHeight,
-                                                                                       FrameWidth, FrameHeight));
+    this->frame_index = frameIndex % (columns * rows);
+    GraphicObject::setPixmap(FullPicture.copy((frame_index % columns) * FrameWidth,
+                                              (frame_index / columns) * FrameHeight,
+                                                       FrameWidth, FrameHeight));
 }
 
 void SpriteObject::frameChange()
 {
-    if (frame == columns * rows - 1)  // проверка на конец цикла
+    if (frame_index == columns * rows - 1)  // проверка на конец цикла
     {
         emit looped();
-        if (single)  // сингл означает удаление в конце первого цикла
+        if (single)  // сингл означает остановку в конце первого цикла
         {
             movie->stop();
             return;
         }
     }
-    setFrame(frame + 1);
+    setFrame(frame_index + 1);
 }

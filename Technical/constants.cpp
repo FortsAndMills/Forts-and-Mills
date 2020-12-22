@@ -232,12 +232,6 @@ qreal Constants::unitHomePointY = 0.25;
 qreal Constants::unitHomeWidth = 0.5;  // размер
 qreal Constants::unitHomeHeight = 0.5;
 
-// Картинка живущего населения на гексе:
-qreal Constants::livingNationPointX = 0.35;  // верхний левый угол
-qreal Constants::livingNationPointY = 0.65;
-qreal Constants::livingNationWidth = 0.3;  // размер
-qreal Constants::livingNationHeight = 0.3;
-
 // Картинка информации на гексе:
 qreal Constants::informationPointX = 0.38;  // верхний левый угол
 qreal Constants::informationPointY = 0.06;
@@ -252,6 +246,9 @@ qreal Constants::hexShieldsLineY = 0.58;
 qreal Constants::hexShieldsMergeX = 0.05;
 qreal Constants::hexShieldsWidth = 0.18;  // размер
 qreal Constants::hexShieldsHeight = 0.20;
+
+// Речки
+qreal Constants::riverHeight = 0.15;
 
 // Путь
 qreal Constants::unitWayWidth = 0.18;  // ширина пути

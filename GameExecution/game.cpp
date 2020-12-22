@@ -1,7 +1,17 @@
 #include "Game.h"
 
-Game::Game(GameRules *rules, Random *rand) : GameSteps(rules, rand)
+Game::Game(GameRules *rules, Random *rand)
 {
+    this->rules = rules;
+    this->rand = rand;
+    rules->FormPlayersList(rand);
+
+    for (int i = 0; i < rules->players.size(); ++i)
+        players[rules->players[i]] = new GamePlayer(rules->players[i]);
+
+    foreach (PlayerColor color, rules->players)
+        chosenUnitType[color] = rules->unitsInGame[0];
+
     GenerateField();
 }
 

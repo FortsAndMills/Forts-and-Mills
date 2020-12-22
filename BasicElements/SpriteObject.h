@@ -14,12 +14,12 @@ private:
     int rows, columns;
     qreal FrameWidth, FrameHeight;  // размеры кадра
 
-    int frame;  // текущий кадр
+    int frame_index;  // текущий кадр
 protected:
     int frames() { return rows * columns; }
 
 private:
-    bool single;
+    bool single;  // по кругу крутить анимацию или только один раз
     int speed = -1;
     QTimer * movie;
 

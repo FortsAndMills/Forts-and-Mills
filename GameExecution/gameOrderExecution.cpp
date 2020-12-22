@@ -1,31 +1,13 @@
-#include "GameOrderExecution.h"
-
-GameOrderExecution::GameOrderExecution(GameRules *rules, Random *rand) :
-    GameFight(rules, rand)
-{
-}
+#include "Game.h"
 
 // проверка на легитимность действия
-bool GameOrderExecution::CheckIfActionBurns(Action a)
+bool Game::CheckIfActionBurns(Action a)
 {
     // если юнит умер или его приказ был сожжён
     if (africa.contains(a.unit))
         return true;
     else if (a.order->realizationFinished)
         return true;
-
-    // если есть запрет на захват
-//    if (a.action.type == GameAction::CAPTURE_HEX)
-//    {
-//        Coord reason = canBeCaptured(a.unit->position, a.unit->color);
-//        if (reason != NOWHERE)
-//        {
-//            players[a.unit->color]->resources[a.order->type]--;
-//            a.order->realizationFinished = true;
-//            AddEvent()->CaptureFailsBecauseOfCastle(a.unit, a.order->type, hex(a.unit->position), hex(reason));
-//            return true;
-//        }
-//    }
 
     if (a.action.type == GameAction::RECRUIT)
     {
@@ -43,6 +25,8 @@ bool GameOrderExecution::CheckIfActionBurns(Action a)
         {
             players[a.unit->color]->resources[a.order->type]--;
             a.order->realizationFinished = true;
+
+            // TODO: нет, причина сгорания приказа другая
             AddEvent()->RecruitFailsBecauseOfAgite(a.unit, a.order->type, hex(a.unit->position));
             return true;
         }
@@ -53,7 +37,7 @@ bool GameOrderExecution::CheckIfActionBurns(Action a)
 
 // одинаковые действия выполняются "одновременно"
 // важно для, например, покидания гекса юнитом
-void GameOrderExecution::Realize(QList<Action> act)
+void Game::Realize(QList<Action> act)
 {
     if (act.size() == 0)
         return;

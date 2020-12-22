@@ -34,7 +34,7 @@ public:
         addPicture("on", "ChosenGameLabelPanel");
         light = NULL;
 
-        for (int i = 0; i < rules->NumOfPlayers; ++i)
+        for (int i = 0; i < rules->numOfPlayers; ++i)
             players.push_back(new PlayersElement(this, i < pl, false));
         field = new FieldTune(this, rules, false);
         units = new UnitsTune(this, rules, false);

@@ -470,6 +470,7 @@ void Unit::locateOrderLikeOnPanel(Order * order)
     reconfigureOrders();
 }
 
+// появление или исчезновение щитов
 void Unit::defenceTurn(int amount, bool on)
 {
     int i = shields.size() - 1;

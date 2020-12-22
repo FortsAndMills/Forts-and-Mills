@@ -47,7 +47,7 @@
 #define UNDEFINED -79
 #define INF 0x7FFFFFFF
 
-#define LESSONS_AMOUNT 5
+#define LESSONS_AMOUNT 4
 
 class Settings;
 class Constants;

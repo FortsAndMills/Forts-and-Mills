@@ -1,5 +1,5 @@
-#ifndef GAMEBASE_H
-#define GAMEBASE_H
+#ifndef GAMESTRUCTURES_H
+#define GAMESTRUCTURES_H
 
 #include "Technical/Headers.h"
 #include "Game/GameRules.h"
@@ -8,7 +8,6 @@
 #include "Game/GameUnit.h"
 #include "Game/GameOrder.h"
 #include "Game/GameAction.h"
-
 
 // виды статусов юнита в бою
 enum FightStatus {FS_ATTACK, FS_DEFEND, FS_DISTANT};
@@ -34,33 +33,4 @@ public:
     bool fight_finished = false;
 };
 
-
-class GameBase
-{
-public:
-    Random * rand;
-    GameRules * rules;
-
-    QMap <PlayerColor, GamePlayer *> players;
-    QList <QList <GameHex *> > hexes;
-    GameHex * hex(Coord Pos)
-    {
-        return hexes[Pos.x][Pos.y];
-    }
-
-    explicit GameBase(GameRules * rules, Random * rand);
-    virtual ~GameBase() {}
-
-    // вспомогательные функции навигации по полю
-    WAY oppositeWay(WAY way);
-    Coord adjacentHex(Coord which, WAY way);
-    QList<Coord> visible_hexes(Coord my, int radius = 2);
-
-    QMap<WAY, Coord > adjacentHexesMap(Coord which);
-    QList<Coord> adjacentHexes(Coord which);
-
-    WAY whereIs(Coord which, Coord from);
-    bool isAdjacent(Coord first, Coord second);
-};
-
-#endif // GAMEBASE_H
+#endif // GAMESTRUCTURES_H

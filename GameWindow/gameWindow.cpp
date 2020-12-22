@@ -79,7 +79,7 @@ void GameWindow::MixEvents()
 
                     if (game->events[e]->unit == NULL)
                     {
-                        qDebug() << "ERROR: Hero is NULL" << endl;
+                        qDebug() << "ERROR: Hero is NULL" << Qt::endl;
                     }
                 }
 

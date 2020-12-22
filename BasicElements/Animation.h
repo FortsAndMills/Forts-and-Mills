@@ -9,8 +9,8 @@ class Animation : public QObject
 {
     Q_OBJECT
 
-    qreal target;  // Цель
 private:
+    qreal target;  // Целевое значение
     Object * work_object;  // Объект, с которым проводятся изменения
     ANIMATION_TYPE type;  // Что анимирует
 
@@ -25,10 +25,17 @@ public:
               void (Object::*setValue)(qreal newValue),
               ANIMATION_TYPE type, qreal target, int time);
     friend AnimationManager;
-    friend Object;  // для доступа к target :(
 
     void stop();  // Останавливает анимацию и сразу переключает на конечное значение
     void start(qreal target_value, int time);  // Начинает анимацию с новым target
+
+    void move_by(qreal dx, qreal dy) // если объект переместился на (dx, dy)
+    {
+        if (type == X_POS)
+            target += dx;
+        if (type == Y_POS)
+            target += dy;
+    }
 
 private slots:
     void frame();  // Реализация одного кадра

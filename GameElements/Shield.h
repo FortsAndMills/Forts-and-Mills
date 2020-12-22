@@ -19,9 +19,9 @@ public:
         this->color = color;
 
         addGeometry("small", QRectF((1 - constants->ShieldSmallStateWidthShift) / 2,
-                                                           (1 - constants->ShieldSmallStateHeightShift) / 2,
-                                                              constants->ShieldSmallStateWidthShift,
-                                                              constants->ShieldSmallStateHeightShift));
+                                    (1 - constants->ShieldSmallStateHeightShift) / 2,
+                                    constants->ShieldSmallStateWidthShift,
+                                    constants->ShieldSmallStateHeightShift));
         addPicture("small", "NeutralShield");
     }
     // для призраков-гексов))

@@ -29,19 +29,15 @@ GameRules::GameRules()
     fieldW = 10;
     fieldH = 6;
 
-    NumOfPlayers = 2;
+    numOfPlayers = 2;
 
     ordersInGame << "Capture" << "Recruit"  << "Liberate"
-                 << "Attack" << "Go" << "Siege"
-                 << "Fire" << "Cure" << "Fortify";
+                 << "Attack" << "Go" << "Cure" << "Fortify";
 
     dayTimes = 3;
     changingDayTimes = false;
 
-    unitsInGame << "Scrat" << "Pig" << "Karkun" << "Hippo";
-
-    // настройка обучающей игры
-    limitatingResources = true;
+    unitsInGame << "Scrat";// << "Pig" << "Karkun" << "Hippo";
 
     setTestOptions();
     recountGenerationParameters();
@@ -67,7 +63,6 @@ void GameRules::setTestOptions()
         QTextStream tstream(hostFile);
         QString s;
         tstream >> s >> damageToHomellesUnits
-                      >> s >> limitatingResources
                       >> s >> peacefullOrdersBurns
                       >> s >> start_choices
                       >> s >> mill_connections
@@ -87,14 +82,13 @@ void GameRules::setTestOptions()
     if (hostFile->open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QTextStream tstream(hostFile);
-        tstream << "DamageToHomelessUnits: " << damageToHomellesUnits << endl
-                      << "MillsLimitResources: " << limitatingResources << endl
-                      << "PeacefullOrdersBurns: " << peacefullOrdersBurns << endl
-                      << "NumOfStartingChoices: " << start_choices << endl
-                      << "RecruitWhenConnectedToMill: " << mill_connections << endl
-                      << "FortsGenerationLimits: " << fort_gp_min << " " << fort_gp_max << endl
-                      << "MillsGenerationLimits: " << mill_gp_min << " " << mill_gp_max << endl
-                      << "RiversGenerationLimits: " << river_gp_min << " " << river_gp_max << endl
+        tstream << "DamageToHomelessUnits: " << damageToHomellesUnits << Qt::endl
+                      << "PeacefullOrdersBurns: " << peacefullOrdersBurns << Qt::endl
+                      << "NumOfStartingChoices: " << start_choices << Qt::endl
+                      << "RecruitWhenConnectedToMill: " << mill_connections << Qt::endl
+                      << "FortsGenerationLimits: " << fort_gp_min << " " << fort_gp_max << Qt::endl
+                      << "MillsGenerationLimits: " << mill_gp_min << " " << mill_gp_max << Qt::endl
+                      << "RiversGenerationLimits: " << river_gp_min << " " << river_gp_max << Qt::endl
                       << "ResourcesAmountCoeff: " << K_change;
         hostFile->close();
     }
@@ -149,7 +143,7 @@ void GameRules::FormPlayersList(Random *rand)
     // составляем список цветов игроков
     QList <QString> vars = AllPlayers;
 
-    for (int i = 0; i < NumOfPlayers; ++i)
+    for (int i = 0; i < numOfPlayers; ++i)
     {
         int k = rand->next() % vars.size();
         players << vars[k];
@@ -161,7 +155,7 @@ void GameRules::FormPlayersList(Random *rand)
 QList<qint32> GameRules::get()
 {
     QList <qint32> ans;
-    ans << NumOfPlayers << fieldW << fieldH;
+    ans << numOfPlayers << fieldW << fieldH;
 
     ans << 0;
     foreach (QString u, AllUnits)
@@ -185,7 +179,7 @@ QList<qint32> GameRules::get()
 }
 GameRules::GameRules(QList<qint32> hash)
 {
-    NumOfPlayers = hash[0];
+    numOfPlayers = hash[0];
     fieldW = hash[1];
     fieldH = hash[2];
 
@@ -231,7 +225,7 @@ QTextStream &operator >>(QTextStream &stream, GameRules * r)
         if (s == "Field:")
             stream >> r->fieldH >> C >> r->fieldW;
         if (s == "Players:")
-            stream >> r->NumOfPlayers;
+            stream >> r->numOfPlayers;
         if (s == "Orders:")
             stream >> r->ordersInGame;
         if (s == "Units:")
@@ -255,7 +249,7 @@ QTextStream &operator >>(QTextStream &stream, GameRules * r)
 QDataStream &operator << (QDataStream &stream, const GameRules *r)
 {
     stream << r->fieldH << r->fieldW
-                << r->NumOfPlayers
+                << r->numOfPlayers
                 << r->ordersInGame
                 << r->unitsInGame
                 << r->dayTimes << r->changingDayTimes;
@@ -264,7 +258,7 @@ QDataStream &operator << (QDataStream &stream, const GameRules *r)
 QDataStream &operator >>(QDataStream &stream, GameRules * r)
 {
     stream >> r->fieldH >> r->fieldW
-                >> r->NumOfPlayers
+                >> r->numOfPlayers
                 >> r->ordersInGame
                 >> r->unitsInGame
                 >> r->dayTimes >> r->changingDayTimes;

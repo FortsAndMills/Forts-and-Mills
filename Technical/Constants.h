@@ -248,12 +248,6 @@ public:
     static qreal unitHomeWidth;  // размер
     static qreal unitHomeHeight;
 
-    // Картинка живущего населения на гексе:
-    static qreal livingNationPointX;  // верхний левый угол
-    static qreal livingNationPointY;
-    static qreal livingNationWidth;  // размер
-    static qreal livingNationHeight;
-
     // Картинка информации на гексе:
     static qreal informationPointX;  // верхний левый угол
     static qreal informationPointY;
@@ -268,6 +262,9 @@ public:
     static qreal hexShieldsMergeX;
     static qreal hexShieldsWidth;  // размер
     static qreal hexShieldsHeight;
+
+    // Речки:
+    static qreal riverHeight;
 
     // Путь
     static qreal unitWayWidth;  // ширина пути

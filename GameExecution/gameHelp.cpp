@@ -1,12 +1,6 @@
-#include "GameHelp.h"
+#include "Game.h"
 
-GameHelp::GameHelp(GameRules *rules, Random *rand) :
-    GameBase(rules, rand)
-{
-
-}
-
-GameUnit *GameHelp::whoHasHomeAt(Coord c)
+GameUnit *Game::whoHasHomeAt(Coord c)
 {
     foreach (GamePlayer * p, players)
         foreach (GameUnit * u, p->units)
@@ -14,7 +8,7 @@ GameUnit *GameHelp::whoHasHomeAt(Coord c)
                  return u;
     return NULL;
 }
-bool GameHelp::isOccupied(GameHex *hex)
+bool Game::isOccupied(GameHex *hex)
 {
     foreach (GamePlayer * p, players)
         if (p->color != hex->color)
@@ -23,7 +17,7 @@ bool GameHelp::isOccupied(GameHex *hex)
                      return true;
     return false;
 }
-QSet <GameUnit *> GameHelp::alliesOnTheSameHex(GameUnit * tar)
+QSet <GameUnit *> Game::alliesOnTheSameHex(GameUnit * tar)
 {
     QSet <GameUnit *> ans;
     foreach (GameUnit * unit, players[tar->color]->units)
@@ -36,7 +30,7 @@ QSet <GameUnit *> GameHelp::alliesOnTheSameHex(GameUnit * tar)
     return ans;
 }
 
-QSet<GameHex *> GameHelp::Connected(QString color, bool consider_occupied, const QSet<Coord> & additional_captures)
+QSet<GameHex *> Game::Connected(QString color, bool consider_occupied, const QSet<Coord> & additional_captures)
 {
     QSet<GameHex *> visited;
     QVector<GameHex*> to_visit;
@@ -73,7 +67,7 @@ QSet<GameHex *> GameHelp::Connected(QString color, bool consider_occupied, const
     return visited;
 }
 
-bool GameHelp::isAgitatedByEnemy(Coord which, QString me)
+bool Game::isAgitatedByEnemy(Coord which, QString me)
 {
     foreach (PlayerColor color, hex(which)->agitated)
         if (color != me)
@@ -81,7 +75,7 @@ bool GameHelp::isAgitatedByEnemy(Coord which, QString me)
     return false;
 }
 
-GameUnit *GameHelp::getUnitById(qint16 id)
+GameUnit *Game::getUnitById(qint16 id)
 {
     foreach (GamePlayer * player, players)
     {
@@ -92,6 +86,26 @@ GameUnit *GameHelp::getUnitById(qint16 id)
         }
     }
 
-    qDebug() << "ERROR: unit not found by id" << endl;
+    qDebug() << "ERROR: unit not found by id" << Qt::endl;
     return NULL;
+}
+
+QString Game::lastPlayerInGame()
+{
+    QString ans = "Neutral";
+    bool flag = true;
+    foreach (GamePlayer * player, players)
+    {
+        if (!player->GiveUp)
+        {
+            if (flag)
+            {
+                flag = false;
+                ans = player->color;
+            }
+            else
+                ans = "Neutral";
+        }
+    }
+    return ans;
 }

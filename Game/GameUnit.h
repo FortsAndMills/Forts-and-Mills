@@ -13,9 +13,8 @@ public:
     int max_health = 5;
     int init_health = 5;
     int max_defenceBonus = 0;
-    //bool isDestroyingAllies = false;
 
-    GameUnitParameters(GameRules *rules, UnitType type);
+    GameUnitParameters(GameRules *, UnitType type);
 };
 
 

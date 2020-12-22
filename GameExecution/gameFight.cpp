@@ -1,9 +1,4 @@
-#include "GameFight.h"
-
-GameFight::GameFight(GameRules *rules, Random *rand) :
-    GameEvents(rules, rand)
-{
-}
+#include "Game.h"
 
 int fb_priority(FightBrid fb)
 {
@@ -16,7 +11,7 @@ int fb_priority(FightBrid fb)
     return 1;
 }
 
-Strike GameFight::getStrike(QSet <GameUnit*> fighters)
+Strike Game::getStrike(QSet <GameUnit*> fighters)
 {
     // определяем, есть ли игрок, который пока сражается укреплениями
     PlayerColor defender = "none";
@@ -191,7 +186,7 @@ Strike GameFight::getStrike(QSet <GameUnit*> fighters)
 
     return strike;
 }
-void GameFight::CountStrike(QSet<GameUnit *> fighters, Strike strike)
+void Game::CountStrike(QSet<GameUnit *> fighters, Strike strike)
 {
     // Реализация боя (обмена ударами)
     foreach (GameUnit * u, fighters)
@@ -231,7 +226,7 @@ void GameFight::CountStrike(QSet<GameUnit *> fighters, Strike strike)
     }
 }
 
-void GameFight::UnitsFight(QSet <GameUnit *> fighters)
+void Game::UnitsFight(QSet <GameUnit *> fighters)
 {
     // заполняем FightStatus: защищается ли юнит, обороняется или он стреляет.
     fs.clear();

@@ -2,7 +2,7 @@
 #define GAMEEVENT_H
 
 #include "Technical/Headers.h"
-#include "GameBase.h"
+#include "GameStructures.h"
 
 // Техническая структура для передачи данных о событиях
 // из игрового модуля в графический
