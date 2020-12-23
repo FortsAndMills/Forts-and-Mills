@@ -4,6 +4,7 @@
 #include "Technical/Headers.h"
 #include "BasicElements/StateObject.h"
 
+// Кнопка, которая увеличивается при наведении.
 class SpecialButton : public StateObject
 {
     Q_OBJECT
@@ -13,9 +14,9 @@ public:
         StateObject(parent, "default", Name, CLICKABLE | HOVER, "", simpleLayer ? "SimpleLayer" : "")
     {
         addGeometry("entered", QRectF(constants->specialButtonShiftX,
-                                                              constants->specialButtonShiftY,
-                                                              constants->specialButtonWidthShift,
-                                                              constants->specialButtonHeightShift));
+                                      constants->specialButtonShiftY,
+                                      constants->specialButtonWidthShift,
+                                      constants->specialButtonHeightShift));
     }
 
 private:

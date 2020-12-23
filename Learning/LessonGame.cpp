@@ -326,14 +326,14 @@ void LessonGame::StartGame()
 
         CaptureHex(hexes[4][2], rules->players[0]);
         unit3 = NewUnit(players[rules->players[0]], "Scrat", Coord(3, 3));
-        SwitchHome(unit3, Coord(4, 2), GameHex::HOME, false);
+        SwitchHome(unit3, Coord(4, 2), GameHex::HOME);
 
         CaptureHex(hexes[3][5], rules->players[1]);
         enemy_unit1 = NewUnit(players[rules->players[1]], "Scrat", Coord(3, 5));
 
         CaptureHex(hexes[4][4], rules->players[1]);
         enemy_unit2 = NewUnit(players[rules->players[1]], "Scrat", Coord(3, 5));
-        SwitchHome(enemy_unit2, Coord(4, 4), GameHex::HOME, false);
+        SwitchHome(enemy_unit2, Coord(4, 4), GameHex::HOME);
 
         CaptureHex(hexes[4][6], rules->players[1]);
         NewUnit(players[rules->players[1]], "Pig", Coord(4, 6));
@@ -1001,7 +1001,8 @@ void LessonGame::PlanRealisation()
     if (N == 3)
     {
         QList <Coord> vars;
-        vars << Coord(2, 2) << Coord(3, 5) << Coord(0, 1) << Coord(4, 6) << Coord(2, 0) << Coord(3, 0) << Coord(4, 3) << Coord(4, 5) << Coord(4, 6) << Coord(4, 7);
+        vars << Coord(2, 2) << Coord(3, 5) << Coord(0, 1) << Coord(4, 6) << Coord(2, 0) << Coord(3, 0) << Coord(4, 3)
+             << Coord(4, 5) << Coord(4, 6) << Coord(4, 7) << Coord(1, 1) << Coord(1, 0) << Coord(3, 1) << Coord(2, 3);
         if (round == 0)
         {
             this->chosenHex[rules->players[1]] = vars[0];

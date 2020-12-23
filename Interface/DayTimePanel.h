@@ -6,7 +6,8 @@
 #include "Technical/Constants.h"
 #include "GameElements/DayTimeButton.h"
 
-// Эта панель используется и в игре, и в меню создания игры, и на панельке комнаты игры в главменю
+// Эта панель используется и в игре, и в меню создания игры,
+// и на панельке комнаты игры в главменю
 class DayTimePanel : public GraphicObject
 {
     Q_OBJECT

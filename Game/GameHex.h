@@ -33,7 +33,6 @@ public:
 
     QSet<PlayerColor> agitated;  // игроки, которые агитировали эту клетку
 
-    bool provides_unit = true;   // ещё может предоставить юнита
     enum HexStatus {TO_BE_CONQUERED,   // нейтральна, есть юнит
                     NOT_CONNECTED,     // захвачена, нет соединения с мельницей
                     NOT_A_HOME,        // захвачена, можно рекрутировать
@@ -41,6 +40,11 @@ public:
                     HOME,              // является чьим-то домом
                     TOMBSTONE}         // юнит мёртв
                    status = TO_BE_CONQUERED;
+    bool provides_unit()
+    {
+        return status == TO_BE_CONQUERED || status == NOT_CONNECTED || status == NOT_A_HOME;
+    }
+
     
     PlayerColor color = "Neutral";  // владелец
     Coord coord;                    // координаты

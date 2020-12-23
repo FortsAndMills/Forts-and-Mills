@@ -1,39 +1,22 @@
-#include "StatesControl.h"
+#include "GameWindow.h"
 
-StatesControl::StatesControl(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
-    Events(game, PlayerIndex, parent)
-{
-
-}
-
-void StatesControl::getReadyToChooseHex(QList <Coord> variants)
+void GameWindow::getReadyToChooseHex(QList <Coord> variants)
 {
     if (!game->players[mainPlayerColor]->GiveUp)
     {
         state = CHOOSING_HEX;
         foreach (Hex * hex, hexes)
         {
-//            if (game->rules->regions_start)
-//            {
-//                if (variants.contains(hex->prototype->region_center))
-//                    hex->forbidToSelect(false);
-//                else
-//                    hex->forbidToSelect();
-//                hex->deplanCapturing(mainPlayerColor);
-//            }
-//            else
-//            {
-                if (variants.contains(hex->prototype->coord))
-                {
-                    hex->light();
-                    hex->forbidToSelect(false);
-                }
-                else
-                {
-                    hex->light(false);
-                    hex->forbidToSelect();
-                }
-//            }
+            if (variants.contains(hex->prototype->coord))
+            {
+                hex->light();
+                hex->forbidToSelect(false);
+            }
+            else
+            {
+                hex->light(false);
+                hex->forbidToSelect();
+            }
         }
     }
     else
@@ -41,7 +24,7 @@ void StatesControl::getReadyToChooseHex(QList <Coord> variants)
         state = WAIT_FOR_ENEMY_START_POINT;
     }
 }
-void StatesControl::getReadyToPlanning()
+void GameWindow::getReadyToPlanning()
 {
     if (!game->players[mainPlayerColor]->GiveUp)
     {
@@ -75,7 +58,7 @@ void StatesControl::getReadyToPlanning()
     DayTimeTable->deselectAll();
     dayTime = -1;
 }
-void StatesControl::getReadyToRealization()
+void GameWindow::getReadyToRealization()
 {
     state = REALIZATION_PHASE;
 
@@ -101,7 +84,7 @@ void StatesControl::getReadyToRealization()
     next->enable(false);
 }
 
-bool StatesControl::setNextTime()
+bool GameWindow::setNextTime()
 {
     // проверка на корректность запроса
     if (dayTime + 1 == game->rules->dayTimes)
@@ -129,7 +112,7 @@ bool StatesControl::setNextTime()
 
     return true;
 }
-void StatesControl::setPreviousTime()
+void GameWindow::setPreviousTime()
 {
     DayTimeTable->select(dayTime, false);
 
@@ -146,7 +129,7 @@ void StatesControl::setPreviousTime()
             definishPlannedOrder(unit);
     }
 }
-void StatesControl::setTime(DayTime time)
+void GameWindow::setTime(DayTime time)
 {
     if (time == dayTime)
         return;
@@ -170,7 +153,7 @@ void StatesControl::setTime(DayTime time)
     else
         setEarlyTime(time);
 }
-void StatesControl::setEarlyTime(DayTime time)
+void GameWindow::setEarlyTime(DayTime time)
 {
     DayTimeTable->select(dayTime, false);
     while (dayTime != time)  // откатываем приказы полностью
@@ -189,7 +172,7 @@ void StatesControl::setEarlyTime(DayTime time)
         DayTimeTable->select(dayTime, true);
     }
 }
-void StatesControl::setLateTime(DayTime time)
+void GameWindow::setLateTime(DayTime time)
 {
     if (dayTime != -1)  // завершаем текущие планы из "промежуточных" состояний
     {
@@ -220,7 +203,7 @@ void StatesControl::setLateTime(DayTime time)
     DayTimeTable->select(dayTime, true);
 }
 
-void StatesControl::getReadyToChooseOrderParameter()
+void GameWindow::getReadyToChooseOrderParameter()
 {
     GameOrder * order = selectedUnit->prototype->plan[dayTime];
 
@@ -266,7 +249,7 @@ void StatesControl::getReadyToChooseOrderParameter()
         }
     }
 }
-void StatesControl::breakChoosingOrderParameter()
+void GameWindow::breakChoosingOrderParameter()
 {
     deplanOrder(selectedUnit->prototype, dayTime);  // убираем планирующийся приказ
 
@@ -282,7 +265,7 @@ void StatesControl::breakChoosingOrderParameter()
         hex->highlight("", false);
     }
 }
-void StatesControl::finishedChoosingOrderParameter()
+void GameWindow::finishedChoosingOrderParameter()
 {
     delightWholeField();  // убираем следы выбора параметров приказа
     disableWholeField();
@@ -321,7 +304,7 @@ void StatesControl::finishedChoosingOrderParameter()
 // show отображает как раз такое промежуточное, текущее состояние
 // finish завершает приказ, т.е. переводит из промежуточного в конечное
 // плюс у обеих операций должны быть обратные для отката
-void StatesControl::showPlannedOrder(GameUnit *unit)
+void GameWindow::showPlannedOrder(GameUnit *unit)
 {
     if (unit->plan[dayTime] == NULL)
         return;
@@ -367,7 +350,7 @@ void StatesControl::showPlannedOrder(GameUnit *unit)
         }
     }
 }
-void StatesControl::deshowPlannedOrder(GameUnit *unit, bool several)
+void GameWindow::deshowPlannedOrder(GameUnit *unit, bool several)
 {
     if (unit->plan[dayTime] == NULL)
         return;
@@ -414,14 +397,14 @@ void StatesControl::deshowPlannedOrder(GameUnit *unit, bool several)
 
             // проверка на то, что в этом гексе должна быть инфа об отсутствии дома
             if (hex(units[unit])->prototype->color == mainPlayerColor &&
-                 !game->isHexAHome(units[unit]->where(), mainPlayerColor))
+                hex(units[unit])->prototype->status == GameHex::NOT_A_HOME)
             {
                 hex(units[unit])->showInformation("Not" + mainPlayerColor + "UnitHome", "NotUnitHome");
             }
         }
     }
 }
-void StatesControl::finishPlannedOrder(GameUnit * unit)
+void GameWindow::finishPlannedOrder(GameUnit * unit)
 {
     if (unit->plan[dayTime] == NULL)
         return;
@@ -445,7 +428,7 @@ void StatesControl::finishPlannedOrder(GameUnit * unit)
         }
     }
 }
-void StatesControl::definishPlannedOrder(GameUnit *unit)
+void GameWindow::definishPlannedOrder(GameUnit *unit)
 {
     if (unit->plan[dayTime] == NULL)
         return;
@@ -473,7 +456,7 @@ void StatesControl::definishPlannedOrder(GameUnit *unit)
     }
 }
 
-void StatesControl::deplanOrder(GameUnit * unit, DayTime time)
+void GameWindow::deplanOrder(GameUnit * unit, DayTime time)
 {
     GameOrder * order = unit->plan[time];
     if (order == NULL)
@@ -501,8 +484,5 @@ void StatesControl::deplanOrder(GameUnit * unit, DayTime time)
     delete order;
     unit->plan[time] = NULL;
 }
-
-
-
 
 

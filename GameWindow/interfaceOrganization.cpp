@@ -1,7 +1,6 @@
-#include "InterfaceOrganization.h"
+#include "GameWindow.h"
 
-InterfaceOrganization::InterfaceOrganization(Game * game, qint8 PlayerIndex, GraphicObject * parent) :
-    GameElementsOrganization(game, PlayerIndex, parent)
+void GameWindow::initInterface()
 {
     setOpacity(0);
     leftPanel = "";
@@ -45,7 +44,7 @@ InterfaceOrganization::InterfaceOrganization(Game * game, qint8 PlayerIndex, Gra
 
     dialog = new Dialog(this, game->rules);
 }
-void InterfaceOrganization::Delete()
+void GameWindow::deleteInterface()
 {
     foreach (PlayerResources * pr, player_windows)
         pr->Delete();
@@ -63,25 +62,23 @@ void InterfaceOrganization::Delete()
         hexCopy->Delete();
     if (dialog != NULL)
         dialog->Delete();
-
-    GameElementsOrganization::Delete();
 }
 
-QRectF InterfaceOrganization::leftPanelGeometry()
+QRectF GameWindow::leftPanelGeometry()
 {
     return QRectF((1 - constants->playerPanelWidth) * width(),
                   constants->upperPanelSize * height(),
                   constants->playerPanelWidth * width(),
                   constants->playerPanelHeight * height());
 }
-QRectF InterfaceOrganization::closedLeftPanelGeometry()
+QRectF GameWindow::closedLeftPanelGeometry()
 {
     return QRectF(width(),
                    constants->upperPanelSize * height(),
                    constants->playerPanelWidth * width(),
                    constants->playerPanelHeight * height());
 }
-void InterfaceOrganization::resizeLeftPanelSwitchers(qreal W, qreal H)
+void GameWindow::resizeLeftPanelSwitchers(qreal W, qreal H)
 {
     int n = leftPanelSwitchers.size();
     qreal wid = constants->playerPanelWidth * W / (n + (n + 1) * constants->leftPanelSwitchersMargin);
@@ -94,7 +91,7 @@ void InterfaceOrganization::resizeLeftPanelSwitchers(qreal W, qreal H)
         X += wid * (1 + constants->leftPanelSwitchersMargin);
     }
 }
-void InterfaceOrganization::resizeDialog(qreal W, qreal H)
+void GameWindow::resizeDialog(qreal W, qreal H)
 {
     dialog->setGeometry(W * (1 / 2.0 - constants->dialogWidth / 2),
                                        H * (1 / 2.0 - constants->dialogHeight / 2),
@@ -102,7 +99,7 @@ void InterfaceOrganization::resizeDialog(qreal W, qreal H)
                                        H * constants->dialogHeight);
 }
 
-void InterfaceOrganization::resize(qreal W, qreal H)
+void GameWindow::resize(qreal W, qreal H)
 {
     constants->recountSizes(W, H, game->rules);  // Пересчёт всех констант!
 
@@ -172,14 +169,14 @@ void InterfaceOrganization::resize(qreal W, qreal H)
     resizeRockets();
     resizeFortifications();
 }
-void InterfaceOrganization::resizeHexCopy()
+void GameWindow::resizeHexCopy()
 {
     hexCopy->setGeometry(constants->hexCopyPointX,
                                            constants->hexCopyPointY,
                                            constants->hexCopyWidth,
                                            constants->hexCopyHeight);
 }
-void InterfaceOrganization::resizeDayTimeTable(qreal W, qreal H)
+void GameWindow::resizeDayTimeTable(qreal W, qreal H)
 {
     int n = DayTimeTable->DayTimePictures.size();
     qreal width = constants->dayTimePictureWidth * (n + constants->dayTimeTableMargin * (n - 1));
@@ -199,7 +196,7 @@ void InterfaceOrganization::resizeDayTimeTable(qreal W, qreal H)
                               H * constants->downPanelSize * (1 - 2 * constants->dayTimeTableUpSpace));
 }
 
-void InterfaceOrganization::leftPanelSwitcherClicked(QString name)
+void GameWindow::leftPanelSwitcherClicked(QString name)
 {
     if (name == mainPlayerColor)
         return;

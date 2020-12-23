@@ -67,7 +67,6 @@ public:
     int damageToHomellesUnits;  // тестовая настройка: бездомные не умирают, а получают дамаг
     int peacefullOrdersBurns;   // тестовая настройка: мирные приказы сжигаются
     int start_choices;          // сколько раз выбираем стартовые клетки
-    int mill_connections;       // тестовая настройка: для рекрута нужно соединение с мельницей
     int fort_gp_min, fort_gp_max;
     int mill_gp_min, mill_gp_max;
     int river_gp_min, river_gp_max;

@@ -1,12 +1,6 @@
-#include "EventsRealization.h"
+#include "GameWindow.h"
 
-EventsRealization::EventsRealization(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
-    GameLog(game, PlayerIndex, parent)
-{
-
-}
-
-EventsRealization::WaitingType EventsRealization::RealizeEvent()
+GameWindow::WaitingType GameWindow::RealizeEvent()
 {
     GameMessage * e = game->events[0];
     if (e->type == CHOOSE_HEX)
@@ -24,7 +18,7 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
         else
         {
             // заполняем лог и запускаем продолжение
-            logMillChoice();
+            //logMillChoice();
             game->HexChosen();
             return WaitingType();
         }
@@ -44,7 +38,7 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
         {
             getReadyToRealization();
 
-            logPlan();
+            //logPlan();
             game->PlanRealisation();
 
             return WaitingType();
@@ -437,7 +431,7 @@ EventsRealization::WaitingType EventsRealization::RealizeEvent()
 }
 
 // ищем центр объекта, который представляет то, чем сражается юнит
-void EventsRealization::UnitsFightObject(QSet <GameUnit *> fighters, const Strike & strike,
+void GameWindow::UnitsFightObject(QSet <GameUnit *> fighters, const Strike & strike,
                                          QMap <GameUnit *, QPointF > & ans, QMap <PlayerColor, QSet<QPointF> > & team_ans)
 {
     foreach (GameUnit * u, fighters)
@@ -474,7 +468,7 @@ void EventsRealization::UnitsFightObject(QSet <GameUnit *> fighters, const Strik
             team_ans[u->color] << ans[u];
     }
 }
-void EventsRealization::UnitsFight(QSet <GameUnit *> fighters, const Strike & strike,
+void GameWindow::UnitsFight(QSet <GameUnit *> fighters, const Strike & strike,
                                    const QMap <GameUnit *, QPointF > & points, const QMap <PlayerColor, QSet<QPointF> > & team_points)
 {
     QSet <PlayerColor> global_dones;

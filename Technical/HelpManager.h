@@ -8,7 +8,7 @@ class HelpManager : public QObject
 {
     Q_OBJECT
 
-    public:
+public:
     static QVector <QString> HelpInfo(QString name, GameRules * rules = NULL);
     static QString HelpPicture(QString name);
 

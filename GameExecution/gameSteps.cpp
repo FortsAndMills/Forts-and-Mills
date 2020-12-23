@@ -135,7 +135,7 @@ void Game::recruitNewUnits()
 {
     foreach (Recruited r, recruitedUnits)
     {
-        if (!rules->mill_connections || Connected(r.color, true).contains(hex(r.where)))
+        if (Connected(r.color, true).contains(hex(r.where)))
             NewUnit(players[r.color], r.type, r.where);
         else
         {
@@ -252,3 +252,45 @@ void Game::addDayTime()
     }
 }
 
+// Подготовки к новому раунду (очистки предыдущих планов)
+bool Game::ChooseOneOfTheStartHexes()
+{
+    if (rules->start_choices <= 0) return false;
+    --rules->start_choices;
+
+    // составляем список вариантов
+    QList <Coord> variants;
+    for (int x = 0; x < rules->fieldH; ++x)
+        for (int y = 0; y < rules->fieldW; ++y)
+            if (hexes[x][y]->canBeChosenAsStartPoint)
+                variants << Coord(x, y);
+
+    if (variants.size() < players.size())  // если выбор закончился
+        return false;
+
+    // очищаем от предыдущих ходов
+    chosenHex.clear();
+    ready.clear();
+
+    // шлём запрос пользователю выбрать гекс
+    AddEvent()->ChooseHex(variants);
+    return true;
+}
+void Game::StartPlanning()
+{
+    // очистка от предыдущих планов
+    foreach (GamePlayer * player, players)
+    {
+        foreach (GameUnit * unit, player->units)
+        {
+            foreach (GameOrder * order, unit->plan)
+            {
+                delete order;
+            }
+            unit->plan.clear();
+        }
+    }
+
+    ready.clear();
+    AddEvent()->Plan();
+}

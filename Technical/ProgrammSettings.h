@@ -100,7 +100,7 @@ public:
         {
             QTextStream tstream(hostFile);
             tstream << "PORT = " << PORT << Qt::endl <<
-                               "HOST NAME = " << HOST_NAME << Qt::endl;
+                       "HOST NAME = " << HOST_NAME << Qt::endl;
             hostFile->close();
         }
 
@@ -110,7 +110,7 @@ public:
             QDataStream stream(file);
             stream << this;
 
-            // <?> Возможны ли проблемы при записи?
+            // TODO: Возможны ли проблемы при записи?
 
             file->close();
             return;

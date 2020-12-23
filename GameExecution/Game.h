@@ -34,6 +34,9 @@ protected:
     void agitationEnds();
     void addDayTime();
 
+    bool ChooseOneOfTheStartHexes();
+    void StartPlanning();
+
     // -------------------------------------------------------------------------------
     // реализация отдельных приказов
     // gameOrderExecution.cpp
@@ -82,7 +85,7 @@ protected:
     void DecaptureHex(GameHex * hex, GameUnit * who);
 
     void KillRecruited(GameHex * hex, GameUnit * who);
-    void RecheckMillConnection(QString color, GameUnit * who);
+    void RecheckMillConnection(PlayerColor color, GameUnit * who);
 
     GameUnit * NewUnit(GamePlayer * player, UnitType type, Coord where);
     void DestroyUnit(GameUnit * unit);
@@ -115,17 +118,6 @@ protected:
     QList <Recruited> recruitedUnits;  // юниты для генерации в конце хода
     virtual void GenerateField();
 
-public:
-    bool isHexAHome(Coord which, QString color);
-    Coord canBeCaptured(Coord which, PlayerColor color);
-    int resourcesLimit(PlayerColor color);
-
-    enum SEARCH_TYPE {ENEMY, ALLY};
-    QSet<GameUnit *> find(SEARCH_TYPE ST, GameUnit * for_whom,
-                    Coord staying = ANY, Coord going_to = ANY);
-
-    QString isGameFinished();
-
     // -------------------------------------------------------------------------------
     // взаимодействие с графическим модулем
     // GameTurns.cpp
@@ -155,24 +147,32 @@ protected:
     }
 
 public:
-    void playerGiveUp(int index);
-
     // может ли юнит использовать приказ и какие у него есть варианты
     bool CanUse(GameUnit * unit, OrderType order);
     QList<OrderType> whatCanUse(GameUnit *);
+
+    // обязан ли приказ быть последним (проверка пересечения речки)
     bool must_be_last(GameUnit * unit, DayTime time);
 
-    bool ChooseOneOfTheStartHexes();
-    void StartPlanning();
+    // кто-то из игроков сдался
+    void playerGiveUp(int index);
 
     // -------------------------------------------------------------------------------
     // утилиты
-    // GameHelp.cpp
+    // GameUtils.cpp
 protected:
     QSet <GameUnit *> alliesOnTheSameHex(GameUnit * tar);
+    enum SEARCH_TYPE {ENEMY, ALLY};
+    QSet<GameUnit *> find(SEARCH_TYPE ST, GameUnit * for_whom,
+                    Coord staying = ANY, Coord going_to = ANY);
+
     QSet <GameHex *> Connected(PlayerColor color, bool consider_occupied = false, const QSet<Coord> &additional_captures = QSet<Coord>());
     bool isOccupied(GameHex * hex);
+
     bool isAgitatedByEnemy(Coord which, PlayerColor me);
+    int resourcesLimit(PlayerColor color);
+
+    PlayerColor isGameFinished();
 
 public:
     GameUnit * whoHasHomeAt(Coord c);
@@ -182,8 +182,8 @@ public:
     QString lastPlayerInGame();
 
     // -------------------------------------------------------------------------------
-    // утилиты
-    // GameBase.cpp
+    // вспомогательные функции навигации по полю
+    // GameGeometry.cpp
 public:
     Random * rand;
     GameRules * rules;
@@ -195,7 +195,6 @@ public:
         return hexes[Pos.x][Pos.y];
     }
 
-    // вспомогательные функции навигации по полю
     WAY oppositeWay(WAY way);
     Coord adjacentHex(Coord which, WAY way);
     QList<Coord> visible_hexes(Coord my, int radius = 2);

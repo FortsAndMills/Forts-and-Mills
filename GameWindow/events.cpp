@@ -1,11 +1,6 @@
-#include "Events.h"
+#include "GameWindow.h"
 
-Events::Events(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
-    InterfaceOrganization(game, PlayerIndex, parent)
-{
-}
-
-void Events::disableWholeField()
+void GameWindow::disableWholeField()
 {
     for (int i = 0; i < game->rules->fieldH; ++i)  // делаем гексы невыделенными и недоступными
     {
@@ -15,7 +10,7 @@ void Events::disableWholeField()
         }
     }
 }
-void Events::delightWholeField()
+void GameWindow::delightWholeField()
 {
     for (int i = 0; i < game->rules->fieldH; ++i)  // делаем гексы невыделенными
     {
@@ -26,7 +21,7 @@ void Events::delightWholeField()
     }
 }
 
-void Events::newUnit(GameUnit * unit, Coord where)
+void GameWindow::newUnit(GameUnit * unit, Coord where)
 {
     units[unit] = new Unit(unit, game, this, unit->color == mainPlayerColor);
     // привязываем сигналы от нового юнита к обработчикам!
@@ -45,7 +40,7 @@ void Events::newUnit(GameUnit * unit, Coord where)
     units[unit]->AnimationStart(WIDTH, constants->unitsSize, constants->unitReconfigureTime);
     units[unit]->AnimationStart(HEIGHT, constants->unitsSize, constants->unitReconfigureTime);
 }
-void Events::blowUnit(GameUnit * unit)
+void GameWindow::blowUnit(GameUnit * unit)
 {
     if (!units.contains(unit))
         debug << "FATAL ERROR: blowing very strange unit!\n";
@@ -73,7 +68,7 @@ void Events::blowUnit(GameUnit * unit)
 }
 
 // перемещаем юнит в гекс coord с выбранным состоянием
-bool Events::moveUnit(Unit * unit, Coord cord, Hex::POSITION_STATE position_type)
+bool GameWindow::moveUnit(Unit * unit, Coord cord, Hex::POSITION_STATE position_type)
 {
     // этот флаг показывает, что перемещение уже началось
     // и в исходном гексе у юнита уже есть аж две точки и, значит, готовая стрелка
@@ -110,7 +105,7 @@ bool Events::moveUnit(Unit * unit, Coord cord, Hex::POSITION_STATE position_type
     // возвращаем true, если со стрелкой работа не велась
     return !wasLeaving || ways_from[unit].isEmpty();
 }
-void Events::moveUnitBack(Unit * unit)
+void GameWindow::moveUnitBack(Unit * unit)
 {
     // отмотка движения юнита по истории
     unit->deanchorFrom(hex(unit));
@@ -122,7 +117,7 @@ void Events::moveUnitBack(Unit * unit)
 
     hexPointsChanged();
 }
-void Events::moveUnitForward(Unit * unit)
+void GameWindow::moveUnitForward(Unit * unit)
 {
     // "реализуем" движение, то есть предполагается,
     // что юнит уже сдвинут, но ещё есть точка, из которой он пришёл,
@@ -147,7 +142,7 @@ void Events::moveUnitForward(Unit * unit)
 
     hexPointsChanged();
 }
-void Events::moveToWayUnit(Unit * unit, Coord to)
+void GameWindow::moveToWayUnit(Unit * unit, Coord to)
 {
     // юнит сдвигается в промежуточную точку в стартовом гексе в направлении нового гекса
     unit->stack << Position(unit->where(), hex(unit)->createPoint(Hex::LEAVING, game->whereIs(to, unit->where())));
@@ -155,7 +150,7 @@ void Events::moveToWayUnit(Unit * unit, Coord to)
 }
 
 // перевязываем приказ от юнита к гексу
-void Events::anchorOrderFromUnit(Unit * unit, Order * order)
+void GameWindow::anchorOrderFromUnit(Unit * unit, Order * order)
 {
     if (order == NULL)
         return;
@@ -170,7 +165,7 @@ void Events::anchorOrderFromUnit(Unit * unit, Order * order)
     hex(unit->where())->addOrder(order);
 }
 // наоборот
-void Events::anchorOrderToUnit(Unit *unit, Order *order)
+void GameWindow::anchorOrderToUnit(Unit *unit, Order *order)
 {
     hex(order->anchor)->removeOrder(order);
 
@@ -179,7 +174,7 @@ void Events::anchorOrderToUnit(Unit *unit, Order *order)
     unit->reconfigureOrders();
 }
 
-void Events::fortify(Hex * hex, int amount, PlayerColor color, QPointF origin)
+void GameWindow::fortify(Hex * hex, int amount, PlayerColor color, QPointF origin)
 {
     int fp;
     if (fortifications[hex].size() == 0)
@@ -207,7 +202,7 @@ void Events::fortify(Hex * hex, int amount, PlayerColor color, QPointF origin)
     }
     hexPointsChanged();
 }
-void Events::deleteAllFortification(Hex * hex)
+void GameWindow::deleteAllFortification(Hex * hex)
 {
     if (fortifications[hex].size() > 0)
     {
@@ -216,7 +211,7 @@ void Events::deleteAllFortification(Hex * hex)
 }
 
 // создание стрелки по последнему перемещению юнита
-void Events::createWay(Unit *unit)
+void GameWindow::createWay(Unit *unit)
 {
     Position to = unit->stack.last();
     Position from = unit->stack[unit->stack.size() - 2];
@@ -248,7 +243,7 @@ void Events::createWay(Unit *unit)
 
     reconfigureWays();
 }
-void Events::shoot(PlayerColor color, QPointF base, QPointF top, int, Rocket::RocketType type)
+void GameWindow::shoot(PlayerColor color, QPointF base, QPointF top, int, Rocket::RocketType type)
 {
     Rocket * sh = new Rocket(this, color, true, type);
     sh->reconfigure(base, top);  // FAIL неудачное название функции, так как она ничего не анимирует
@@ -258,7 +253,7 @@ void Events::shoot(PlayerColor color, QPointF base, QPointF top, int, Rocket::Ro
     sh->animate();
 }
 
-void Events::newResources(GameHex * hex, PlayerColor color, QList<Resource> resources, QList<bool> burn)
+void GameWindow::newResources(GameHex * hex, PlayerColor color, QList<Resource> resources, QList<bool> burn)
 {
     // делаем массив burn корректным
     while (burn.size() < resources.size())
@@ -282,12 +277,12 @@ void Events::newResources(GameHex * hex, PlayerColor color, QList<Resource> reso
     foreach (OrderPic * op, new_resources)
         op->anchorTo(player_windows[color]);
 }
-void Events::disappearAllTurnedOffOrders()
+void GameWindow::disappearAllTurnedOffOrders()
 {
     foreach (PlayerColor player, game->rules->players)
         player_windows[player]->disappearAllTurnedOffOrders();
 }
-void Events::reconfigureResources()
+void GameWindow::reconfigureResources()
 {
     foreach (PlayerResources * player, player_windows)
     {

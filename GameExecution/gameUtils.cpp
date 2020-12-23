@@ -8,6 +8,7 @@ GameUnit *Game::whoHasHomeAt(Coord c)
                  return u;
     return NULL;
 }
+
 bool Game::isOccupied(GameHex *hex)
 {
     foreach (GamePlayer * p, players)
@@ -17,6 +18,7 @@ bool Game::isOccupied(GameHex *hex)
                      return true;
     return false;
 }
+
 QSet <GameUnit *> Game::alliesOnTheSameHex(GameUnit * tar)
 {
     QSet <GameUnit *> ans;
@@ -28,6 +30,45 @@ QSet <GameUnit *> Game::alliesOnTheSameHex(GameUnit * tar)
         }
     }
     return ans;
+}
+QSet <GameUnit *> Game::find(SEARCH_TYPE ST, GameUnit * for_whom,
+                          Coord staying, Coord going_to)
+{
+    QSet <GameUnit *> ans;
+    for (int i = 0; i < rules->players.size(); ++i)
+    {
+        if ((ST == ENEMY && rules->players[i] != for_whom->color) ||
+            (ST == ALLY && rules->players[i] == for_whom->color))
+        {
+            foreach (GameUnit * unit, players[rules->players[i]]->units)
+            {
+                if (unit->health > 0 && unit != for_whom &&
+                     (staying == ANY || unit->position == staying) &&
+                     (going_to == ANY || unit->going_to == going_to))
+                {
+                    ans << unit;
+                }
+            }
+        }
+    }
+
+    return ans;
+}
+
+int Game::resourcesLimit(PlayerColor color)
+{
+    int count = 0;
+    for (int i = 0; i < rules->fieldH; ++i)
+    {
+        for (int j = 0; j < rules->fieldW; ++j)
+        {
+            if (hexes[i][j]->increasesResourceLimitWhenCaptured &&
+                hexes[i][j]->color == color && !isOccupied(hexes[i][j]))
+                ++count;
+        }
+    }
+
+    return count;
 }
 
 QSet<GameHex *> Game::Connected(QString color, bool consider_occupied, const QSet<Coord> & additional_captures)
@@ -108,4 +149,12 @@ QString Game::lastPlayerInGame()
         }
     }
     return ans;
+}
+
+// проверка на окончание игры!
+PlayerColor Game::isGameFinished()
+{
+    // TODO
+    PlayerColor winner = "Neutral";
+    return winner;
 }

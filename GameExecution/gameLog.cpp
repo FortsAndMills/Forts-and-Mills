@@ -1,8 +1,9 @@
 #include "GameLog.h"
 
-GameLog::GameLog(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
-    Interaction(game, PlayerIndex, parent)
+GameLog::GameLog(Game *game, qint8 PlayerIndex)
 {
+    this->game = game;
+
     QDir().mkpath(QApplication::applicationDirPath() + "/PlayedGames");
     QString logFileName = QApplication::applicationDirPath() + "/PlayedGames/game " + QDate::currentDate().toString("MMMM dd (yy), ") + QTime::currentTime().toString("hh.mm") + ".fam";
     logFile = new QFile(logFileName);
@@ -15,9 +16,7 @@ GameLog::GameLog(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
 
     log << "Rules:\n" << game->rules << "\n";
 
-    int i = 0;
-    while (game->rules->players[i] != mainPlayerColor) { ++i; }
-    log << "MyIndex: " << i << "\n\n";
+    log << "MyIndex: " << PlayerIndex << "\n\n";
 
     log << "FIELD:\n";
 
@@ -30,8 +29,6 @@ GameLog::GameLog(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
             log << h->type;
             if (h->canHaveResources)
                 log << " : " << h->resources;
-            //else if (h->canBeChosenAsStartPoint)
-            //    log << " : " << h->livingNation << "\n";
             else
                 log << "\n";
         }
@@ -40,11 +37,10 @@ GameLog::GameLog(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
 
     log.flush();
 }
-void GameLog::Delete()
+GameLog::~GameLog()
 {
     logFile->close();
     delete logFile;
-    Interaction::Delete();
 }
 
 void GameLog::logMillChoice()

@@ -21,7 +21,7 @@ bool Game::CheckIfActionBurns(Action a)
         }
 
         // рекрут на отсоединённой территории
-        if (rules->mill_connections && !Connected(a.unit->color, true).contains(hex(a.unit->position)))
+        if (!Connected(a.unit->color, true).contains(hex(a.unit->position)))
         {
             players[a.unit->color]->resources[a.order->type]--;
             a.order->realizationFinished = true;
@@ -263,8 +263,7 @@ void Game::Realize(QList<Action> act)
                 DecaptureHex(Hex, a.unit);
             }
 
-            if (rules->mill_connections)
-                RecheckMillConnection(color, a.unit);
+            RecheckMillConnection(color, a.unit);
         }
     }
     else if (T == GameAction::CAPTURE_HEX)
@@ -286,10 +285,7 @@ void Game::Realize(QList<Action> act)
                 Hex->color = a.unit->color;
 
                 // иконка "бездомных"
-                if (rules->mill_connections)
-                    RecheckMillConnection(a.unit->color, a.unit);
-                else if (Hex->provides_unit)
-                    AddEvent()->HexStatusChanged(Hex, GameHex::NOT_A_HOME, a.unit->color, a.unit);
+                RecheckMillConnection(a.unit->color, a.unit);
 
                 AddEvent()->UnitCapturesHex(a.unit, Hex, a.unit->color);
             }
@@ -302,16 +298,11 @@ void Game::Realize(QList<Action> act)
             // если клетка захвачена и к ней никто не привязан
             if (hex(a.unit->position)->color == a.unit->color)
             {
-                // тестовая настройка с запретом воскрешений
-                if (hex(a.unit->position)->provides_unit)
+                if (hex(a.unit->position)->status == GameHex::NOT_A_HOME)
                 {
-                    // по базовым правилам, нельзя рекрутировать
-                    if (!isHexAHome(a.unit->position, a.unit->color))
-                    {
-                        AddEvent()->UnitIsGoingToRecruit(a.unit, hex(a.unit->position), a.action.unitType);
-                        hex(a.unit->position)->status = GameHex::RECRUITING;
-                        recruitedUnits << Recruited(a.unit->position, a.action.unitType, a.unit->color);
-                    }
+                    AddEvent()->UnitIsGoingToRecruit(a.unit, hex(a.unit->position), a.action.unitType);
+                    hex(a.unit->position)->status = GameHex::RECRUITING;
+                    recruitedUnits << Recruited(a.unit->position, a.action.unitType, a.unit->color);
                 }
             }
         }

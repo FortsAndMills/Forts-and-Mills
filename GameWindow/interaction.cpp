@@ -1,7 +1,6 @@
-#include "Interaction.h"
+#include "GameWindow.h"
 
-Interaction::Interaction(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
-    StatesControl(game, PlayerIndex, parent)
+void GameWindow::initialConnections()
 {
     connect(this, SIGNAL(writeToOpponent(QByteArray)), client, SLOT(sendToOpponent(QByteArray)));
     connect(client, SIGNAL(MessageToGame(QByteArray)), SLOT(readFromOpponent(QByteArray)));
@@ -41,7 +40,7 @@ Interaction::Interaction(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
 
     connect(dialog, SIGNAL(returned(bool, QString)), SLOT(DialogReturned(bool, QString)));
 }
-void Interaction::unitConnections(Unit * unit)
+void GameWindow::unitConnections(Unit * unit)
 {
     connect(unit, SIGNAL(entered(GameUnit*)), SLOT(unitHoverEntered(GameUnit*)));
     connect(unit, SIGNAL(left(GameUnit*)), SLOT(unitHoverLeft(GameUnit*)));
@@ -49,13 +48,13 @@ void Interaction::unitConnections(Unit * unit)
     connect(unit, SIGNAL(orderVariantChosen(QString)), SLOT(orderVariantClicked(QString)));
     connect(unit, SIGNAL(unitTypeChosen(QString)), SLOT(unitTypeChosen(QString)));
 }
-void Interaction::orderPicsConnections(OrderPic *pic)
+void GameWindow::orderPicsConnections(OrderPic *pic)
 {
     connect(pic, SIGNAL(orderPicEntered(QString,QString)), SLOT(orderPicEntered(QString,QString)));
     connect(pic, SIGNAL(orderPicLeft(QString,QString)), SLOT(orderPicLeft(QString,QString)));
 }
 
-void Interaction::hexClicked(Coord c)
+void GameWindow::hexClicked(Coord c)
 {
     if (state == CHOOSING_HEX)
     {
@@ -91,7 +90,7 @@ void Interaction::hexClicked(Coord c)
         finishedChoosingOrderParameter();
     }
 }
-void Interaction::hexEntered(Coord c)
+void GameWindow::hexEntered(Coord c)
 {
     if (hexCopy != NULL)
     {
@@ -115,7 +114,7 @@ void Interaction::hexEntered(Coord c)
         }
     }
 }
-void Interaction::hexLeft(Coord c)
+void GameWindow::hexLeft(Coord c)
 {
     if (hexCopy != NULL &&
             hexCopy->prototype->coord == c)
@@ -134,7 +133,7 @@ void Interaction::hexLeft(Coord c)
     }
 }
 
-void Interaction::orderPicEntered(OrderType type, PlayerColor)
+void GameWindow::orderPicEntered(OrderType type, PlayerColor)
 {
     if (state != CHOOSE_ORDER_PARAMETER)
     {
@@ -144,7 +143,7 @@ void Interaction::orderPicEntered(OrderType type, PlayerColor)
         }
     }
 }
-void Interaction::orderPicLeft(OrderType type, PlayerColor)
+void GameWindow::orderPicLeft(OrderType type, PlayerColor)
 {
     foreach (Hex * hex, hexes)
     {
@@ -152,7 +151,7 @@ void Interaction::orderPicLeft(OrderType type, PlayerColor)
     }
 }
 
-void Interaction::orderVariantClicked(OrderType type)
+void GameWindow::orderVariantClicked(OrderType type)
 {
     if (selectedUnit == NULL)
         debug << "FatalError: no selected unit, but there is order variant!!!\n";
@@ -189,23 +188,23 @@ void Interaction::orderVariantClicked(OrderType type)
     getReadyToChooseOrderParameter();
 }
 
-void Interaction::unitTypeChosen(QString type)
+void GameWindow::unitTypeChosen(QString type)
 {
     selectedUnit->prototype->plan[dayTime]->setParameter(type);
     finishedChoosingOrderParameter();
 }
 
-void Interaction::unitHoverEntered(GameUnit *unit)
+void GameWindow::unitHoverEntered(GameUnit *unit)
 {
     if (unit->home != NOWHERE)
         hex(unit->home)->showUnitHome(unit->color);
 }
-void Interaction::unitHoverLeft(GameUnit *unit)
+void GameWindow::unitHoverLeft(GameUnit *unit)
 {
     if (unit->home != NOWHERE)
         hex(unit->home)->hideUnitHome();
 }
-void Interaction::unitLeftClicked(GameUnit * unit)
+void GameWindow::unitLeftClicked(GameUnit * unit)
 {
     if (state == PLANNING || state == CHOOSE_ORDER_PARAMETER)
     {
@@ -278,7 +277,7 @@ void Interaction::unitLeftClicked(GameUnit * unit)
     }
 }
 
-void Interaction::dayTimeClicked(DayTime time)
+void GameWindow::dayTimeClicked(DayTime time)
 {
     if (state == PLANNING || state == CHOOSE_ORDER_PARAMETER ||
          state == WAIT_FOR_ENEMY_PLAN)
@@ -289,7 +288,7 @@ void Interaction::dayTimeClicked(DayTime time)
             setTime(-1);
     }
 }
-void Interaction::startUnitTypeClicked(bool on, QString type)
+void GameWindow::startUnitTypeClicked(bool on, QString type)
 {
     if (state == CHOOSING_HEX && on)
     {
@@ -306,7 +305,7 @@ void Interaction::startUnitTypeClicked(bool on, QString type)
     }
 }
 
-void Interaction::GoButtonPushed()
+void GameWindow::GoButtonPushed()
 {
     if (state == CHOOSE_ORDER_PARAMETER)
         breakChoosingOrderParameter();
@@ -333,7 +332,7 @@ void Interaction::GoButtonPushed()
         resizeDialog(width(), height());
     }
 }
-void Interaction::DialogReturned(bool isOk, QString sig_mes)
+void GameWindow::DialogReturned(bool isOk, QString sig_mes)
 {
     if (ARE_YOU_SURE_DIALOG == state)
     {
@@ -358,7 +357,7 @@ void Interaction::DialogReturned(bool isOk, QString sig_mes)
 #define GIVE_UP (qint8)1
 #define MILLS_COORDINATES_MESSAGE (qint8)2
 #define PLAN (qint8)3
-void Interaction::sendPlan()
+void GameWindow::sendPlan()
 {
     if (state == CHOOSING_HEX)
     {
@@ -423,7 +422,7 @@ void Interaction::sendPlan()
         }
     }
 }
-void Interaction::readFromOpponent(QByteArray message)
+void GameWindow::readFromOpponent(QByteArray message)
 {
     QDataStream in(&message, QIODevice::ReadOnly);
     qint8 Command;
@@ -498,20 +497,20 @@ void Interaction::readFromOpponent(QByteArray message)
         qApp->alert(dynamic_cast<QWidget *>(this->parent()));
     }
 }
-void Interaction::NextButtonClicked()
+void GameWindow::NextButtonClicked()
 {
     NextPhase();
 }
 
 // оповещения о событиях
-void Interaction::serverDisconnected()
+void GameWindow::serverDisconnected()
 {
     dialog->set(mainPlayerColor, "ОШИБКА!<br>Соединение с сервером разорвано! Пытаемся переподключиться...", false, false, true);
     resizeDialog(width(), height());
 
     qApp->alert(dynamic_cast<QWidget *>(this->parent()));
 }
-void Interaction::opponentDisconnected(qint8 index)
+void GameWindow::opponentDisconnected(qint8 index)
 {
     if (!game->players[game->rules->players[index]]->GiveUp)
     {
@@ -521,7 +520,7 @@ void Interaction::opponentDisconnected(qint8 index)
         qApp->alert(dynamic_cast<QWidget *>(this->parent()));
     }
 }
-void Interaction::opponentReconnected(qint8 index)
+void GameWindow::opponentReconnected(qint8 index)
 {
     if (!game->players[game->rules->players[index]]->GiveUp)
     {
@@ -532,7 +531,7 @@ void Interaction::opponentReconnected(qint8 index)
     }
 }
 
-void Interaction::giveup()
+void GameWindow::giveup()
 {
     if (!game->players[mainPlayerColor]->GiveUp)
     {
@@ -553,7 +552,7 @@ void Interaction::giveup()
         emit GoHome();
 }
 
-void Interaction::whiteFlagClicked()
+void GameWindow::whiteFlagClicked()
 {
     if (game->players[mainPlayerColor]->GiveUp)
         return;
@@ -565,7 +564,7 @@ void Interaction::whiteFlagClicked()
     dialog->set(mainPlayerColor, "Сдаётесь?", false, true, true, false, "", "GiveUp");
     resizeDialog(width(), height());
 }
-void Interaction::homeButtonClicked()
+void GameWindow::homeButtonClicked()
 {
     if (game->players[mainPlayerColor]->GiveUp)
     {

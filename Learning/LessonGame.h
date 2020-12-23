@@ -44,12 +44,9 @@ private:
 public:
     void StartGame();
 
-    void SwitchHome(GameUnit * unit, Coord new_home, GameHex::HexStatus status = GameHex::TO_BE_CONQUERED, bool provides=true)
+    void SwitchHome(GameUnit * unit, Coord new_home, GameHex::HexStatus status = GameHex::TO_BE_CONQUERED)
     {
-        hex(unit->home)->provides_unit = provides;
         hex(unit->home)->status = status;
-
-        hex(new_home)->provides_unit = false;
         hex(new_home)->status = GameHex::HOME;
         unit->home = new_home;
     }

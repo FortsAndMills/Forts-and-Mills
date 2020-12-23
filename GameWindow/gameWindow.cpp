@@ -1,11 +1,60 @@
 #include "GameWindow.h"
 
 GameWindow::GameWindow(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
-    EventsRealization(game, PlayerIndex, parent)
+    GraphicObject(parent)
 {
+    this->game = game;
+    this->PlayerIndex = PlayerIndex;
+    this->mainPlayerColor = game->rules->players[PlayerIndex];
+
+    field = new Field(this, game);
+    for (int i = 0; i < game->rules->fieldH; ++i)
+    {
+        for (int j = 0; j < game->rules->fieldW; ++j)
+        {
+            hexes[game->hexes[i][j]] = field->hexes[i][j];
+        }
+    }
+
+    foreach (GamePlayer * player, game->players)
+    {
+        foreach (GameUnit* unit, player->units)
+        {
+            units[unit] = new Unit(unit, game, this, player->color == mainPlayerColor);
+        }
+    }
+
+    initInterface();
+    initialConnections();
+
     game->StartGame();
+
     // это чтобы NextPhase вызвался уже после инициализации...
     QTimer::singleShot(1, this, SLOT(NextPhase()));
+}
+void GameWindow::Delete()
+{
+    foreach (QList<Rocket*> list, rockets)
+        foreach (Rocket * R, list)
+            R->Delete();
+    foreach (QStack <UnitWay *> stack, ways_to)
+        foreach (UnitWay * way, stack)
+            way->Delete();
+    foreach (QStack <UnitWay *> stack, ways_from)
+        foreach (UnitWay * way, stack)
+            way->Delete();
+    foreach (QList <Fortification *> list, fortifications)
+        foreach (Fortification * F, list)
+            F->Delete();
+    foreach (Order * Or, orders)
+        if (Or != NULL)
+            Or->Delete();
+    foreach (Unit * u, units)
+        u->Delete();
+    field->Delete();
+    delete game;
+    deleteInterface();
+    GraphicObject::Delete();
 }
 
 void GameWindow::NextPhase()

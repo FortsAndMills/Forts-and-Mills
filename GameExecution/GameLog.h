@@ -1,24 +1,23 @@
 #ifndef GAMELOG_H
 #define GAMELOG_H
 
-#include "Interaction.h"
+#include "Game.h"
 
 // Данные игры сохраняются в файлик!
-class GameLog : public Interaction
+class GameLog
 {
-    Q_OBJECT
-
-public:
+private:
     QFile * logFile;
     QTextStream log;
+    Game * game;
 
+public:
     void logStart();
     void logMillChoice();
     void logPlan();
 
-    explicit GameLog(Game * game, qint8 PlayerIndex, GraphicObject * parent);
-public slots:
-    virtual void Delete();
+    explicit GameLog(Game * game, qint8 PlayerIndex);
+    ~GameLog();
 };
 
 #endif // GAMELOG_H

@@ -1,56 +1,7 @@
-#include "GameElementsOrganization.h"
-
-GameElementsOrganization::GameElementsOrganization(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
-    GraphicObject(parent)
-{
-    this->game = game;
-    this->PlayerIndex = PlayerIndex;
-    this->mainPlayerColor = game->rules->players[PlayerIndex];
-
-    field = new Field(this, game);
-    for (int i = 0; i < game->rules->fieldH; ++i)
-    {
-        for (int j = 0; j < game->rules->fieldW; ++j)
-        {
-            hexes[game->hexes[i][j]] = field->hexes[i][j];
-        }
-    }
-
-    foreach (GamePlayer * player, game->players)
-    {
-        foreach (GameUnit* unit, player->units)
-        {
-            units[unit] = new Unit(unit, game, this, player->color == mainPlayerColor);
-        }
-    }
-}
-void GameElementsOrganization::Delete()
-{
-    foreach (QList<Rocket*> list, rockets)
-        foreach (Rocket * R, list)
-            R->Delete();
-    foreach (QStack <UnitWay *> stack, ways_to)
-        foreach (UnitWay * way, stack)
-            way->Delete();
-    foreach (QStack <UnitWay *> stack, ways_from)
-        foreach (UnitWay * way, stack)
-            way->Delete();
-    foreach (QList <Fortification *> list, fortifications)
-        foreach (Fortification * F, list)
-            F->Delete();
-    foreach (Order * Or, orders)
-        if (Or != NULL)
-            Or->Delete();
-    foreach (Unit * u, units)
-        u->Delete();
-    field->Delete();
-    delete game;
-
-    GraphicObject::Delete();
-}
+#include "GameWindow.h"
 
 // ищет координаты соседнего гекса - удобная функция
-QPointF GameElementsOrganization::adjacentHexCoord(Hex *hex, WAY way)
+QPointF GameWindow::adjacentHexCoord(Hex *hex, WAY way)
 {
     QPointF p = mapFromItem(hex->parentItem(), hex->pos());
     if (way == UP)
@@ -72,11 +23,11 @@ QPointF GameElementsOrganization::adjacentHexCoord(Hex *hex, WAY way)
 
 // координаты объектов обычно ищутся через точки на гексах, к которым они привязаны
 // поэтому для объектов хранится не только гекс, к которым они привязаны, но и id якоря внутри гекса
-QPointF GameElementsOrganization::unitCoordinate(Unit * u)
+QPointF GameWindow::unitCoordinate(Unit * u)
 {
     return hex(u)->point(u->point(), this) - QPointF(constants->unitsSize / 2, constants->unitsSize / 2);
 }
-void GameElementsOrganization::resizeUnits()
+void GameWindow::resizeUnits()
 {
     foreach (Unit * u, units)
     {
@@ -87,29 +38,29 @@ void GameElementsOrganization::resizeUnits()
         }
     }
 }
-QPointF GameElementsOrganization::wayToStartCoordinate(UnitWay *way)
+QPointF GameWindow::wayToStartCoordinate(UnitWay *way)
 {
     return adjacentHexCoord(hex(way->to),
           game->whereIs(way->from, way->to)) +
             hex(way->from)->points[way->from_point];
 }
-QPointF GameElementsOrganization::wayToEndCoordinate(UnitWay *way)
+QPointF GameWindow::wayToEndCoordinate(UnitWay *way)
 {
     return mapFromItem(hex(way->to),
             hex(way->to)->points[way->to_point]);
 }
-QPointF GameElementsOrganization::wayFromStartCoordinate(UnitWay *way)
+QPointF GameWindow::wayFromStartCoordinate(UnitWay *way)
 {
     return mapFromItem(hex(way->from),
             hex(way->from)->points[way->from_point]);
 }
-QPointF GameElementsOrganization::wayFromEndCoordinate(UnitWay *way)
+QPointF GameWindow::wayFromEndCoordinate(UnitWay *way)
 {
     return adjacentHexCoord(hex(way->from),
           game->whereIs(way->to, way->from)) +
             hex(way->to)->points[way->to_point];
 }
-void GameElementsOrganization::resizeWays()
+void GameWindow::resizeWays()
 {
     foreach (QStack <UnitWay *> list, ways_to)
     {
@@ -135,7 +86,7 @@ void GameElementsOrganization::resizeWays()
         }
     }
 }
-void GameElementsOrganization::resizeRockets()
+void GameWindow::resizeRockets()
 {
     foreach (Unit * u, units)
     {
@@ -153,7 +104,7 @@ void GameElementsOrganization::resizeRockets()
         }
     }
 }
-QRectF GameElementsOrganization::fortificationGeometry(Hex *hex, int index)
+QRectF GameWindow::fortificationGeometry(Hex *hex, int index)
 {
     qreal W = constants->fortificationWidth * constants->unitsSize;
     qreal H = constants->fortificationHeight * constants->unitsSize;
@@ -163,7 +114,7 @@ QRectF GameElementsOrganization::fortificationGeometry(Hex *hex, int index)
                                             constants->fortificationStackShiftY * H);
     return QRectF(cen.x() - W / 2, cen.y() - H / 2, W, H);
 }
-void GameElementsOrganization::resizeFortifications()
+void GameWindow::resizeFortifications()
 {
     foreach (Hex * hex, hexes)
         for (int i = 0; i < fortifications[hex].size(); ++i)
@@ -171,14 +122,14 @@ void GameElementsOrganization::resizeFortifications()
 }
 
 // все объекты отправляются в полёт к своим назначенным точкам
-void GameElementsOrganization::allHexesToReconfigurePoints()
+void GameWindow::allHexesToReconfigurePoints()
 {
     foreach (Hex * hex, hexes)
     {
         hex->recountPoints();
     }
 }
-void GameElementsOrganization::reconfigureUnits()
+void GameWindow::reconfigureUnits()
 {
     foreach (Unit * unit, units)
     {
@@ -190,7 +141,7 @@ void GameElementsOrganization::reconfigureUnits()
         }
     }
 }
-void GameElementsOrganization::reconfigureWays()
+void GameWindow::reconfigureWays()
 {
     foreach (QStack <UnitWay *> list, ways_to)
     {
@@ -216,7 +167,7 @@ void GameElementsOrganization::reconfigureWays()
         }
     }
 }
-void GameElementsOrganization::reconfigureRockets()
+void GameWindow::reconfigureRockets()
 {
     foreach (Unit * u, units)
     {
@@ -234,14 +185,14 @@ void GameElementsOrganization::reconfigureRockets()
         }
     }
 }
-void GameElementsOrganization::reconfigureFortifications()
+void GameWindow::reconfigureFortifications()
 {
     foreach (Hex * hex, hexes)
         for (int i = 0; i < fortifications[hex].size(); ++i)
             fortifications[hex][i]->AnimationStart(fortificationGeometry(hex, i), constants->unitReconfigureTime);
 }
 
-void GameElementsOrganization::hexPointsChanged()
+void GameWindow::hexPointsChanged()
 {
     reconfigureUnits();
     reconfigureWays();

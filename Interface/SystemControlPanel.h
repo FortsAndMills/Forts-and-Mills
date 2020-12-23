@@ -1,6 +1,7 @@
 #include "Technical/Headers.h"
 #include "BasicElements/StateObject.h"
 
+// -Ox
 class SystemControlPanel : public GraphicObject
 {
     Q_OBJECT

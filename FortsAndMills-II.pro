@@ -18,6 +18,9 @@ RC_FILE = icon.rc
 
 
 SOURCES += main.cpp \
+    GameExecution/gameGeometry.cpp \
+    GameExecution/gameLog.cpp \
+    GameExecution/gameUtils.cpp \
     Learning/LessonGame.cpp \
     Technical/headers.cpp \
     GameElements/field.cpp \
@@ -33,17 +36,14 @@ SOURCES += main.cpp \
     Game/gameOrder.cpp \
     Game/gameRules.cpp \
     GameExecution/gameEvents.cpp \
-    GameExecution/gameHelp.cpp \
     Game/gameHex.cpp \
     GameExecution/game.cpp \
     GameExecution/gameTurns.cpp \
-    GameExecution/gameBase.cpp \
     GameExecution/gameSteps.cpp \
     GameExecution/gameFight.cpp \
     GameExecution/gameOrderExecution.cpp \
     GameExecution/gameField.cpp \
     GameWindow/eventsRealization.cpp \
-    GameWindow/gameLog.cpp \
     GameWindow/interaction.cpp \
     GameWindow/interfaceOrganization.cpp \
     GameWindow/statesControl.cpp \
@@ -55,6 +55,7 @@ SOURCES += main.cpp \
     Technical/Help.cpp
 
 HEADERS  += mainwindow.h \
+    GameExecution/GameLog.h \
     GameExecution/GameStructures.h \
     Programm/Basic/headers.h \
     Basic/ProgrammSettings.h \
@@ -101,7 +102,6 @@ HEADERS  += mainwindow.h \
     GameElements/DayTimeButton.h \
     GameElements/UnitWay.h \
     BasicElements/Animation.h \
-    Interface/GameLogic/GameWindow.h \
     GameElements/Rocket.h \
     GameElements/Shield.h \
     BasicElements/MergingObject.h \
@@ -112,13 +112,6 @@ HEADERS  += mainwindow.h \
     Game/GameMessages.h \
     GameExecution/GameMessages.h \
     GameWindow/GameWindow.h \
-    GameWindow/GameElementsOrganization.h \
-    GameWindow/InterfaceOrganization.h \
-    GameWindow/Interaction.h \
-    GameWindow/StatesControl.h \
-    GameWindow/GameLog.h \
-    GameWindow/EventsRealization.h \
-    GameWindow/Events.h \
     Interface/LeftPanelsSwitch.h \
     Interface/CreatingGameWindow.h \
     Interface/Tunes.h \

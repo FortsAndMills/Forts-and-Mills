@@ -48,7 +48,6 @@ void GameRules::setTestOptions()
     damageToHomellesUnits = 179;
     peacefullOrdersBurns = false;
     start_choices = 7;
-    mill_connections = true;
     fort_gp_min = 6;
     fort_gp_max = 9;
     mill_gp_min = 4;
@@ -65,7 +64,6 @@ void GameRules::setTestOptions()
         tstream >> s >> damageToHomellesUnits
                       >> s >> peacefullOrdersBurns
                       >> s >> start_choices
-                      >> s >> mill_connections
                       >> s >> fort_gp_min >> fort_gp_max
                       >> s >> mill_gp_min >> mill_gp_max
                       >> s >> river_gp_min >> river_gp_max
@@ -85,7 +83,6 @@ void GameRules::setTestOptions()
         tstream << "DamageToHomelessUnits: " << damageToHomellesUnits << Qt::endl
                       << "PeacefullOrdersBurns: " << peacefullOrdersBurns << Qt::endl
                       << "NumOfStartingChoices: " << start_choices << Qt::endl
-                      << "RecruitWhenConnectedToMill: " << mill_connections << Qt::endl
                       << "FortsGenerationLimits: " << fort_gp_min << " " << fort_gp_max << Qt::endl
                       << "MillsGenerationLimits: " << mill_gp_min << " " << mill_gp_max << Qt::endl
                       << "RiversGenerationLimits: " << river_gp_min << " " << river_gp_max << Qt::endl

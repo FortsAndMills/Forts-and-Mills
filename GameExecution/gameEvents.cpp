@@ -27,13 +27,10 @@ void Game::DecaptureHex(GameHex *hex, GameUnit *who)
         AddEvent()->HexStatusChanged(hex, hex->status, hex->color, who);
     }
 
-    if (isHexAHome(hex->coord, hex->color))
+    foreach (GameUnit * unit, players[hex->color]->units)
     {
-        foreach (GameUnit * unit, players[hex->color]->units)
-        {
-            if (unit->home == hex->coord)
-                AddEvent()->UnitLoosesHome(unit, hex, who);
-        }
+        if (unit->home == hex->coord)
+            AddEvent()->UnitLoosesHome(unit, hex, who);
     }
 
     hex->color = "Neutral";
@@ -105,7 +102,6 @@ GameUnit * Game::NewUnit(GamePlayer * player, UnitType type, Coord where)
     GameUnit * New = new GameUnit(rules, type, player->color, where, basicId);
     ++basicId;
 
-    hex(where)->provides_unit = false;
     hex(where)->status = GameHex::HOME;
 
     player->units << New;
