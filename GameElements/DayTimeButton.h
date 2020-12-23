@@ -20,7 +20,7 @@ public:
     // active отвечает за то, отображается ли панель в игровом окне или в главменю
     // в последнем случае, она неинтерактивна и просто висит картинкой
     explicit DayTimeButton(GraphicObject * parent, DayTime time, QString timeName, bool active) :
-        StateObject(parent, "default", timeName, active * (CLICKABLE | HOVER) + !active * CHILD, "", "SimpleLayer")
+        StateObject(parent, "default", timeName, active * (CLICKABLE | HOVER), "", "SimpleLayer")
     {
         this->time = time;
 

@@ -20,7 +20,7 @@ protected:
 public:
     void addPicture(QString state, QString pictureName)  // Функция добавления нового состояния
     {
-        pictures[state] = new GraphicObject(this, CHILD, pictureName);
+        pictures[state] = new GraphicObject(this, (this->flags != 0) * CHILD, pictureName);
         pictures[state]->setOpacity(0);
         pictures[state]->setZValue(constants->statesZpos);
     }

@@ -14,9 +14,9 @@ class DayTimePanel : public GraphicObject
 public:
     QMap <DayTime, DayTimeButton *> DayTimePictures;
 
-    enum DayTimePanelState {FREEZE, BUTTON, GAME_STATE};
+    enum DayTimePanelState {FREEZE, GAME_STATE};
     explicit DayTimePanel(GraphicObject * parent, int dt, DayTimePanelState state = GAME_STATE, bool MaximizeDayTimes = false) :
-        GraphicObject(parent, (state == BUTTON) * (CLICKABLE | CHILD) | (state == FREEZE) * CHILD, "", "", "SimpleLayer")
+        GraphicObject(parent, 0, "", "", "SimpleLayer")
     {
         this->MaximizeDayTimes = MaximizeDayTimes;
 

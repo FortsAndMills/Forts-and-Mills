@@ -20,6 +20,7 @@ class GraphicObject : public Object
 {
     Q_OBJECT
 
+protected:
     Properties flags;  // Свойства графического объекта
 public:
     void setProperties(Properties newFlags);

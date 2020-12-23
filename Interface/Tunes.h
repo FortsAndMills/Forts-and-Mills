@@ -480,10 +480,11 @@ class DayTimesTune : public GraphicObject
     int dayTimes;
 
     QTimer * timer;
-public:
     bool active;
+
+public:
     explicit DayTimesTune(GraphicObject * parent, GameRules * rules = settings->rules, bool active = true) :
-        GraphicObject(parent, RIGHT_CLICKABLE | (active * HOVER), "", "LessonFrameSelection", "SimpleLayer")
+        GraphicObject(parent, RIGHT_CLICKABLE | (active * HOVER) | (active * CLICKABLE), "", "LessonFrameSelection", "SimpleLayer")
     {
         this->active = active;
         dayTimes = rules->dayTimes;
@@ -501,9 +502,7 @@ public:
     }
     void createPanel(bool cdt)
     {
-        panel = new DayTimePanel(this, dayTimes,
-                                 active ? DayTimePanel::BUTTON : DayTimePanel::FREEZE, cdt);
-        connect(panel, SIGNAL(leftClicked()), SLOT(whenClicked()));
+        panel = new DayTimePanel(this, dayTimes, DayTimePanel::FREEZE, cdt);
         resizeChildren(width(), height());
     }
 
@@ -529,16 +528,7 @@ public:
         return boundingRect().contains(point);
     }
 
-public slots:
-    void inc()
-    {
-        panel->Delete();
-        dayTimes = (dayTimes) % 5 + 1;
-        createPanel(true);
-
-        timer->start(constants->dayTimesChangeAnimationTime);
-    }
-    void whenClicked()  // переключение ведётся не только между вариантами 1...5, но и шестым вариантом - их динамическим переключением
+    void leftClick()  // переключение ведётся не только между вариантами 1...5, но и шестым вариантом - их динамическим переключением
     {
         panel->Delete();
 
@@ -565,6 +555,16 @@ public slots:
             timer->start(constants->dayTimesChangeAnimationTime);
         else
             timer->stop();
+    }
+
+public slots:
+    void inc()
+    {
+        panel->Delete();
+        dayTimes = (dayTimes) % 5 + 1;
+        createPanel(true);
+
+        timer->start(constants->dayTimesChangeAnimationTime);
     }
 };
 
