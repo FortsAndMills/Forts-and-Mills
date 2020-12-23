@@ -43,6 +43,8 @@ public:
 
     static qreal goButtonAppearTime;  // смена основных кнопок
 
+    static qreal progressBarUpdateTime;  // время увеличения прогресс бара
+
     static qreal mainOrderAppearTime;  // время появления основного приказа
     static qreal mainOrderOpenTime;  // время переворачивания основного приказа
 
@@ -228,6 +230,10 @@ public:
     static qreal goX;  // Кнопка go
     static qreal goY;
     static qreal goSize;
+
+    static qreal startChoiceProgressBarY;  // прогресс стартового выбора
+    static qreal startChoiceProgressBarWidth;
+    static qreal startChoiceProgressBarHeight;
 
     // Гексы
     static qreal hexShift;  // Константа, зависящая от картинки гекса

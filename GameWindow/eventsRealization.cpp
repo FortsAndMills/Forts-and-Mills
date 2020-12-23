@@ -7,6 +7,9 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
     {
         if (Substate == 0)
         {
+            // увеличиваем прогресс-бар
+            startChoiceProgress->expand();
+
             // делаем доступными к нажатию определённые гексы
             getReadyToChooseHex(e->variants);
 
@@ -89,9 +92,9 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
     {
         // переключаем время дня на табличке
         if (dayTime != -1)
-            DayTimeTable->select(dayTime, false);
+            dayTimeTable->select(dayTime, false);
         dayTime = e->time;
-        DayTimeTable->select(dayTime, true);
+        dayTimeTable->select(dayTime, true);
 
         // появляются все приказы
         foreach (Unit * unit, units)
@@ -395,14 +398,14 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
     }
     else if (e->type == DAY_TIMES_CHANGED)
     {
-        DayTimeTable->disappear();
+        dayTimeTable->disappear();
 
         // для изменения количества времён дня, табличку приходится пересоздавать
-        DayTimeTable = new DayTimePanel(this, game->rules->dayTimes);
+        dayTimeTable = new DayTimePanel(this, game->rules->dayTimes);
         resizeDayTimeTable(width(), height());
         for (int i = 0; i < game->rules->dayTimes; ++i)
-            connect(DayTimeTable->DayTimePictures[i], SIGNAL(leftClicked(int)), SLOT(dayTimeClicked(int)));
-        DayTimeTable->appear();
+            connect(dayTimeTable->DayTimePictures[i], SIGNAL(leftClicked(int)), SLOT(dayTimeClicked(int)));
+        dayTimeTable->appear();
 
         return WaitingType();
     }

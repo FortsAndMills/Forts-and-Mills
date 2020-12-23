@@ -68,7 +68,13 @@ void Images::InitPictures()
                  "SimpleLayer",
                  "PlayerOnline",
                  "PlayerOffline",
-                 "PlayersLabel"},
+                 "PlayersLabel",
+                 "startChoiceBarBlue",
+                 "startChoiceBarRed",
+                 "startChoiceBarGreen",
+                 "startChoiceBarYellow",
+                 "startChoiceProgressBase",
+                 "startChoiceProgressFrame"},
                  ".png");
 
     names << PictureNameFolder("Numbers",

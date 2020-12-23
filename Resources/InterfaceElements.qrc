@@ -8,5 +8,11 @@
         <file>Content/InterfaceElements/PlayerOffline.png</file>
         <file>Content/InterfaceElements/PlayerOnline.png</file>
         <file>Content/InterfaceElements/PlayersLabel.png</file>
+        <file>Content/InterfaceElements/startChoiceBarBlue.png</file>
+        <file>Content/InterfaceElements/startChoiceBarGreen.png</file>
+        <file>Content/InterfaceElements/startChoiceBarRed.png</file>
+        <file>Content/InterfaceElements/startChoiceBarYellow.png</file>
+        <file>Content/InterfaceElements/startChoiceProgressBase.png</file>
+        <file>Content/InterfaceElements/startChoiceProgressFrame.png</file>
     </qresource>
 </RCC>

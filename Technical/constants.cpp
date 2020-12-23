@@ -36,6 +36,8 @@ qreal Constants::unitOrderReconfigureTime = 100;  // время полёта к�
 
 qreal Constants::goButtonAppearTime = 200;  // смена основных кнопок
 
+qreal Constants::progressBarUpdateTime = 500;  // смена прогресс бара
+
 qreal Constants::mainOrderAppearTime = 300;  // время появления основного приказа
 qreal Constants::mainOrderOpenTime = 300;  // время переворачивания основного приказа
 
@@ -180,7 +182,7 @@ qreal Constants::resourcesTableInsideMargin = 0.05;
 
 qreal Constants::fieldSideMargin = 0.015;  // Отступы справа и слева от интерфейса поля
 
-qreal Constants::fieldY = 0.05;  // позиция поля от высоты
+qreal Constants::fieldY = 0.08;  // позиция поля от высоты
 
 qreal Constants::hexCopyLimitPointX = 0.015;
 qreal Constants::hexCopyLimitPointYmargin = 0.005;
@@ -211,6 +213,10 @@ qreal Constants::fieldControlHeight = 0.7;  // высота от размера 
 qreal Constants::goX = 0.875;  // Искусственная контрольная панель
 qreal Constants::goY = 0.8;
 qreal Constants::goSize = 0.165;
+
+qreal Constants::startChoiceProgressBarY = 0.025;  // прогресс бар стартового выбора
+qreal Constants::startChoiceProgressBarWidth = 0.4;
+qreal Constants::startChoiceProgressBarHeight = 0.04;
 
 
 // Гексы

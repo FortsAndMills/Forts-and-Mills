@@ -18,6 +18,7 @@
 #include "Interface/Dialog.h"
 #include "Interface/LeftPanelsSwitch.h"
 #include "Interface/SpecialButton.h"
+#include "Interface/StartChoiceProgress.h"
 #include "Interface/Tunes.h"
 
 class GameWindow : public GraphicObject
@@ -212,9 +213,11 @@ protected:
     GoButton * go;
     NextButton * next;
 
-    DayTimePanel * DayTimeTable;
-    UnitsTune * StartUnitsChoice;
+    DayTimePanel * dayTimeTable;
+    UnitsTune * startUnitsChoice;
     FieldWindow * fieldControl;
+
+    StartChoiceProgress * startChoiceProgress;
 
     SpecialButton * whiteFlag;
     SpecialButton * homeButton;

@@ -30,6 +30,7 @@ enum LessonMessageType
     SHOW_FIELD_CONTROL,
     SHOW_DAY_TIMES,
     SHOW_GO,
+    SHOW_START_PROGRESSBAR,
     ENABLE_GO,
     DISABLE_GO,
     ENABLE_NEXT,
@@ -122,6 +123,11 @@ public:
     {
         type = LESSON;
         ltype = SHOW_GO;
+    }
+    void ShowStartProgressBar()
+    {
+        type = LESSON;
+        ltype = SHOW_START_PROGRESSBAR;
     }
     void DisableGo()
     {

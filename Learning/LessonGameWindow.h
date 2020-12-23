@@ -15,6 +15,7 @@ public:
         GameWindow(game, 0, parent)
     {
         whiteFlag->setVisible(false);
+        startChoiceProgress->setVisible(false);
 
         connect(dialog, SIGNAL(returned(bool,QString)), SLOT(lessonDialogReturned(bool,QString)));
         connect(dialog, SIGNAL(wantBack()), SLOT(ShowPreviousLesson()));
@@ -105,7 +106,7 @@ public:
             }
             else if (Le->ltype == HIDE_DAY_TIMES)
             {
-                DayTimeTable->setVisible(false);
+                dayTimeTable->setVisible(false);
                 return WaitingType();
             }
             else if (Le->ltype == HIDE_FIELD_CONTROL)
@@ -127,9 +128,9 @@ public:
             }
             else if (Le->ltype == SHOW_DAY_TIMES)
             {
-                DayTimeTable->setVisible(true);
-                DayTimeTable->setOpacity(0);
-                DayTimeTable->AnimationStart(OPACITY, 1);
+                dayTimeTable->setVisible(true);
+                dayTimeTable->setOpacity(0);
+                dayTimeTable->AnimationStart(OPACITY, 1);
                 return WaitingType();
             }
             else if (Le->ltype == SHOW_GO)
@@ -137,6 +138,13 @@ public:
                 go->setVisible(true);
                 go->setOpacity(0);
                 go->AnimationStart(OPACITY, 1);
+                return WaitingType();
+            }
+            else if (Le->ltype == SHOW_START_PROGRESSBAR)
+            {
+                startChoiceProgress->setVisible(true);
+                startChoiceProgress->setOpacity(0);
+                startChoiceProgress->AnimationStart(OPACITY, 1);
                 return WaitingType();
             }
             else if (Le->ltype == DISABLE_GO)
@@ -173,6 +181,7 @@ public:
             }
             else if (Le->ltype == GET_READY_TO_CHOOSE_HEX)
             {
+                startChoiceProgress->expand();
                 getReadyToChooseHex(Le->variants);
                 return WaitingType();
             }

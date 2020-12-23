@@ -7,6 +7,7 @@
 #include "BasicElements/MergingObject.h"
 #include "Tunes.h"
 
+// Прямоугольник игры в "комнатах"
 class GameLabel : public StateObject
 {
     Q_OBJECT

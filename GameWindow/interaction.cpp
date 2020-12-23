@@ -22,10 +22,10 @@ void GameWindow::initialConnections()
         unitConnections(u);
 
     for (int i = 0; i < game->rules->dayTimes; ++i)
-        connect(DayTimeTable->DayTimePictures[i], SIGNAL(leftClicked(int)), SLOT(dayTimeClicked(int)));
+        connect(dayTimeTable->DayTimePictures[i], SIGNAL(leftClicked(int)), SLOT(dayTimeClicked(int)));
 
     for (int i = 0; i < game->rules->unitsInGame.size(); ++i)
-        connect(StartUnitsChoice->units[i], SIGNAL(whenClicked(bool,QString)), SLOT(startUnitTypeClicked(bool, QString)));
+        connect(startUnitsChoice->units[i], SIGNAL(whenClicked(bool,QString)), SLOT(startUnitTypeClicked(bool, QString)));
 
 
     connect(go, SIGNAL(leftClicked()), SLOT(GoButtonPushed()));
@@ -293,13 +293,13 @@ void GameWindow::startUnitTypeClicked(bool on, QString type)
     if (state == CHOOSING_HEX && on)
     {
         int i = 0;
-        while (StartUnitsChoice->units[i]->type != type) { ++i; }
+        while (startUnitsChoice->units[i]->type != type) { ++i; }
 
         int to_turn_off = 0;
-        while (StartUnitsChoice->units[to_turn_off]->type != game->chosenUnitType[mainPlayerColor]) { ++to_turn_off; }
+        while (startUnitsChoice->units[to_turn_off]->type != game->chosenUnitType[mainPlayerColor]) { ++to_turn_off; }
 
-        StartUnitsChoice->units[to_turn_off]->turnOn(false);
-        StartUnitsChoice->units[i]->turnOn(true);
+        startUnitsChoice->units[to_turn_off]->turnOn(false);
+        startUnitsChoice->units[i]->turnOn(true);
 
         game->chosenUnitType[mainPlayerColor] = type;
     }

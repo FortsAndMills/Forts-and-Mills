@@ -57,6 +57,7 @@ SOURCES += main.cpp \
 HEADERS  += mainwindow.h \
     GameExecution/GameLog.h \
     GameExecution/GameStructures.h \
+    Interface/StartChoiceProgress.h \
     Programm/Basic/headers.h \
     Basic/ProgrammSettings.h \
     Product/MainWindow.h \

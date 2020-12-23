@@ -47,15 +47,16 @@ void GameWindow::getReadyToPlanning()
     delightWholeField();
     disableWholeField();
 
-    if (!DayTimeTable->isVisible())
-        DayTimeTable->appear();
+    if (!dayTimeTable->isVisible())
+        dayTimeTable->appear();
 
-    StartUnitsChoice->AnimationStart(OPACITY, 0);
+    startUnitsChoice->AnimationStart(OPACITY, 0);
+    startChoiceProgress->AnimationStart(OPACITY, 0);
 
 //    foreach (Hex * hex, hexes)
 //        hex->hideLivingNation();
 
-    DayTimeTable->deselectAll();
+    dayTimeTable->deselectAll();
     dayTime = -1;
 }
 void GameWindow::getReadyToRealization()
@@ -93,7 +94,7 @@ bool GameWindow::setNextTime()
     // выключение выделения текущего времени дня
     if (dayTime != -1)
     {
-        DayTimeTable->select(dayTime, false);
+        dayTimeTable->select(dayTime, false);
 
         // "завершение" того, что отображается в промежуточном состоянии
         // например, если юнит идёёёёт, то он должен прийти
@@ -104,7 +105,7 @@ bool GameWindow::setNextTime()
     ++dayTime;
 
     // выделение нового текущего времени дня
-    DayTimeTable->select(dayTime, true);
+    dayTimeTable->select(dayTime, true);
 
     // отображение приказов в это время дня
     foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
@@ -114,7 +115,7 @@ bool GameWindow::setNextTime()
 }
 void GameWindow::setPreviousTime()
 {
-    DayTimeTable->select(dayTime, false);
+    dayTimeTable->select(dayTime, false);
 
     foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
         deshowPlannedOrder(unit);
@@ -123,7 +124,7 @@ void GameWindow::setPreviousTime()
 
     if (dayTime != -1)
     {
-        DayTimeTable->select(dayTime, true);
+        dayTimeTable->select(dayTime, true);
 
         foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
             definishPlannedOrder(unit);
@@ -155,7 +156,7 @@ void GameWindow::setTime(DayTime time)
 }
 void GameWindow::setEarlyTime(DayTime time)
 {
-    DayTimeTable->select(dayTime, false);
+    dayTimeTable->select(dayTime, false);
     while (dayTime != time)  // откатываем приказы полностью
     {
         foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
@@ -169,14 +170,14 @@ void GameWindow::setEarlyTime(DayTime time)
         foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
             definishPlannedOrder(unit);
 
-        DayTimeTable->select(dayTime, true);
+        dayTimeTable->select(dayTime, true);
     }
 }
 void GameWindow::setLateTime(DayTime time)
 {
     if (dayTime != -1)  // завершаем текущие планы из "промежуточных" состояний
     {
-        DayTimeTable->select(dayTime, false);
+        dayTimeTable->select(dayTime, false);
 
         foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
         {
@@ -200,7 +201,7 @@ void GameWindow::setLateTime(DayTime time)
     foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
         showPlannedOrder(unit);
 
-    DayTimeTable->select(dayTime, true);
+    dayTimeTable->select(dayTime, true);
 }
 
 void GameWindow::getReadyToChooseOrderParameter()

@@ -9,6 +9,7 @@
 #include "SpecialButton.h"
 #include "Dialog.h"
 
+// Меню создания игры
 class CreatingGameWindow : public GraphicObject
 {
     Q_OBJECT

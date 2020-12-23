@@ -1047,7 +1047,8 @@ void LessonGame::PlanRealisation()
             while (!hexes[vars[i].x][vars[i].y]->canBeChosenAsStartPoint) { ++i; }
             chosenHex[rules->players[1]] = vars[i];
 
-            AddEvent()->ShowMessage("Количество оставшихся выборов (пока не) показано в верху экрана.", false, true, true);
+            AddEvent()->ShowStartProgressBar();
+            AddEvent()->ShowMessage("Количество оставшихся выборов показано в верху экрана.", false, true, true);
 
             HexChosen();
             if (round < 6)

@@ -30,12 +30,14 @@ void GameWindow::initInterface()
     next = new NextButton(this, mainPlayerColor);
     next->setOpacity(0);
 
-    DayTimeTable = new DayTimePanel(this, game->rules->dayTimes);
-    DayTimeTable->setVisible(false);
+    dayTimeTable = new DayTimePanel(this, game->rules->dayTimes);
+    dayTimeTable->setVisible(false);
 
-    StartUnitsChoice = new UnitsTune(this, game->rules, mainPlayerColor, game->chosenUnitType[mainPlayerColor]);
+    startUnitsChoice = new UnitsTune(this, game->rules, mainPlayerColor, game->chosenUnitType[mainPlayerColor]);
 
     fieldControl = new FieldWindow(this, field);
+
+    startChoiceProgress = new StartChoiceProgress(this, mainPlayerColor, game->rules->start_choices);
 
     whiteFlag = new SpecialButton(this, "WhiteFlag");
     homeButton = new SpecialButton(this, "HomeButton");
@@ -52,11 +54,12 @@ void GameWindow::deleteInterface()
         lps->Delete();
     go->Delete();
     next->Delete();
-    DayTimeTable->Delete();
-    StartUnitsChoice->Delete();
+    dayTimeTable->Delete();
+    startUnitsChoice->Delete();
     fieldControl->Delete();
     whiteFlag->Delete();
     homeButton->Delete();
+    startChoiceProgress->Delete();
 
     if (hexCopy != NULL)
         hexCopy->Delete();
@@ -134,9 +137,9 @@ void GameWindow::resize(qreal W, qreal H)
                     H * constants->goSize);
 
     next->setGeometry(W * constants->goX,
-                    H * constants->goY,
-                    H * constants->goSize,
-                    H * constants->goSize);
+                      H * constants->goY,
+                      H * constants->goSize,
+                      H * constants->goSize);
 
     resizeDayTimeTable(W, H);
 
@@ -144,6 +147,11 @@ void GameWindow::resize(qreal W, qreal H)
                                                  H * (1 - constants->downPanelSize / 2 - constants->downPanelSize * constants->fieldControlHeight / 2),
                                                  W * constants->fieldControlWidth,
                                                  H * constants->downPanelSize * constants->fieldControlHeight);
+
+    startChoiceProgress->setGeometry(W / 2 * (1 - constants->startChoiceProgressBarWidth),
+                                     H * constants->startChoiceProgressBarY,
+                                     W * constants->startChoiceProgressBarWidth,
+                                     H * constants->startChoiceProgressBarHeight);
 
     whiteFlag->setGeometry(constants->whiteFlagX * W,
                                              (constants->upperPanelSize - constants->whiteFlagHeight) * H,
@@ -178,10 +186,10 @@ void GameWindow::resizeHexCopy()
 }
 void GameWindow::resizeDayTimeTable(qreal W, qreal H)
 {
-    int n = DayTimeTable->DayTimePictures.size();
+    int n = dayTimeTable->DayTimePictures.size();
     qreal width = constants->dayTimePictureWidth * (n + constants->dayTimeTableMargin * (n - 1));
 
-    DayTimeTable->setGeometry(W * (1 - width) / 2,
+    dayTimeTable->setGeometry(W * (1 - width) / 2,
                               H * (1 - constants->downPanelSize + constants->downPanelSize * constants->dayTimeTableUpSpace),
                               W * width,
                               H * constants->downPanelSize * (1 - 2 * constants->dayTimeTableUpSpace));
@@ -190,7 +198,7 @@ void GameWindow::resizeDayTimeTable(qreal W, qreal H)
     n = game->rules->unitsInGame.size();
     width = constants->dayTimePictureWidth * (n + constants->dayTimeTableMargin * (n - 1));
 
-    StartUnitsChoice->setGeometry(W * (1 - width) / 2,
+    startUnitsChoice->setGeometry(W * (1 - width) / 2,
                               H * (1 - constants->downPanelSize + constants->downPanelSize * constants->dayTimeTableUpSpace),
                               W * width,
                               H * constants->downPanelSize * (1 - 2 * constants->dayTimeTableUpSpace));

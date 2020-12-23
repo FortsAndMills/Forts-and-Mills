@@ -5,6 +5,7 @@
 #include "Technical/Constants.h"
 #include "BasicElements/StateObject.h"
 
+// Задняя рамка всего приложения
 class Background : public StateObject
 {
     Q_OBJECT
