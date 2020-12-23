@@ -60,6 +60,7 @@ class Client;
 #define UnitType QString
 #define OrderType QString
 #define DefaultOrder "Wait"
+#define DeleteLastOrder "DeleteLastOrder"
 #define PlayerColor QString
 #define Resource QString
 #define DayTime int

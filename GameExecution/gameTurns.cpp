@@ -94,6 +94,9 @@ QList<OrderType> Game::whatCanUse(GameUnit * unit)
             ans << order;
     }
     ans << DefaultOrder;
+
+    if (unit->plan[0] != NULL)
+        ans << DeleteLastOrder;
     return ans;
 }
 bool Game::must_be_last(GameUnit * unit, DayTime time)

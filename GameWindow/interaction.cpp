@@ -156,6 +156,28 @@ void GameWindow::orderVariantClicked(OrderType type)
     if (selectedUnit == NULL)
         debug << "FatalError: no selected unit, but there is order variant!!!\n";
 
+    // если выбран "удалить последний приказ"
+    if (type == DeleteLastOrder)
+    {
+        state = PLANNING;
+        selectedUnit->hidePanel();
+        setPreviousTime();  // откатываемся на прошлый шаг во времени
+
+        // sanity check
+        if (selectedUnit->prototype->plan[dayTime] == NULL)
+        {
+            debug << "FATAL ERROR: canceled order, but it... does not exist!!!\n";
+            return;
+        }
+
+        // отменяем последний приказ
+        deplanOrder(selectedUnit->prototype, dayTime);
+
+        // снова показываем панель
+        selectedUnit->showOrdersPanel(game->whatCanUse(selectedUnit->prototype));
+        return;
+    }
+
     state = CHOOSE_ORDER_PARAMETER;
 
     if (selectedUnit->prototype->plan[dayTime] != NULL)

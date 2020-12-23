@@ -275,14 +275,14 @@ public:
     QString name;
 
     explicit OrderVariant(GraphicObject * parent, QString name) :
-        StateObject(parent, "default", name, HOVER | CLICKABLE | RIGHT_CLICKABLE)
+        StateObject(parent, "default", name == DeleteLastOrder ? "RedCancelButton" : name, HOVER | CLICKABLE | RIGHT_CLICKABLE)
     {
         this->name = name;
 
         addGeometry("entered", QRectF(constants->specialButtonShiftX,
-                                                              constants->specialButtonShiftY,
-                                                              constants->specialButtonWidthShift,
-                                                              constants->specialButtonHeightShift));
+                                      constants->specialButtonShiftY,
+                                      constants->specialButtonWidthShift,
+                                      constants->specialButtonHeightShift));
     }
 
     void enter()
