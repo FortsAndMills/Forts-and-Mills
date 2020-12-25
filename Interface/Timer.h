@@ -3,6 +3,7 @@
 
 #include "Technical/HelpManager.h"
 #include "BasicElements/DigitObject.h"
+#include "GameExecution/Game.h"
 
 class Timer : public GraphicObject
 {
@@ -72,9 +73,22 @@ public:
     void disappear()
     {
         hidden = true;
+        timer->stop();
         this->AnimationStart(OPACITY, 0, constants->gameMainPhaseStartPanelsAppearTime);
     }
+    void activate(Game * game)
+    {
+        if (game->rules->timer_per_round == 0 && hidden)
+        {
+            int seconds;
+            if (game->state == Game::GS_CHOOSE_HEX)
+                seconds = game->rules->timer_per_choice_after_opponent;
+            else
+                seconds = game->rules->timer_per_plan_after_opponent;
 
+            launch(seconds);
+        }
+    }
     void launch(int seconds)
     {
         if (seconds == 0)

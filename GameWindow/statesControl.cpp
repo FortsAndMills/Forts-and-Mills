@@ -27,9 +27,10 @@ void GameWindow::getReadyToPlanning()
 
         go->enable();
         go->AnimationStart(OPACITY, 1, constants->goButtonAppearTime);
-        next->AnimationStart(OPACITY, 0, constants->goButtonAppearTime);
-        next->enable(false);
     }
+
+    next->AnimationStart(OPACITY, 0, constants->goButtonAppearTime);
+    next->enable(false);
 
     delightWholeField();
     disableWholeField();
