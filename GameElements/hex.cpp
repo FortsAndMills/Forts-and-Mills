@@ -401,6 +401,10 @@ void Hex::forbidToSelect(bool forbid)
         setProperties(CLICKABLE | HOVER | RIGHT_CLICKABLE);
     }
 }
+bool Hex::is_clickable()
+{
+    return (this->flags & CLICKABLE) != 0;
+}
 
 void Hex::planCapturing(PlayerColor color)
 {

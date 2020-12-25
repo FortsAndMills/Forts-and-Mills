@@ -32,6 +32,7 @@ void GameWindow::initialConnections()
     connect(next, SIGNAL(leftClickStarted()), SLOT(NextButtonClicked()));
     connect(whiteFlag, SIGNAL(leftClicked()), SLOT(whiteFlagClicked()));
     connect(homeButton, SIGNAL(leftClicked()), SLOT(homeButtonClicked()));
+    connect(timer, SIGNAL(expired()), SLOT(timerExpired()));
 
     connect(fieldControl->up, SIGNAL(leftClicked()), SLOT(hexPointsChanged()));
     connect(fieldControl->down, SIGNAL(leftClicked()), SLOT(hexPointsChanged()));
@@ -188,7 +189,6 @@ void GameWindow::orderVariantClicked(OrderType type)
 
     // создаём новый приказ выбранного типа
     GameOrder * order = new GameOrder(game->rules, selectedUnit->prototype->type, type);
-    ++priorities[dayTime];
     selectedUnit->prototype->plan[dayTime] = order;
 
     // инициализируем его и привязываем к текущему юниту
@@ -310,10 +310,11 @@ void GameWindow::dayTimeClicked(DayTime time)
             setTime(-1);
     }
 }
-void GameWindow::startUnitTypeClicked(bool on, QString type)
+void GameWindow::startUnitTypeClicked(bool on, UnitType type)
 {
     if (state == CHOOSING_HEX && on)
     {
+        // TODO: а есть же функция getUnitTypebyIndex или что-то такое?
         int i = 0;
         while (startUnitsChoice->units[i]->type != type) { ++i; }
 
@@ -324,6 +325,101 @@ void GameWindow::startUnitTypeClicked(bool on, QString type)
         startUnitsChoice->units[i]->turnOn(true);
 
         game->chosenUnitType[mainPlayerColor] = type;
+    }
+}
+
+void GameWindow::timerExpired()
+{
+    if (game->players[mainPlayerColor]->GiveUp)
+        return;
+
+    bool forced_plan = false;
+
+    if (state == CHOOSING_HEX)
+    {
+        // принудительная отправка плана
+        forced_plan = true;
+
+        // придётся выбрать случайную клетку
+        if (game->chosenHex[mainPlayerColor] == NOWHERE)
+        {
+            QList <Coord> vars;
+            for (int i = 0; i < game->rules->fieldH; ++i)  // делаем гексы невыделенными и недоступными
+            {
+                for (int j = 0; j < game->rules->fieldW; ++j)
+                {
+                    if (hex(i, j)->is_clickable())
+                    {
+                        vars << Coord(i, j);
+                    }
+                }
+            }
+            game->chosenHex[mainPlayerColor] = vars[game->rand->next() % vars.size()];
+        }
+
+        this->disableWholeField();
+    }
+
+    if (state == CHOOSE_ORDER_PARAMETER)
+        breakChoosingOrderParameter();
+
+    if (state == ARE_YOU_SURE_DIALOG)
+    {
+        dialog->cancelClicked();
+    }
+
+    if (state == PLANNING)
+    {
+        forced_plan = true;
+
+        if (selectedUnit != NULL)
+        {
+            selectedUnit->deselect();
+            selectedUnit->hidePanel();
+            selectedUnit = NULL;
+        }
+    }
+
+    if (state == REALIZATION_PHASE)
+    {
+        forced_plan = true;
+    }
+
+    if (forced_plan)
+    {
+        sendPlan();
+
+        if (!game->players[mainPlayerColor]->GiveUp)
+        {
+            dialog->set(mainPlayerColor, "Время вышло!", false, true, false, false, "", "timerexpired");
+            resizeDialog(width(), height());
+        }
+    }
+}
+
+void GameWindow::CheckNextPhase()
+{
+    if (game->isEveryoneReady())
+    {
+        // равен true если мы просматривали исход предыдущего раунда,
+        // а уже нужно обсчитать следующий раунд потому что время вышло
+        bool trigger_next_phase = state != REALIZATION_PHASE;
+
+        // переход из режима планирования в режим просмотра
+        if (state == PLANNING || state == CHOOSE_ORDER_PARAMETER ||
+            state == WAIT_FOR_ENEMY_PLAN || state == ARE_YOU_SURE_DIALOG)
+        {
+            getReadyToRealization();
+        }
+
+        int time = game->NextStage();
+        timer->launch(time);
+
+        if (trigger_next_phase)
+            NextPhase();
+
+        // оповещение в трее
+        qApp->alert(dynamic_cast<QWidget *>(this->parent()));
     }
 }
 
@@ -377,7 +473,7 @@ void GameWindow::DialogReturned(bool isOk, QString sig_mes)
 // на вход и выход передаются сообщения чисто местного протокола
 
 #define GIVE_UP (qint8)1
-#define MILLS_COORDINATES_MESSAGE (qint8)2
+#define START_COORDINATES_MESSAGE (qint8)2
 #define PLAN (qint8)3
 void GameWindow::sendPlan()
 {
@@ -387,26 +483,23 @@ void GameWindow::sendPlan()
 
         QByteArray message;
         QDataStream write(&message, QIODevice::WriteOnly);
-        write << MILLS_COORDINATES_MESSAGE
+        write << START_COORDINATES_MESSAGE
                   << PlayerIndex
                   << game->chosenHex[mainPlayerColor]
                   << game->rules->unitTypeIndex(game->chosenUnitType[mainPlayerColor]);
         emit writeToOpponent(message);
 
-        game->ready[mainPlayerColor] = true;
-        if (game->isEveryoneReady())
-        {
-            NextPhase();
-        }
+        game->ready[mainPlayerColor] = true;        
+        CheckNextPhase();
     }
-    else if (state == PLANNING)
+    else if (state == PLANNING || state == REALIZATION_PHASE)
     {
-        state = WAIT_FOR_ENEMY_PLAN;
+        if (state == PLANNING)
+            state = WAIT_FOR_ENEMY_PLAN;
 
         QByteArray message;
         QDataStream write(&message, QIODevice::WriteOnly);
-        write << PLAN
-                  << PlayerIndex;
+        write << PLAN << PlayerIndex;
 
         foreach (GameUnit * unit, game->players[mainPlayerColor]->units)
         {
@@ -416,7 +509,6 @@ void GameWindow::sendPlan()
                 if (unit->plan[time] == NULL)
                 {
                     unit->plan[time] = new GameOrder(game->rules, unit->type, DefaultOrder);
-                    ++priorities[time];
                 }
 
                 // отправляем план
@@ -438,10 +530,7 @@ void GameWindow::sendPlan()
         emit writeToOpponent(message);
 
         game->ready[mainPlayerColor] = true;
-        if (game->isEveryoneReady())
-        {
-            NextPhase();
-        }
+        CheckNextPhase();
     }
 }
 void GameWindow::readFromOpponent(QByteArray message)
@@ -459,12 +548,9 @@ void GameWindow::readFromOpponent(QByteArray message)
         resizeDialog(width(), height());
 
         game->playerGiveUp(sender_index);
-        if ((state == WAIT_FOR_ENEMY_PLAN ||
-             state == WAIT_FOR_ENEMY_START_POINT) &&
-                game->isEveryoneReady())
-            NextPhase();
     }
-    if (Command == MILLS_COORDINATES_MESSAGE)
+
+    if (Command == START_COORDINATES_MESSAGE)
     {        
         PlayerColor sender = game->rules->players[sender_index];
 
@@ -513,11 +599,7 @@ void GameWindow::readFromOpponent(QByteArray message)
     }
 
     game->ready[game->rules->players[sender_index]] = true;
-    if (game->isEveryoneReady())
-    {
-        NextPhase();
-        qApp->alert(dynamic_cast<QWidget *>(this->parent()));
-    }
+    CheckNextPhase();
 }
 void GameWindow::NextButtonClicked()
 {
@@ -554,7 +636,25 @@ void GameWindow::opponentReconnected(qint8 index)
 }
 
 void GameWindow::giveup()
-{
+{    
+    if (state == CHOOSING_HEX || state == WAIT_FOR_ENEMY_START_POINT)
+    {
+        // отключаем выбранный гекс
+        if (game->chosenHex[mainPlayerColor] != NOWHERE)
+        {
+            hex(game->chosenHex[mainPlayerColor])->select(false);
+            game->chosenHex[mainPlayerColor] = NOWHERE;
+        }
+
+        // выключаем возможность кликать на поле
+        disableWholeField();
+
+        // убираем панели
+        go->AnimationStart(OPACITY, 0, constants->goButtonAppearTime);
+        startUnitsChoice->AnimationStart(OPACITY, 0);
+    }
+
+    // отправка сообщения
     if (!game->players[mainPlayerColor]->GiveUp)
     {
         QByteArray message;
@@ -563,11 +663,7 @@ void GameWindow::giveup()
         emit writeToOpponent(message);
 
         game->playerGiveUp(PlayerIndex);
-        if ((state == PLANNING || state == CHOOSING_HEX ||
-             state == WAIT_FOR_ENEMY_PLAN ||
-             state == WAIT_FOR_ENEMY_START_POINT) &&
-             game->isEveryoneReady())
-            NextPhase();
+        CheckNextPhase();
     }
 
     if (planned_to_go_home)  // что это?

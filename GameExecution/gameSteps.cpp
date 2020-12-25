@@ -3,15 +3,21 @@
 // обработка выбора стартовых клеток в начале игры
 void Game::ProcessChosenHexes()
 {
+    AddEvent()->StartChoiceMade();
+
     QSet <GameHex *> ch;
     int giveupers = 0;
     foreach (GamePlayer * player, players)
     {
         if (player->GiveUp)
             ++giveupers;
+        else if (ch.contains(hex(chosenHex[player->color])))
+        {
+            // один гекс был выбран несколькими игроками; он выкидывается из вариантов
+            hex(chosenHex[player->color])->canBeChosenAsStartPoint = false;            
+        }
         else
         {
-            hex(chosenHex[player->color])->canBeChosenAsStartPoint = false;
             ch << hex(chosenHex[player->color]);
         }
     }

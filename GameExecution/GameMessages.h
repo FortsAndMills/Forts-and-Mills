@@ -10,6 +10,7 @@
 enum GameEventType
 {
     CHOOSE_HEX,
+    START_CHOICE_MADE,
     NEW_UNIT_APPEAR,
     HEX_CAPTURED,
     RESOURCE_APPEAR,
@@ -84,6 +85,10 @@ public:
     {
         type = CHOOSE_HEX;
         this->variants = variants;
+    }
+    void StartChoiceMade()
+    {
+        type = START_CHOICE_MADE;
     }
     void NewUnitAppear(GameUnit * unit, GameHex * hex)
     {

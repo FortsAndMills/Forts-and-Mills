@@ -58,6 +58,7 @@ HEADERS  += mainwindow.h \
     GameExecution/GameLog.h \
     GameExecution/GameStructures.h \
     Interface/StartChoiceProgress.h \
+    Interface/Timer.h \
     Programm/Basic/headers.h \
     Basic/ProgrammSettings.h \
     Product/MainWindow.h \

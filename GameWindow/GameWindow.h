@@ -19,6 +19,7 @@
 #include "Interface/LeftPanelsSwitch.h"
 #include "Interface/SpecialButton.h"
 #include "Interface/StartChoiceProgress.h"
+#include "Interface/Timer.h"
 #include "Interface/Tunes.h"
 
 class GameWindow : public GraphicObject
@@ -89,6 +90,8 @@ protected:
 
     bool planned_to_go_home = false;
 
+    void CheckNextPhase();  // проверяет, нужно ли просчитать следующий раунд игры
+
 protected slots:
     virtual void hexClicked(Coord c);
     void hexLeft(Coord c);
@@ -106,6 +109,8 @@ protected slots:
 
     void dayTimeClicked(DayTime time);
     void startUnitTypeClicked(bool on, QString type);
+
+    void timerExpired();
 
     void readFromOpponent(QByteArray in); // пришла посылка от противника
     void sendPlan();
@@ -174,8 +179,6 @@ protected:
     Unit * selectedUnit = NULL;  // выделенный юнит
     DayTime dayTime = -1;  // текущее время, -1 если не выбрано
 
-    QMap <DayTime, int> priorities;  // приоритеты для создания приказов
-
     void disableWholeField();
     void delightWholeField();
 
@@ -213,6 +216,7 @@ protected:
     GoButton * go;
     NextButton * next;
 
+    Timer * timer;
     DayTimePanel * dayTimeTable;
     UnitsTune * startUnitsChoice;
     FieldWindow * fieldControl;

@@ -94,6 +94,8 @@ public slots:
     }
     void ConnectionCheck()
     {
+        // TODO: если сервер вырубился, тут происходит ошибка
+
         QByteArray block;
         QDataStream out(&block, QIODevice::WriteOnly);
         out << (quint16)0 << CONNECTION_CHECK;

@@ -138,7 +138,7 @@ public:
     }
     bool checkIfPlanIsGood();
 
-    void PlanRealisation();
+    int PlanRealisation();
 };
 
 

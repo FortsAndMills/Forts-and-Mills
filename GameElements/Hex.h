@@ -147,6 +147,7 @@ public:
     void select(bool enable = true, bool immediate = false);
     void light(bool enable = true, bool immediate = false);
     void forbidToSelect(bool forbid = true);
+    bool is_clickable();
 
     void planCapturing(PlayerColor color);
     void deplanCapturing(PlayerColor color);

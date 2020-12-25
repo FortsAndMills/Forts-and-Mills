@@ -13,6 +13,8 @@ Game::Game(GameRules *rules, Random *rand)
         chosenUnitType[color] = rules->unitsInGame[0];
 
     GenerateField();
+
+    // TODO log here
 }
 
 void Game::StartGame()
@@ -20,50 +22,66 @@ void Game::StartGame()
     ChooseOneOfTheStartHexes();
 }
 
-void Game::HexChosen()
+int Game::NextStage()
 {
     if (lastPlayerInGame() == "Neutral")
     {
-        ProcessChosenHexes();
-
-        if (!ChooseOneOfTheStartHexes())
+        if (state == GS_CHOOSE_HEX)
         {
-            //if (rules->waves_start && !rules->surround_start)
-            //    WavesStart();
-            //if ((rules->surround_start || rules->regions_start) && !rules->waves_start)
-            //    gatherResources();
+            ProcessChosenHexes();
 
-            StartPlanning();
-        }
-    }
-    else
-        AddEvent()->Win(lastPlayerInGame());
-}
+            if (!ChooseOneOfTheStartHexes())
+            {
+                state = GS_PLAN;
+                StartPlanning();
 
-void Game::PlanRealisation()
-{
-    if (lastPlayerInGame() == "Neutral")
-    {
-        RealizePlan();
-
-        destroyHomelessUnits();
-        recruitNewUnits();
-        killAllies();
-        burnExtraResources();
-        gatherResources();
-        defenceFill();
-        agitationEnds();
-
-        if (isGameFinished() == "Neutral")
-        {
-            addDayTime();
-            StartPlanning();
+                // запускаем таймер
+                if (rules->timer_per_round)
+                {
+                    return rules->timer_per_plan;
+                }
+            }
+            else
+            {
+                // запускаем таймер
+                if (rules->timer_per_round)
+                {
+                    return rules->timer_per_choice;
+                }
+            }
         }
         else
         {
-            AddEvent()->Win(isGameFinished());
+            RealizePlan();
+
+            destroyHomelessUnits();
+            recruitNewUnits();
+            killAllies();
+            burnExtraResources();
+            gatherResources();
+            defenceFill();
+            agitationEnds();
+
+            if (isGameFinished() == "Neutral")
+            {
+                addDayTime();
+                StartPlanning();
+
+                // запускаем таймер
+                if (rules->timer_per_round)
+                {
+                    return rules->timer_per_plan;
+                }
+            }
+            else
+            {
+                AddEvent()->Win(isGameFinished());
+            }
         }
+
     }
     else
         AddEvent()->Win(lastPlayerInGame());
+
+    return 0;
 }

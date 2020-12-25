@@ -331,7 +331,7 @@ public:
         {
             if (state == PLANNING || state == CHOOSE_ORDER_PARAMETER)
                 getReadyToRealization();
-            game->PlanRealisation();
+            game->NextStage();
         }
         else
             go->enable();

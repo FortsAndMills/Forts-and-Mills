@@ -72,6 +72,10 @@ public:
     int river_gp_min, river_gp_max;
     double K_change;
 
+    int timer_per_round;  // флаг: если да, то время даётся на раунд; иначе после готовности противника
+    int timer_per_choice, timer_per_plan;
+    int timer_per_choice_after_opponent, timer_per_plan_after_opponent;
+
     explicit GameRules();
     explicit GameRules(QList <qint32> hash);
     void setTestOptions();

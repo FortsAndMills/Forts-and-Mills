@@ -21,5 +21,6 @@
         <file>Content/Numbers/MillDigit8.png</file>
         <file>Content/Numbers/MillDigit9.png</file>
         <file>Content/Numbers/x.png</file>
+        <file>Content/Numbers/colon.png</file>
     </qresource>
 </RCC>

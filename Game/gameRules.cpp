@@ -56,6 +56,13 @@ void GameRules::setTestOptions()
     river_gp_max = 4;
     K_change = 1;
 
+    // таймеры
+    timer_per_round = 1;
+    timer_per_choice = 90;
+    timer_per_plan = 360;
+    timer_per_choice_after_opponent = 30;
+    timer_per_plan_after_opponent = 120;
+
     QFile * hostFile = new QFile("Experiments_options.txt");
     if (hostFile->open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -67,7 +74,12 @@ void GameRules::setTestOptions()
                       >> s >> fort_gp_min >> fort_gp_max
                       >> s >> mill_gp_min >> mill_gp_max
                       >> s >> river_gp_min >> river_gp_max
-                      >> s >> K_change;
+                      >> s >> K_change
+                      >> s >> timer_per_round
+                      >> s >> timer_per_choice
+                      >> s >> timer_per_plan
+                      >> s >> timer_per_choice_after_opponent
+                      >> s >> timer_per_plan_after_opponent;
 
         if(tstream.status() != QTextStream::Ok)
         {
@@ -86,7 +98,13 @@ void GameRules::setTestOptions()
                       << "FortsGenerationLimits: " << fort_gp_min << " " << fort_gp_max << Qt::endl
                       << "MillsGenerationLimits: " << mill_gp_min << " " << mill_gp_max << Qt::endl
                       << "RiversGenerationLimits: " << river_gp_min << " " << river_gp_max << Qt::endl
-                      << "ResourcesAmountCoeff: " << K_change;
+                      << "ResourcesAmountCoeff: " << K_change << Qt::endl
+                      << Qt::endl
+                      << "timer_per_round: " << timer_per_round << Qt::endl
+                      << "timer_per_choice: " << timer_per_choice << Qt::endl
+                      << "timer_per_plan: " << timer_per_plan << Qt::endl
+                      << "timer_per_choice_after_opponent: " << timer_per_choice_after_opponent << Qt::endl
+                      << "timer_per_plan_after_opponent: " << timer_per_plan_after_opponent << Qt::endl;
         hostFile->close();
     }
 }

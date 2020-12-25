@@ -98,7 +98,8 @@ void Images::InitPictures()
                 "FortDigit2",
                 "FortDigit1",
                 "FortDigit0",
-                "x"},
+                "x",
+                "colon"},
                  ".png");
 
     names << PictureNameFolder("Icons",

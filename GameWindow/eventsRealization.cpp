@@ -5,47 +5,40 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
     GameMessage * e = game->events[0];
     if (e->type == CHOOSE_HEX)
     {
-        if (Substate == 0)
+        // делаем доступными к нажатию определённые гексы
+        if (game->events.size() == 1)
         {
-            // увеличиваем прогресс-бар
-            startChoiceProgress->expand();
+            if (game->players[mainPlayerColor]->GiveUp)
+                state = WAIT_FOR_ENEMY_START_POINT; // мы сдались, но планы врагов ещё не пришли
+            else
+                getReadyToChooseHex(e->variants); // мы не сдались, и у нас ещё есть время
 
-            // делаем доступными к нажатию определённые гексы
-            getReadyToChooseHex(e->variants);
-
-            Substate = 1;
-            if (game->isEveryoneReady())  // ??!?
-                return WaitingType();
-            return WaitingType(WAIT_FOR_INTERACTION, 0, false);
+            return WaitingType(WAIT_FOR_INTERACTION);
         }
         else
         {
-            // заполняем лог и запускаем продолжение
-            //logMillChoice();
-            game->HexChosen();
+            // игра уже перешла к следующему раунду
             return WaitingType();
         }
     }
     else if (e->type == PLAN)
     {
-        if (Substate == 0)
+        if (game->events.size() == 1)
         {
             getReadyToPlanning();
-
-            Substate = 1;
-            if (game->isEveryoneReady())
-                return WaitingType();
-            return WaitingType(WAIT_FOR_INTERACTION, 0, false);
+            return WaitingType(WAIT_FOR_INTERACTION);
         }
         else
         {
-            getReadyToRealization();
-
-            //logPlan();
-            game->PlanRealisation();
-
+            // игра уже перешла к следующему раунду
             return WaitingType();
         }
+    }
+    else if (e->type == START_CHOICE_MADE)
+    {
+        // увеличиваем прогресс-бар
+        startChoiceProgress->expand();
+        return WaitingType();
     }
     else if (e->type == HEX_CAPTURED)
     {

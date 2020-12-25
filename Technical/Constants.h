@@ -231,6 +231,11 @@ public:
     static qreal goY;
     static qreal goSize;
 
+    static qreal timerX;  // Таймер
+    static qreal timerY;
+    static qreal timerWidth;
+    static qreal timerHeight;
+
     static qreal startChoiceProgressBarY;  // прогресс стартового выбора
     static qreal startChoiceProgressBarWidth;
     static qreal startChoiceProgressBarHeight;

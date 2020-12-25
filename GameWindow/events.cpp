@@ -28,7 +28,7 @@ void GameWindow::newUnit(GameUnit * unit, Coord where)
     unitConnections(units[unit]);
 
     // добавляем его текущую позицию в список его позиций
-    units[unit]->stack << Position(unit->position, hex(where)->createPoint());
+    units[unit]->stack << Position(where, hex(where)->createPoint());
     units[unit]->anchorTo(hex(units[unit]));  // привязываем к текущему гексу
 
     // организуем появление
@@ -226,7 +226,7 @@ void GameWindow::createWay(Unit *unit)
                              to.position, to.point);
 
     NewTo->setStartPosition(wayToStartCoordinate(NewTo),
-                                           wayToEndCoordinate(NewTo));
+                            wayToEndCoordinate(NewTo));
     NewTo->anchorTo(hex(to.position));
     NewTo->ClipWithItem(hex(to.position));
     ways_to[unit] << NewTo;

@@ -35,6 +35,9 @@ void GameWindow::initInterface()
 
     startUnitsChoice = new UnitsTune(this, game->rules, mainPlayerColor, game->chosenUnitType[mainPlayerColor]);
 
+    timer = new Timer(this);
+    timer->setVisible(false);
+
     fieldControl = new FieldWindow(this, field);
 
     startChoiceProgress = new StartChoiceProgress(this, mainPlayerColor, game->rules->start_choices);
@@ -54,6 +57,7 @@ void GameWindow::deleteInterface()
         lps->Delete();
     go->Delete();
     next->Delete();
+    timer->Delete();
     dayTimeTable->Delete();
     startUnitsChoice->Delete();
     fieldControl->Delete();
@@ -140,6 +144,11 @@ void GameWindow::resize(qreal W, qreal H)
                       H * constants->goY,
                       H * constants->goSize,
                       H * constants->goSize);
+
+    timer->setGeometry(W * constants->timerX,
+                       H * constants->timerY,
+                       W * constants->timerWidth,
+                       H * constants->timerHeight);
 
     resizeDayTimeTable(W, H);
 

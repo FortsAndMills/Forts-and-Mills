@@ -2,46 +2,33 @@
 
 void GameWindow::getReadyToChooseHex(QList <Coord> variants)
 {
-    if (!game->players[mainPlayerColor]->GiveUp)
+    state = CHOOSING_HEX;
+    foreach (Hex * hex, hexes)
     {
-        state = CHOOSING_HEX;
-        foreach (Hex * hex, hexes)
+        if (variants.contains(hex->prototype->coord))
         {
-            if (variants.contains(hex->prototype->coord))
-            {
-                hex->light();
-                hex->forbidToSelect(false);
-            }
-            else
-            {
-                hex->light(false);
-                hex->forbidToSelect();
-            }
+            hex->light();
+            hex->forbidToSelect(false);
         }
-    }
-    else
-    {
-        state = WAIT_FOR_ENEMY_START_POINT;
+        else
+        {
+            hex->light(false);
+            hex->forbidToSelect();
+        }
     }
 }
 void GameWindow::getReadyToPlanning()
 {
-    if (!game->players[mainPlayerColor]->GiveUp)
+    if (game->players[mainPlayerColor]->GiveUp)
+        state = WAIT_FOR_ENEMY_PLAN; // мы сдались, но планы врагов ещё не пришли
+    else
     {
-        state = PLANNING;
-
-        for (int i = 0; i < priorities.size(); ++i)
-            priorities[i] = 0;
+        state = PLANNING;  // мы не сдались и у нас ещё есть время
 
         go->enable();
         go->AnimationStart(OPACITY, 1, constants->goButtonAppearTime);
         next->AnimationStart(OPACITY, 0, constants->goButtonAppearTime);
         next->enable(false);
-        //wantToCaptureRegion(ANY, false);
-    }
-    else
-    {
-        state = WAIT_FOR_ENEMY_PLAN;
     }
 
     delightWholeField();
@@ -52,9 +39,6 @@ void GameWindow::getReadyToPlanning()
 
     startUnitsChoice->AnimationStart(OPACITY, 0);
     startChoiceProgress->AnimationStart(OPACITY, 0);
-
-//    foreach (Hex * hex, hexes)
-//        hex->hideLivingNation();
 
     dayTimeTable->deselectAll();
     dayTime = -1;

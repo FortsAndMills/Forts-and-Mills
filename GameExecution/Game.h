@@ -12,10 +12,11 @@ public:
 
     // -------------------------------------------------------------------------------
     // функции внешнего вызова
+    // возвращают время таймера
     // реализации в Game.cpp
+    enum GameState {GS_CHOOSE_HEX, GS_PLAN} state = GS_CHOOSE_HEX;
     virtual void StartGame();
-    virtual void HexChosen();
-    virtual void PlanRealisation();
+    virtual int NextStage();
 
 protected:
     // -------------------------------------------------------------------------------

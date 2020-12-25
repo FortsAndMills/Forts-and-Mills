@@ -6,6 +6,8 @@
 
 // Цифры (пока используются только для размера поля в главменю)
 
+#define COLON_DIGIT -179
+
 class DigitObject : public GraphicObject
 {
 public:
@@ -13,8 +15,8 @@ public:
     QString type;  // стиль: "Mill" или "Fort"
 
     // отображает одну цифру или 'x'
-    DigitObject(GraphicObject * parent, int n, QString type, Properties prop) :
-        GraphicObject(parent, prop, n >= 0 && n <= 9 ? type + "Digit" + QString::number(n) : "x")
+    DigitObject(GraphicObject * parent, int n, QString type = "Fort", Properties prop = 0) :
+        GraphicObject(parent, prop, n >= 0 && n <= 9 ? type + "Digit" + QString::number(n) : (n == COLON_DIGIT ? "colon" : "x"))
     {
         this->type = type;
         this->n = n;

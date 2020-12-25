@@ -683,7 +683,7 @@ bool LessonGame::checkIfPlanIsGood()
     return true;
 }
 
-void LessonGame::PlanRealisation()
+int LessonGame::PlanRealisation()
 {
     if (N == 0)
     {
@@ -1011,7 +1011,7 @@ void LessonGame::PlanRealisation()
 
             AddEvent()->ShowMessage("Игроки выбрали разные клетки, поэтому каждый получает желаемое! На игроков уже действует лимит ресурсов от фортов.", true, true, true);
 
-            HexChosen();
+            NextStage();
             GameMessage* true_message = events.last();
             AddEvent()->GetReadyToChooseHex(true_message);
             events.removeAt(events.size() - 2);
@@ -1029,7 +1029,7 @@ void LessonGame::PlanRealisation()
 
             AddEvent()->ShowMessage("Игроки выбрали одну и ту же клетку, поэтому она никому не достаётся и выкидывается из вариантов.", false, true, true);
 
-            HexChosen();
+            NextStage();
             GameMessage* true_message = events.last();
             AddEvent()->GetReadyToChooseHex(true_message);
             events.removeAt(events.size() - 2);
@@ -1050,7 +1050,7 @@ void LessonGame::PlanRealisation()
             AddEvent()->ShowStartProgressBar();
             AddEvent()->ShowMessage("Количество оставшихся выборов показано в верху экрана.", false, true, true);
 
-            HexChosen();
+            NextStage();
             if (round < 6)
             {
                 GameMessage* true_message = events.last();
@@ -1071,5 +1071,7 @@ void LessonGame::PlanRealisation()
             }
         }
     }
+
+    return 0;
 }
 
