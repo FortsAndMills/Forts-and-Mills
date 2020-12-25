@@ -104,6 +104,9 @@ void Game::GenerateField()
             // определяем следующее направление
             hex3 = hex(adjacentHex(hex1->coord, WAY(int(way) + 1)));
 
+            if (rand->next() % rules->river_interrupt_probability == 0)
+                break;
+
             if (rand->next() % 2)
             {
                 start = hex1;

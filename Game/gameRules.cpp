@@ -48,6 +48,8 @@ void GameRules::setTestOptions()
     damageToHomellesUnits = 179;
     peacefullOrdersBurns = false;
     start_choices = 7;
+    pig_can_shoot_attacker = false;
+    fire_has_penalty = true;
     fort_gp_min = 6;
     fort_gp_max = 9;
     mill_gp_min = 4;
@@ -71,6 +73,8 @@ void GameRules::setTestOptions()
         tstream >> s >> damageToHomellesUnits
                       >> s >> peacefullOrdersBurns
                       >> s >> start_choices
+                      >> s >> pig_can_shoot_attacker
+                      >> s >> fire_has_penalty
                       >> s >> fort_gp_min >> fort_gp_max
                       >> s >> mill_gp_min >> mill_gp_max
                       >> s >> river_gp_min >> river_gp_max
@@ -95,6 +99,8 @@ void GameRules::setTestOptions()
         tstream << "DamageToHomelessUnits: " << damageToHomellesUnits << Qt::endl
                       << "PeacefullOrdersBurns: " << peacefullOrdersBurns << Qt::endl
                       << "NumOfStartingChoices: " << start_choices << Qt::endl
+                      << "PigCanShootAttacker: " << pig_can_shoot_attacker << Qt::endl
+                      << "FireHasPenalty: " << fire_has_penalty << Qt::endl
                       << "FortsGenerationLimits: " << fort_gp_min << " " << fort_gp_max << Qt::endl
                       << "MillsGenerationLimits: " << mill_gp_min << " " << mill_gp_max << Qt::endl
                       << "RiversGenerationLimits: " << river_gp_min << " " << river_gp_max << Qt::endl
@@ -121,6 +127,8 @@ void GameRules::recountGenerationParameters()
         dayTimes = 1;
 
     qreal K = (fieldW * fieldH) / 60.0;  // во сколько раз увеличить кол. всех ресурсов
+
+    river_interrupt_probability = 20; // шансы реки прерваться
 
     // диапазоны генерации фортов, мельниц и гор
     numOfRivers = Range(river_gp_min, river_gp_max, K);

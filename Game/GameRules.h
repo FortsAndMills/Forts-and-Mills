@@ -56,6 +56,9 @@ public:
     QMap <OrderType, Range> numOfResourcesOnField;
     Range numOfRivers;
 
+    // шансы реки прерваться при генерации
+    int river_interrupt_probability;
+
     // эти флаги выставляются в зависимости от настроек игры
     bool doesCaptureRecruits;
     bool doesEnteringEnemyHexLiberates;
@@ -67,6 +70,8 @@ public:
     int damageToHomellesUnits;  // тестовая настройка: бездомные не умирают, а получают дамаг
     int peacefullOrdersBurns;   // тестовая настройка: мирные приказы сжигаются
     int start_choices;          // сколько раз выбираем стартовые клетки
+    int pig_can_shoot_attacker;
+    int fire_has_penalty;
     int fort_gp_min, fort_gp_max;
     int mill_gp_min, mill_gp_max;
     int river_gp_min, river_gp_max;

@@ -105,7 +105,7 @@ GameOrderParameters::GameOrderParameters(GameRules * rules, UnitType owner, Orde
     if (type == "Fire")
     {
         burnsWhenFight = false;
-        fightInfluence = 0;
+        fightInfluence = -rules->fire_has_penalty;
 
         if (owner == "Pig")
         {

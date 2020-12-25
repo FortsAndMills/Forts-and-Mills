@@ -115,7 +115,7 @@ void Game::Realize(QList<Action> act)
             {
                 QSet <GameUnit *> targets;
                 // сначала стреляем в тех, кто входит в нашу клетку с правильной стороны
-                if (adjacentHexes(a.unit->position).contains(a.action.target))
+                if (rules->pig_can_shoot_attacker && adjacentHexes(a.unit->position).contains(a.action.target))
                 {
                     targets = find(ENEMY, a.unit, a.action.target, a.unit->position);
                 }
