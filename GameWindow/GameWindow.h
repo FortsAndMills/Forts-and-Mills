@@ -7,6 +7,7 @@
 #include "Technical/AnimationManager.h"
 
 #include "GameExecution/Game.h"
+#include "GameExecution/GameLog.h"
 #include "GameElements/FieldWindow.h"
 #include "GameElements/Unit.h"
 #include "GameElements/Rocket.h"
@@ -89,6 +90,7 @@ protected:
     void orderPicsConnections(OrderPic * pic);
 
     bool planned_to_go_home = false;
+    GameLog * log;
 
     void CheckNextPhase();  // проверяет, нужно ли просчитать следующий раунд игры
 

@@ -85,6 +85,10 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
     if (name == "Cure") return QVector<QString>()
                 << "<u>Лечение</u> - восстанавливает 1 единицу здоровья. Здоровье не может стать больше исходного."
                 << "В случае боя юнит получает штраф -1.";
+    if (name == DefaultOrder) return QVector<QString>()
+                << "<u>Пропуск хода</u> - ничего не делать. Выставляется по умолчанию.";
+    if (name == DeleteLastOrder) return QVector<QString>()
+                << "Удаляет последний отданный приказ.";
 
 
     if (name == "Scrat") return QVector<QString>()
@@ -96,8 +100,8 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
             << "Считается, что юнит находился в обороне, если он не перемещается в момент боя. Бонус восполняется в конце раунда.";
     if (name == "Karkun") return QVector<QString>()
             << "<u>Каркун</u> - может использовать приказ штурма. Полное здоровье - 4.";
-    if (name == "Bruter") return QVector<QString>()
-            << "<u>Брутер</u> - уничтожает всех союзников, попавших с ним в одну клетку. Полное здоровье - 6.";
+    if (name == "Rabbit") return QVector<QString>()
+            << "<u>Кролик</u> - появляется сразу два юнита с полным здоровьем 3.";
     if (name == "Mumusha") return QVector<QString>()
             << "<u>Корова</u> - Полное здоровье - 7, но появляется с 3 здоровья.";
 
@@ -150,8 +154,11 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
             << "Здесь отображается, какие приказы участвуют в игре.";
     if (name == "DayTimesTune") return QVector<QString>()
             << "На этой панели можно настроить количество времён дня в игре: от 1 до 5 или изменяющийся режим, в котором количество времён дня будет циклически изменяться от 1 до 5.";
+
     if (name == "DayTimesInGame") return QVector<QString>()
             << "Здесь отображается, сколько времён дня в игре.";
+    if (name == "Timer") return QVector<QString>()
+            << "Здесь отображается оставшееся время.";
 
 
     if (name == "HowToAskHelp") return QVector<QString>()
@@ -173,12 +180,13 @@ QString HelpManager::HelpPicture(QString name)
     if (name == "Pursue") return "Pursue";
     if (name == "Fortify") return "Fortify";
     if (name == "Cure") return "Cure";
+    if (name == DefaultOrder) return DefaultOrder;
 
     if (name == "Scrat") return "Scrat";
     if (name == "Pig") return "Pig";
     if (name == "Karkun") return "Karkun";
     if (name == "Hippo") return "Hippo";
-    if (name == "Bruter") return "Bruter";
+    if (name == "Rabbit") return "Rabbit";
     if (name == "Mumusha") return "Mumusha";
 
     if (name == "Fort") return "Fort";

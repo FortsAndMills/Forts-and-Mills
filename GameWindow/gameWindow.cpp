@@ -29,6 +29,9 @@ GameWindow::GameWindow(Game *game, qint8 PlayerIndex, GraphicObject *parent) :
 
     game->StartGame();
 
+    // TODO: не делать этого при обучении
+    log = new GameLog(game, PlayerIndex);
+
     // это чтобы NextPhase вызвался уже после инициализации...
     QTimer::singleShot(1, this, SLOT(NextPhase()));
 }

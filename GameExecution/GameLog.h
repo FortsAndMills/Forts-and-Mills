@@ -12,7 +12,6 @@ private:
     Game * game;
 
 public:
-    void logStart();
     void logMillChoice();
     void logPlan();
 
