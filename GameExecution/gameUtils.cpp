@@ -154,7 +154,26 @@ QString Game::lastPlayerInGame()
 // проверка на окончание игры!
 PlayerColor Game::isGameFinished()
 {
-    // TODO
     PlayerColor winner = "Neutral";
+    foreach (GamePlayer * player, players)
+    {
+        // у игрока есть юниты и ресурсы
+        if (!player->GiveUp && player->units.size() > 0 &&
+                player->resources["Capture"] > 0)
+        {
+            // первый найденный победитель
+            if (winner == "Neutral")
+            {
+                winner = player->color;
+            }
+            else
+            {
+                // уже второй победитель нашёлся; игра продолжается!
+                return "Neutral";
+            }
+        }
+    }
+
+    // TODO все мертвы: это ничья.
     return winner;
 }

@@ -13,8 +13,6 @@ Game::Game(GameRules *rules, Random *rand)
         chosenUnitType[color] = rules->unitsInGame[0];
 
     GenerateField();
-
-    // TODO log here
 }
 
 void Game::StartGame()
@@ -75,13 +73,13 @@ int Game::NextStage()
             }
             else
             {
-                AddEvent()->Win(isGameFinished());
+                win(isGameFinished());
             }
         }
 
     }
     else
-        AddEvent()->Win(lastPlayerInGame());
+        win(lastPlayerInGame());
 
     return 0;
 }

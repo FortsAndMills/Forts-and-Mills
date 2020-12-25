@@ -34,7 +34,7 @@ void Game::ProcessChosenHexes()
 
                 // перекрашиваем и даём юнита
                 GameHex * Hex = hex(chosenHex[player->color]);
-                GameUnit * New = NewUnit(player, chosenUnitType[player->color], Hex->coord);
+                NewUnit(player, chosenUnitType[player->color], Hex->coord);
                 CaptureHex(Hex, player->color);
 
                 // даём ресурсы за юнита
@@ -256,6 +256,12 @@ void Game::addDayTime()
         rules->dayTimes = rules->dayTimes % 5 + 1;
         AddEvent()->DayTimesChanged();
     }
+}
+
+void Game::win(PlayerColor winner)
+{
+    this->winner = winner;
+    AddEvent()->Win(winner);
 }
 
 // Подготовки к новому раунду (очистки предыдущих планов)

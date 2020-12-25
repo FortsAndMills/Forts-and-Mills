@@ -35,6 +35,8 @@ protected:
     void agitationEnds();
     void addDayTime();
 
+    void win(PlayerColor winner);
+
     bool ChooseOneOfTheStartHexes();
     void StartPlanning();
 
@@ -134,6 +136,9 @@ public:
     QMap <PlayerColor, bool> ready;
     bool isEveryoneReady()
     {
+        if (lastPlayerInGame() != "Neutral")
+            return true;
+
         foreach (PlayerColor pc, rules->players)
             if (!ready[pc] && !players[pc]->GiveUp)
                 return false;
@@ -188,6 +193,7 @@ public:
 public:
     Random * rand;
     GameRules * rules;
+    PlayerColor winner = "Neutral";
 
     QMap <PlayerColor, GamePlayer *> players;
     QList <QList <GameHex *> > hexes;

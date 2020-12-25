@@ -403,7 +403,7 @@ void GameWindow::CheckNextPhase()
     {
         // равен true если мы просматривали исход предыдущего раунда,
         // а уже нужно обсчитать следующий раунд потому что время вышло
-        bool trigger_next_phase = state != REALIZATION_PHASE;
+        bool trigger_next_phase = game->events.size() == 1;
 
         // переход из режима планирования в режим просмотра
         if (state == PLANNING || state == CHOOSE_ORDER_PARAMETER ||
@@ -412,14 +412,24 @@ void GameWindow::CheckNextPhase()
             getReadyToRealization();
         }
 
-        int time = game->NextStage();
-        timer->launch(time);
+        // логгируем игру в файлик
+        if (state == REALIZATION_PHASE)
+            log->logPlan();
+        else
+            log->logMillChoice();
 
-        if (trigger_next_phase)
-            NextPhase();
+        // запускаем следующий этап игры
+        int time = game->NextStage();
 
         // оповещение в трее
         qApp->alert(dynamic_cast<QWidget *>(this->parent()));
+
+        // запускаем таймер
+        timer->launch(time);
+
+        // триггерим обработку следующего события
+        if (trigger_next_phase)
+            NextPhase();
     }
 }
 
@@ -470,8 +480,6 @@ void GameWindow::DialogReturned(bool isOk, QString sig_mes)
     {
         if (isOk)
             giveup();
-        else
-            go->enable();
     }
 }
 
@@ -694,7 +702,6 @@ void GameWindow::whiteFlagClicked()
         return;
 
     prev_state = state;
-    go->enable(false);
     planned_to_go_home = false;
 
     dialog->set(mainPlayerColor, "Сдаётесь?", false, true, true, false, "", "GiveUp");
@@ -702,7 +709,7 @@ void GameWindow::whiteFlagClicked()
 }
 void GameWindow::homeButtonClicked()
 {
-    if (game->players[mainPlayerColor]->GiveUp)
+    if (game->players[mainPlayerColor]->GiveUp || game->winner != "Neutral")
     {
         emit GoHome();
         return;
