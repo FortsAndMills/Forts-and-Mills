@@ -36,7 +36,7 @@ public:
         light = NULL;
 
         for (int i = 0; i < rules->numOfPlayers; ++i)
-            players.push_back(new PlayersElement(this, i < pl, false));
+            players.push_back(new PlayersElement(this, i, i < pl, false));
         field = new FieldTune(this, rules, false);
         units = new UnitsTune(this, rules, false);
         orders = new OrdersTune(this, rules, false);

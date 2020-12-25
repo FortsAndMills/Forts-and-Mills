@@ -19,16 +19,18 @@ class PlayersElement : public StateObject
 public:
     bool isOn = true;
     bool active;
+    int i;
 
-    PlayersElement(GraphicObject * parent, bool isOn, bool active) :
+    PlayersElement(GraphicObject * parent, int i, bool isOn, bool active) :
         StateObject(parent, "on", "PlayerOnline", (active * CLICKABLE) | RIGHT_CLICKABLE, "", "SimpleLayer")
     {
+        this->i = i;
         this->active = active;
         addPicture("off", "PlayerOffline");
         turnOn(isOn);
     }
 
-    void leftClick() { emit whenClicked(!isOn); }
+    void leftClick() { emit whenClicked(i); }
     void rightClick() { emit help->HelpAsked(active ? "PlayersTune" : "NumberOfPlayers"); }
     void turnOn(bool on)
     {
@@ -37,7 +39,7 @@ public:
     }
 
 signals:
-    void whenClicked(bool on);
+    void whenClicked(int i);
 };
 class PlayersTune : public GraphicObject
 {
@@ -53,8 +55,8 @@ public:
         Label = new GraphicObject(this, 0, "PlayersLabel");
         for (int i = 0; i < settings->rules->AllPlayers.size(); ++i)
         {
-            players.push_back(new PlayersElement(this, i < settings->rules->numOfPlayers, true));
-            connect(players[i], SIGNAL(whenClicked(bool)), SLOT(whenClicked(bool)));
+            players.push_back(new PlayersElement(this, i, i < settings->rules->numOfPlayers, true));
+            connect(players[i], SIGNAL(whenClicked(int)), SLOT(whenClicked(int)));
         }
     }
     virtual void Delete()
@@ -99,31 +101,18 @@ public:
     }
 
 private slots:
-    void whenClicked(bool on)
+    void whenClicked(int i)
     {
-        if (on)
+        while (settings->rules->numOfPlayers <= i)
         {
-            int i = 0;
-            while (i < players.size() && players[i]->isOn)
-                ++i;
-
-            if (i < players.size())
-            {
-                players[i]->turnOn(true);
-                ++settings->rules->numOfPlayers;
-            }
+            players[settings->rules->numOfPlayers]->turnOn(true);
+            ++settings->rules->numOfPlayers;
         }
-        else
-        {
-            int i = players.size() - 1;
-            while (i >= 2 && !players[i]->isOn)
-                --i;
 
-            if (i >= 2)
-            {
-                players[i]->turnOn(false);
-                --settings->rules->numOfPlayers;
-            }
+        while (settings->rules->numOfPlayers > qMax(i + 1, 2))
+        {
+            --settings->rules->numOfPlayers;
+            players[settings->rules->numOfPlayers]->turnOn(false);
         }
     }
 };
