@@ -3,7 +3,7 @@
 
 QList <QString> GameRules::AllPlayers = {"Blue", "Red", "Green", "Yellow"};
 QList <QString> GameRules::AllOrders = {"Capture", "Recruit", "Liberate", "Agite", "Attack", "Go", "Retreat", "Siege", "Fire", "Pursue", "Cure", "Fortify"};
-QList <QString> GameRules::AllUnits = {"Scrat", "Pig", "Hippo", "Karkun", "Mumusha"};
+QList <QString> GameRules::AllUnits = {"Scrat", "Pig", "Hippo", "Karkun", "Mumusha", "Rabbit"};
 
 // вспомогательная функция: упорядочивает
 // элементы a в зависимости от их порядка в example

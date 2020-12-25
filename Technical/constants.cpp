@@ -214,9 +214,9 @@ qreal Constants::goX = 0.875;  // Искусственная контрольн�
 qreal Constants::goY = 0.8;
 qreal Constants::goSize = 0.165;
 
-qreal Constants::timerX = 0.175;  // Таймер
+qreal Constants::timerX = 0.165;  // Таймер
 qreal Constants::timerY = 0.85;
-qreal Constants::timerWidth = 0.15;
+qreal Constants::timerWidth = 0.135;
 qreal Constants::timerHeight = 0.15;
 
 qreal Constants::startChoiceProgressBarY = 0.025;  // прогресс бар стартового выбора

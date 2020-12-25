@@ -13,6 +13,7 @@ public:
     int max_health = 5;
     int init_health = 5;
     int max_defenceBonus = 0;
+    bool doubles = false;
 
     GameUnitParameters(GameRules *, UnitType type);
 };

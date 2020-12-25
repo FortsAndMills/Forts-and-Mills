@@ -102,10 +102,15 @@ GameUnit * Game::NewUnit(GamePlayer * player, UnitType type, Coord where)
     GameUnit * New = new GameUnit(rules, type, player->color, where, basicId);
     ++basicId;
 
-    hex(where)->status = GameHex::HOME;
-
     player->units << New;
     AddEvent()->NewUnitAppear(New, hex(where));
+
+    // кролики
+    if (hex(where)->status != GameHex::HOME && New->doubles)
+    {
+        hex(where)->status = GameHex::HOME;
+        NewUnit(player, type, where);
+    }
     return New;
 }
 void Game::DestroyUnit(GameUnit *unit)

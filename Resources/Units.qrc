@@ -12,29 +12,29 @@
         <file>Content/Units/RedPig.png</file>
         <file>Content/Units/RedScrat.png</file>
         <file>Content/Units/Scrat.png</file>
-        <file>Content/Units/BlueBruter.png</file>
-        <file>Content/Units/Bruter.png</file>
-        <file>Content/Units/RedBruter.png</file>
         <file>Content/Units/BlueMumusha.png</file>
         <file>Content/Units/Mumusha.png</file>
         <file>Content/Units/RedMumusha.png</file>
-        <file>Content/Units/GreenBruter.png</file>
         <file>Content/Units/GreenHippo.png</file>
         <file>Content/Units/GreenKarkun.png</file>
         <file>Content/Units/GreenMumusha.png</file>
         <file>Content/Units/GreenPig.png</file>
         <file>Content/Units/GreenScrat.png</file>
-        <file>Content/Units/YellowBruter.png</file>
         <file>Content/Units/YellowHippo.png</file>
         <file>Content/Units/YellowKarkun.png</file>
         <file>Content/Units/YellowMumusha.png</file>
         <file>Content/Units/YellowPig.png</file>
         <file>Content/Units/YellowScrat.png</file>
-        <file>Content/Units/NeutralBruter.png</file>
         <file>Content/Units/NeutralHippo.png</file>
         <file>Content/Units/NeutralKarkun.png</file>
         <file>Content/Units/NeutralMumusha.png</file>
         <file>Content/Units/NeutralPig.png</file>
         <file>Content/Units/NeutralScrat.png</file>
+        <file>Content/Units/BlueRabbit.png</file>
+        <file>Content/Units/GreenRabbit.png</file>
+        <file>Content/Units/NeutralRabbit.png</file>
+        <file>Content/Units/RedRabbit.png</file>
+        <file>Content/Units/YellowRabbit.png</file>
+        <file>Content/Units/Rabbit.png</file>
     </qresource>
 </RCC>
