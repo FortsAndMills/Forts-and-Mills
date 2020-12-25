@@ -35,6 +35,8 @@ void LessonGame::GenerateField()
         types[3][5] = "Fort";
         types[0][0] = "Fort";
         types[0][1] = "Fort";
+
+        types[4][3] = "Mountain";
     }
     if (N == 2)
     {
@@ -108,6 +110,9 @@ void LessonGame::GenerateField()
         hexes[4][7]->resources << "Go" << "Go";
         hexes[3][7]->resources << "Go" << "Go";
         hexes[4][4]->resources << "Liberate";
+
+        hexes[3][3]->rivers[RIGHT_DOWN] = true;
+        hexes[4][4]->rivers[LEFT_UP] = true;
     }
     if (N == 2)
     {
@@ -189,7 +194,7 @@ void LessonGame::StartGame()
 
         AddEvent()->ShowMessage("Наша задача - составить для своих юнитов план действий, то есть что они будут делать в этот раунд.");
 
-        AddEvent()->ShowMessage("Мы играем за синих. Давайте попробуем захватить расположенный на карте форт.", "Fort");
+        AddEvent()->ShowMessageAndPicture("Мы играем за синих. Давайте попробуем захватить расположенный на карте форт.", "Fort");
 
         // Отдаём приказ атаки на завтрак
         AddEvent()->ReactionOnUnitClick(unit1, Reaction(BLOCK, "Этот юнит не доберётся до форта..."));
@@ -201,6 +206,7 @@ void LessonGame::StartGame()
         AddEvent()->ReactionOnOrderChoice("Capture", Reaction(BLOCK, "Это приказ захвата. Нам нужна атака!", "Attack"));
         AddEvent()->ReactionOnOrderChoice("Attack", Reaction(NEXT_PHASE));
         AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(BLOCK, "Это приказ пропуска хода. Нам нужна атака!", "Attack"));
+        AddEvent()->ReactionOnOrderChoice(DeleteLastOrder, Reaction(BLOCK, "Эта кнопка отменяет последний приказ. Выберите атаку!", "Attack"));
         AddEvent()->ShowMessageAndPicture("Теперь выберем приказ, который мы хотим отдать - приказ атаки", "Attack", false, true);
 
         AddEvent()->DefaultHexChoiceReaction(Reaction(BLOCK, "Нам нужно добраться до форта за две атаки, поэтому стоит пойти в другом направлении", "Fort"));
@@ -211,6 +217,7 @@ void LessonGame::StartGame()
         AddEvent()->ReactionOnOrderChoice("Capture", Reaction(BLOCK, "Это приказ захвата. Нам нужна атака!", "Attack"));
         AddEvent()->ReactionOnOrderChoice("Attack", Reaction(NEXT_PHASE));
         AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(BLOCK, "Это приказ пропуска хода. Нам нужна атака!", "Attack"));
+        AddEvent()->ReactionOnOrderChoice(DeleteLastOrder, Reaction(BLOCK, "Эта кнопка отменяет последний приказ. Выберите атаку!", "Attack"));
         AddEvent()->ShowMessageAndPicture("Приказ на завтрак запланирован. Теперь можно отдать ему приказ на обед - атаку в форт", "Attack", false, true);
 
         AddEvent()->DefaultHexChoiceReaction(Reaction(BLOCK, "Нам нужно атаковать форт!", "Fort"));
@@ -222,6 +229,7 @@ void LessonGame::StartGame()
         AddEvent()->ReactionOnOrderChoice("Capture", Reaction(NEXT_PHASE));
         AddEvent()->ReactionOnOrderChoice("Attack", Reaction(BLOCK, "Это приказ атаки. Нам нужен захват!", "Capture"));
         AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(BLOCK, "Это приказ пропуска хода. Нам нужен захват!", "Capture"));
+        AddEvent()->ReactionOnOrderChoice(DeleteLastOrder, Reaction(BLOCK, "Эта кнопка отменяет последний приказ. Выберите захват!", "Capture"));
         AddEvent()->ShowMessageAndPicture("На ужин отдадим юниту приказ захвата клетки. Тогда форт будет наш!", "Capture", false, true);
 
 
@@ -240,6 +248,7 @@ void LessonGame::StartGame()
         AddEvent()->ReactionOnOrderChoice("Capture", Reaction(BLOCK, "Это приказ захвата. Нам нужна атака!", "Attack"));
         AddEvent()->ReactionOnOrderChoice("Attack", Reaction(NEXT_PHASE));
         AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(BLOCK, "Это приказ пропуска хода. Нам нужна атака!", "Attack"));
+        AddEvent()->ReactionOnOrderChoice(DeleteLastOrder, Reaction(BLOCK, "Эта кнопка отменяет последний приказ. Выберите атаку!", "Attack"));
         AddEvent()->ShowMessageAndPicture("Вторым юнитом попробуем заполучить мельницу!", "Mill", false, false);
 
         AddEvent()->DefaultHexChoiceReaction(Reaction(BLOCK, "Давайте пойдём в мельницу, расположенную клеткой ниже.", "Mill"));
@@ -272,6 +281,7 @@ void LessonGame::StartGame()
         AddEvent()->DefaultOrderChoiceReaction(Reaction(DEFAULT));
         AddEvent()->DefaultUnitClickReaction(Reaction(DEFAULT));
         AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(DEFAULT, "Приказ пропуска хода выставляется по умолчанию - его не обязательно выставлять вручную, если только юнит не собирается делать что-то другое после него"));
+        AddEvent()->ReactionOnOrderChoice(DeleteLastOrder, Reaction(DEFAULT, "Эта кнопка стирает последний приказ."));
         AddEvent()->ShowMessage("Итак, наша задача - захватить форт и мельницу. Когда ваш план будет готов, нажимайте кнопку Go", false, false, true);
     }
     if (N == 1)
@@ -301,7 +311,7 @@ void LessonGame::StartGame()
         AddEvent()->HideHomes();
 
         // Вступление
-        AddEvent()->ShowMessage("Все приказы, которые вы отдаёте своим юнитам, являются истрачиваемыми ресурсами.");
+        AddEvent()->ShowMessage("Все приказы, которые вы отдаёте своим юнитам, являются расходуемыми ресурсами.");
         AddEvent()->ShowMessage("Каждый игрок знает свои и чужие ресурсы. Они отображаются на боковых панелях.");
         AddEvent()->ShowMessage("Мы снова играем за синих, и у нас есть две атаки и два захвата. Это сильно ограничивает наши действия.");
         AddEvent()->ShowMessage("У нас даже нет источников ресурса передвижения! Нам срочно нужны клетки с ресурсами!");
@@ -683,10 +693,12 @@ bool LessonGame::checkIfPlanIsGood()
     return true;
 }
 
-int LessonGame::PlanRealisation()
+int LessonGame::NextStage()
 {
     if (N == 0)
     {
+        state = Game::GS_PLAN;
+
         enemy_unit1->plan[0] = new GameOrder(rules, enemy_unit1->type, "Attack");
         enemy_unit1->plan[0]->actions[1].target = Coord(4, 6);
         enemy_unit1->plan[1] = new GameOrder(rules, enemy_unit1->type, "Attack");
@@ -736,6 +748,8 @@ int LessonGame::PlanRealisation()
     }
     if (N == 1)
     {
+        state = Game::GS_PLAN;
+
         if (round == 0)
         {
             AddEvent()->ShowMessage("Похоже, враг тоже попытался самому получить ресурсы!", false, true, true);
@@ -819,6 +833,8 @@ int LessonGame::PlanRealisation()
     }
     if (N == 2)
     {
+        state = Game::GS_PLAN;
+
         if (round == 0)
         {
             AddEvent()->DefaultOrderChoiceReaction(Reaction(DEFAULT));
@@ -1011,7 +1027,7 @@ int LessonGame::PlanRealisation()
 
             AddEvent()->ShowMessage("Игроки выбрали разные клетки, поэтому каждый получает желаемое! На игроков уже действует лимит ресурсов от фортов.", true, true, true);
 
-            NextStage();
+            Game::NextStage();
             GameMessage* true_message = events.last();
             AddEvent()->GetReadyToChooseHex(true_message);
             events.removeAt(events.size() - 2);
@@ -1020,7 +1036,7 @@ int LessonGame::PlanRealisation()
             AddEvent()->ShowMessage("Игроки выбрали разные клетки, поэтому каждый получает желаемое! На игроков уже действует лимит ресурсов от фортов.", true, false, true);
 
             AddEvent()->DefaultHexChoiceReaction(Reaction(DEFAULT));
-            AddEvent()->ShowMessage("Игроки делают следующий выбор.", false, true, true);
+            AddEvent()->ShowMessage("Игроки делают следующий выбор.", false, false, true);
             round = 1;
         }
         else if (round == 1)
@@ -1029,7 +1045,7 @@ int LessonGame::PlanRealisation()
 
             AddEvent()->ShowMessage("Игроки выбрали одну и ту же клетку, поэтому она никому не достаётся и выкидывается из вариантов.", false, true, true);
 
-            NextStage();
+            Game::NextStage();
             GameMessage* true_message = events.last();
             AddEvent()->GetReadyToChooseHex(true_message);
             events.removeAt(events.size() - 2);
@@ -1047,16 +1063,26 @@ int LessonGame::PlanRealisation()
             while (!hexes[vars[i].x][vars[i].y]->canBeChosenAsStartPoint) { ++i; }
             chosenHex[rules->players[1]] = vars[i];
 
-            AddEvent()->ShowStartProgressBar();
-            AddEvent()->ShowMessage("Количество оставшихся выборов показано в верху экрана.", false, true, true);
+            if (round == 2)
+            {
+                AddEvent()->ShowStartProgressBar();
+                final_message = "Количество оставшихся выборов показано в верху экрана.";
+            }
 
-            NextStage();
+            Game::NextStage();
+
             if (round < 6)
             {
                 GameMessage* true_message = events.last();
                 AddEvent()->GetReadyToChooseHex(true_message);
                 events.removeAt(events.size() - 2);
                 round++;
+
+                if (round == 5 && players["Blue"]->resources["Capture"] == 0)
+                {
+                    final_message = "Стоит взять хотя бы один форт, иначе вы останетесь без ресурсов!";
+                }
+                AddEvent()->ShowMessage(final_message, false, false, true);
             }
             else
             {

@@ -181,7 +181,6 @@ public:
             }
             else if (Le->ltype == GET_READY_TO_CHOOSE_HEX)
             {
-                startChoiceProgress->expand();
                 getReadyToChooseHex(Le->variants);
                 return WaitingType();
             }

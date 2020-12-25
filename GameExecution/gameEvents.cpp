@@ -106,10 +106,11 @@ GameUnit * Game::NewUnit(GamePlayer * player, UnitType type, Coord where)
     AddEvent()->NewUnitAppear(New, hex(where));
 
     // кролики
-    if (hex(where)->status != GameHex::HOME && New->doubles)
+    if (hex(where)->status != GameHex::HOME)
     {
         hex(where)->status = GameHex::HOME;
-        NewUnit(player, type, where);
+        if (New->doubles)
+            NewUnit(player, type, where);
     }
     return New;
 }

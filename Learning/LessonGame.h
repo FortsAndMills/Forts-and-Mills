@@ -30,6 +30,7 @@ public:
         return Le;
     }
     bool antirepeat = false;
+    QString final_message;
 
     void GenerateField();
 
@@ -42,7 +43,7 @@ private:
     GameUnit * enemy_unit3;
 
 public:
-    void StartGame();
+    void StartGame() override;
 
     void SwitchHome(GameUnit * unit, Coord new_home, GameHex::HexStatus status = GameHex::TO_BE_CONQUERED)
     {
@@ -138,7 +139,7 @@ public:
     }
     bool checkIfPlanIsGood();
 
-    int PlanRealisation();
+    int NextStage() override;
 };
 
 

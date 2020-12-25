@@ -60,6 +60,12 @@ void GameLog::logMillChoice()
 }
 void GameLog::logPlan()
 {
+    if (game->lastPlayerInGame() != "Neutral")
+    {
+        log << game->lastPlayerInGame() << " is the last player.";
+        return;
+    }
+
     log << "PLANS:\n";
     for (int i = 0; i < game->rules->players.size(); ++i)
     {
