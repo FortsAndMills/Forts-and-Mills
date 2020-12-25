@@ -465,8 +465,14 @@ void GameWindow::DialogReturned(bool isOk, QString sig_mes)
             go->enable();
         }
     }
-    if (sig_mes == "GiveUp" && isOk)
-        giveup();
+
+    if (sig_mes == "GiveUp")
+    {
+        if (isOk)
+            giveup();
+        else
+            go->enable();
+    }
 }
 
 // общение с другими игроками
