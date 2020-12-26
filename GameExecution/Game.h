@@ -175,7 +175,7 @@ protected:
     bool isOccupied(GameHex * hex);
 
     bool isAgitatedByEnemy(Coord which, PlayerColor me);
-    int resourcesLimit(PlayerColor color);
+    int resourcesLimit(PlayerColor color, bool consider_occupied = true);
 
     PlayerColor isGameFinished();
 

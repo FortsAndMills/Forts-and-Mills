@@ -49,7 +49,7 @@ QSet <GameUnit *> Game::find(SEARCH_TYPE ST, GameUnit * for_whom,
 }
 
 // подсчёт лимита ресурсов игрока
-int Game::resourcesLimit(PlayerColor color)
+int Game::resourcesLimit(PlayerColor color, bool consider_occupied)
 {
     int count = 0;
     for (int i = 0; i < rules->fieldH; ++i)
@@ -57,7 +57,8 @@ int Game::resourcesLimit(PlayerColor color)
         for (int j = 0; j < rules->fieldW; ++j)
         {
             if (hexes[i][j]->increasesResourceLimitWhenCaptured &&
-                hexes[i][j]->color == color && !isOccupied(hexes[i][j]))
+                hexes[i][j]->color == color &&
+                (!consider_occupied || !isOccupied(hexes[i][j])))
                 ++count;
         }
     }
@@ -154,9 +155,9 @@ PlayerColor Game::isGameFinished()
     PlayerColor winner = "Neutral";
     foreach (GamePlayer * player, players)
     {
-        // у игрока есть юниты и ресурсы
+        // у игрока есть юниты и лимит ресурсов > 0
         if (!player->GiveUp && player->units.size() > 0 &&
-                player->resources["Capture"] > 0)
+             resourcesLimit(player->color, false))
         {
             // первый найденный победитель
             if (winner == "Neutral")
