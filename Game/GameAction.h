@@ -41,7 +41,6 @@ public:
 
     // Возможные действия
     enum GameActionType {START_REALIZATION,
-                         AGITE,
                          AMBUSH,
                          LEAVE_HEX,
                          PURSUE,
@@ -50,6 +49,7 @@ public:
                          RETURN,
                          FINISH_ENTERING,
                          SHOOT,
+                         AGITE,
                          CAPTURE_HEX,
                          RECRUIT,
                          LIBERATE,

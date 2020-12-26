@@ -89,7 +89,7 @@ public:
 
     void rightClick()
     {
-        emit help->HelpAsked(type);
+        emit help->HelpAsked(opened ? type : "Unknown");
     }
 
 private:

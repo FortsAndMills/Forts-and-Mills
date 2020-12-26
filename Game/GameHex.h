@@ -44,6 +44,7 @@ public:
     {
         return status == TO_BE_CONQUERED || status == NOT_CONNECTED || status == NOT_A_HOME;
     }
+    int generated_units = 0;  // сколько юнитов породило (полезно для кролика)
 
     
     PlayerColor color = "Neutral";  // владелец

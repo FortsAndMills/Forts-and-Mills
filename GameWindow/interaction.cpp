@@ -104,16 +104,9 @@ void GameWindow::hexEntered(Coord c)
     hexCopy->light(false, true);
     resizeHexCopy();
 
-    // во время планирования также отображается юнит из этой клетки
-    // TODO стоит эту инфу хранить динамически, чтоб можно было и во время реализации этим баловаться
-    if (state != REALIZATION_PHASE)
-    {
-        GameUnit * unit = game->whoHasHomeAt(c);
-        if (unit != NULL && units.contains(unit))
-        {
-            units[unit]->light();
-        }
-    }
+    foreach (Unit * unit, units)
+        if (unit->prototype->home == c)
+            unit->light();
 }
 void GameWindow::hexLeft(Coord c)
 {
@@ -124,14 +117,9 @@ void GameWindow::hexLeft(Coord c)
         hexCopy = NULL;
     }
 
-    if (state != REALIZATION_PHASE)
-    {
-        GameUnit * unit = game->whoHasHomeAt(c);
-        if (unit != NULL && units.contains(unit))
-        {
-            units[unit]->light(false);
-        }
-    }
+    foreach (Unit * unit, units)
+        if (unit->prototype->home == c)
+            unit->light(false);
 }
 
 void GameWindow::orderPicEntered(OrderType type, PlayerColor)

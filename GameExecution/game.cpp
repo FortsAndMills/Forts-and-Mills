@@ -4,7 +4,7 @@ Game::Game(GameRules *rules, Random *rand)
 {
     this->rules = rules;
     this->rand = rand;
-    rules->FormPlayersList(rand);
+    rules->formPlayersList(rand);
 
     for (int i = 0; i < rules->players.size(); ++i)
         players[rules->players[i]] = new GamePlayer(rules->players[i]);
@@ -54,7 +54,6 @@ int Game::NextStage()
 
             destroyHomelessUnits();
             recruitNewUnits();
-            killAllies();
             burnExtraResources();
             gatherResources();
             defenceFill();

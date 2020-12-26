@@ -89,6 +89,8 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
                 << "<u>Пропуск хода</u> - ничего не делать. Выставляется по умолчанию.";
     if (name == DeleteLastOrder) return QVector<QString>()
                 << "Удаляет последний отданный приказ.";
+    if (name == "Unknown") return QVector<QString>()
+                << "Приказ этого юнита пока остаётся сюрпризом...";
 
 
     if (name == "Scrat") return QVector<QString>()
@@ -180,6 +182,7 @@ QString HelpManager::HelpPicture(QString name)
     if (name == "Pursue") return "Pursue";
     if (name == "Fortify") return "Fortify";
     if (name == "Cure") return "Cure";
+    if (name == "Unknown") return "Unknown";
     if (name == DefaultOrder) return DefaultOrder;
 
     if (name == "Scrat") return "Scrat";

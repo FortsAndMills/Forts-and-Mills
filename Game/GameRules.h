@@ -14,13 +14,16 @@ public:
     static QList <QString> AllOrders;
     static QList <QString> AllUnits;
 
+    // размер поля
     int fieldW;
     int fieldH;
 
+    // игроки
     int numOfPlayers;
     QList <PlayerColor> players;
-    void FormPlayersList(Random * rand);
+    void formPlayersList(Random * rand);
 
+    // включёные в игру приказы
     QList <OrderType> ordersInGame;
     // навигация по списку приказов
     OrderType getOrderByIndex(qint8 i)
@@ -48,6 +51,7 @@ public:
         return i;
     }
 
+    // количество времён дня и увеличиваются ли они каждый раунд
     int dayTimes;
     bool changingDayTimes;
 
@@ -70,12 +74,12 @@ public:
     int damageToHomellesUnits;  // тестовая настройка: бездомные не умирают, а получают дамаг
     int peacefullOrdersBurns;   // тестовая настройка: мирные приказы сжигаются
     int start_choices;          // сколько раз выбираем стартовые клетки
-    int pig_can_shoot_attacker;
+    int pig_can_shoot_attacker; // тестовые настройки хрюшки
     int fire_has_penalty;
-    int fort_gp_min, fort_gp_max;
+    int fort_gp_min, fort_gp_max;  // диапазоны генерации фортов, мельниц, рек
     int mill_gp_min, mill_gp_max;
     int river_gp_min, river_gp_max;
-    double K_change;
+    double K_change;               // коэф. увеличения доли ресурсов на карте
 
     int timer_per_round;  // флаг: если да, то время даётся на раунд; иначе после готовности противника
     int timer_per_choice, timer_per_plan;

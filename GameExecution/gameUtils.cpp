@@ -1,14 +1,6 @@
 #include "Game.h"
 
-GameUnit *Game::whoHasHomeAt(Coord c)
-{
-    foreach (GamePlayer * p, players)
-        foreach (GameUnit * u, p->units)
-             if (u->home == c)
-                 return u;
-    return NULL;
-}
-
+// проверяет, оккупирована ли клетка врагом
 bool Game::isOccupied(GameHex *hex)
 {
     foreach (GamePlayer * p, players)
@@ -19,6 +11,7 @@ bool Game::isOccupied(GameHex *hex)
     return false;
 }
 
+// поиск прочих юнитов по критериям
 QSet <GameUnit *> Game::alliesOnTheSameHex(GameUnit * tar)
 {
     QSet <GameUnit *> ans;
@@ -55,6 +48,7 @@ QSet <GameUnit *> Game::find(SEARCH_TYPE ST, GameUnit * for_whom,
     return ans;
 }
 
+// подсчёт лимита ресурсов игрока
 int Game::resourcesLimit(PlayerColor color)
 {
     int count = 0;
@@ -71,6 +65,7 @@ int Game::resourcesLimit(PlayerColor color)
     return count;
 }
 
+// найти все соединённые с мельницей территории
 QSet<GameHex *> Game::Connected(QString color, bool consider_occupied, const QSet<Coord> & additional_captures)
 {
     QSet<GameHex *> visited;
@@ -108,6 +103,7 @@ QSet<GameHex *> Game::Connected(QString color, bool consider_occupied, const QSe
     return visited;
 }
 
+// проверить, была ли клетка агитирована врагом
 bool Game::isAgitatedByEnemy(Coord which, QString me)
 {
     foreach (PlayerColor color, hex(which)->agitated)
@@ -131,6 +127,7 @@ GameUnit *Game::getUnitById(qint16 id)
     return NULL;
 }
 
+// проверка на то, что сдались все игроки кроме одного
 QString Game::lastPlayerInGame()
 {
     QString ans = "Neutral";

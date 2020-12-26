@@ -110,7 +110,6 @@ void Game::RealizePlan()
         }
 
         AddEvent()->TimeFinished(time);
-        killAllies();  // проверка на Брутера
     }
     AddEvent()->PlanRealizationFinished();
 }
@@ -153,27 +152,6 @@ void Game::recruitNewUnits()
     }
 
     recruitedUnits.clear();
-}
-void Game::killAllies()
-{
-//    QSet <GameUnit *> toKill;
-//    foreach (GamePlayer * player, players)
-//    {
-//        foreach (GameUnit * unit, player->units)
-//        {
-//            if (unit->isDestroyingAllies)
-//            {
-//                QSet <GameUnit *> boat = alliesOnTheSameHex(unit);
-//                foreach (GameUnit * u, boat)
-//                {
-//                    toKill << u;
-//                }
-//            }
-//        }
-//    }
-
-//    foreach (GameUnit * unit, toKill)
-//        DestroyUnit(unit);
 }
 void Game::burnExtraResources()
 {
@@ -265,6 +243,7 @@ void Game::win(PlayerColor winner)
 }
 
 // Подготовки к новому раунду (очистки предыдущих планов)
+// возвращает false если выбор закончился
 bool Game::ChooseOneOfTheStartHexes()
 {
     if (rules->start_choices <= 0) return false;

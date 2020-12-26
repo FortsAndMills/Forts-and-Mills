@@ -51,14 +51,6 @@ void Game::Realize(QList<Action> act)
             AddEvent()->OrderRealizationStarted(a.unit, a.unit->color, a.order->type);
         }
     }
-    else if (T == GameAction::AGITE)
-    {
-        foreach (Action a, act)
-        {
-            hex(a.action.target)->agitated.insert(a.unit->color);
-            AddEvent()->Agitated(a.unit, hex(a.action.target));
-        }
-    }
     else if (T == GameAction::LEAVE_HEX)
     {
         foreach (Action a, act)
@@ -73,10 +65,13 @@ void Game::Realize(QList<Action> act)
         // TODO: одновременный pursue друг в друга?
         foreach (Action a, act)
         {
-            // "выход из клетки"
+            // считаем клетку, в которую нужно идти, чтобы поймать целевого юнита
             Coord target_pos = (a.action.unit->going_to == NOWHERE ? a.action.unit->position : a.action.unit->going_to);
+
+            // если целевой юнит не мёртв и он находится в соседней клетке
             if (!africa.contains(a.action.unit) && isAdjacent(a.unit->position, target_pos))
             {
+                // выходим из клетки (аналогично LEAVE_HEX)
                 a.unit->going_to = target_pos;
                 AddEvent()->UnitLeaves(a.unit, hex(target_pos));
             }
@@ -90,11 +85,12 @@ void Game::Realize(QList<Action> act)
     {
         foreach (Action a, act)
         {
-            // стреляем во врагов, которые входят в клетку
             a.unit->distantAttack = a.action.amount;
 
             if (a.unit->distantAttack > 0)
             {
+                // стреляем во врагов, которые вышли откуда угодно
+                // в направлении нашей текущей позиции
                 QSet <GameUnit *> targets = find(ENEMY, a.unit, ANY, a.unit->position);
                 if (targets.size() > 0)
                 {
@@ -115,11 +111,15 @@ void Game::Realize(QList<Action> act)
             {
                 QSet <GameUnit *> targets;
                 // сначала стреляем в тех, кто входит в нашу клетку с правильной стороны
+                // "выстрел в лицо" (правило может быть отменено)
                 if (rules->pig_can_shoot_attacker && adjacentHexes(a.unit->position).contains(a.action.target))
                 {
                     targets = find(ENEMY, a.unit, a.action.target, a.unit->position);
                 }
-                if (targets.size() == 0)  // иначе в тех, кто стоит в целевой клетке или входит
+
+                // иначе в тех, кто стоит в целевой клетке или входит в неё
+                // решили, что во всю толпу сразу
+                if (targets.size() == 0)
                 {
                     targets = find(ENEMY, a.unit, a.action.target, NOWHERE);
                     targets += find(ENEMY, a.unit, ANY, a.action.target);
@@ -133,7 +133,7 @@ void Game::Realize(QList<Action> act)
                 UnitsFight(targets << a.unit);
             }
 
-            // оставшиеся выстрелы должны отправиться в пустоту
+            // оставшиеся выстрелы должны отправиться в пустоту в визуализации
             if (a.unit->distantAttack == a.action.amount)
             {
                 AddEvent()->ShootLeft(a.unit, hex(a.action.target), a.unit->distantAttack);
@@ -153,6 +153,7 @@ void Game::Realize(QList<Action> act)
 
                 if (enemies.size() > 0)
                 {
+                    // возможно, мы не одни, кто пересекает эту клетку
                     QSet <GameUnit *> allies = find(ALLY, a.unit, a.unit->position, a.unit->going_to);
                     allies << a.unit;
 
@@ -175,7 +176,7 @@ void Game::Realize(QList<Action> act)
     {
         foreach (Action a, act)
         {
-            // не триггернутые перемещения
+            // не триггернутые перемещения (например, от PURSUE)
             if (a.unit->going_to == NOWHERE)
                 continue;
 
@@ -188,12 +189,13 @@ void Game::Realize(QList<Action> act)
 
                 if (enemies.size() > 0)
                 {
-                    // ищем союзников в клетке
+                    // ищем союзников в клетке (такое может быть при возвращении в родную клетку от PURSUE)
                     QSet <GameUnit *> allies = find(ALLY, a.unit, a.unit->going_to, NOWHERE);
                     // ищем союзников, пришедших на подмогу
                     allies += find(ALLY, a.unit, ANY, a.unit->going_to);
                     allies << a.unit;
 
+                    // сражение
                     QSet <GameUnit *> fighters = enemies + allies;
                     AddEvent()->UnitsAreGoingToFight(fighters);
                     UnitsFight(fighters);
@@ -207,10 +209,12 @@ void Game::Realize(QList<Action> act)
         {
             if (a.unit->going_to != NOWHERE)
             {
+                // меняем местами позицию и целевую клетку
                 Coord pos = a.unit->position;
                 a.unit->position = a.unit->going_to;
                 a.unit->going_to = pos;
 
+                // оказалось удобнее, чем отдельное действие
                 AddEvent()->UnitFinishesEnter(a.unit, hex(a.unit->position));
                 AddEvent()->UnitLeaves(a.unit, hex(a.unit->going_to));
                 AddEvent()->UnitEnters(a.unit, hex(a.unit->going_to), find(ENEMY, a.unit, a.unit->going_to, ANY));
@@ -229,7 +233,7 @@ void Game::Realize(QList<Action> act)
 
                 GameHex * Hex = hex(a.unit->position);
 
-                // в этот момент убиваем "рекутируемых" юнитов
+                // в этот момент убиваем "рекрутируемых" юнитов
                 KillRecruited(Hex, a.unit);
 
                 // если есть укрепление, они исчезают
@@ -249,6 +253,14 @@ void Game::Realize(QList<Action> act)
             }
         }
     }
+    else if (T == GameAction::AGITE)
+    {
+        foreach (Action a, act)
+        {
+            hex(a.action.target)->agitated.insert(a.unit->color);
+            AddEvent()->Agitated(a.unit, hex(a.action.target));
+        }
+    }
     else if (T == GameAction::LIBERATE)
     {
         foreach (Action a, act)
@@ -263,6 +275,8 @@ void Game::Realize(QList<Action> act)
                 DecaptureHex(Hex, a.unit);
             }
 
+            // может быть потеряно соединение с мельницей
+            // требуется смена иконок (статусов гексов)
             RecheckMillConnection(color, a.unit);
         }
     }
@@ -284,7 +298,7 @@ void Game::Realize(QList<Action> act)
                 // перекрашиваем
                 Hex->color = a.unit->color;
 
-                // иконка "бездомных"
+                // требуется смена иконок (статусов гексов)
                 RecheckMillConnection(a.unit->color, a.unit);
 
                 AddEvent()->UnitCapturesHex(a.unit, Hex, a.unit->color);

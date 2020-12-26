@@ -28,7 +28,6 @@ protected:
 
     void destroyHomelessUnits();
     void recruitNewUnits();
-    void killAllies();
     void gatherResources();
     void burnExtraResources();
     void defenceFill();
@@ -181,7 +180,6 @@ protected:
     PlayerColor isGameFinished();
 
 public:
-    GameUnit * whoHasHomeAt(Coord c);
     GameUnit * getUnitById(qint16 id);
 
     // проверка на сдавшихся игроков

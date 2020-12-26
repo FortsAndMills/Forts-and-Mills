@@ -104,6 +104,7 @@ bool Game::must_be_last(GameUnit * unit, DayTime time)
     if (time == -1)
         return false;
 
+    // проверка пересечения речки
     Coord where = unit->position;
     for (DayTime t = 0; t <= time; ++t)
     {

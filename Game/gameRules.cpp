@@ -37,7 +37,7 @@ GameRules::GameRules()
     dayTimes = 3;
     changingDayTimes = false;
 
-    unitsInGame << "Scrat";// << "Pig" << "Karkun" << "Hippo";
+    unitsInGame << "Scrat";
 
     setTestOptions();
     recountGenerationParameters();
@@ -137,11 +137,7 @@ void GameRules::recountGenerationParameters()
     numOfHexTypes["Mountain"] = Range(3, 7, K);
     numOfHexTypes["Lake"] = Range(3, 7, K);
 
-    // для количества генерящихся приказов приходится использовать магию
-//    int cb = 0;
-//    if (!ordersInGame.contains("Recruit"))
-//        ++cb;
-
+    // если включено отступление, то ходов и атак генерится на 1 меньше
     int ab = 0;
     if (ordersInGame.contains("Retreat"))
         --ab;
@@ -149,9 +145,9 @@ void GameRules::recountGenerationParameters()
     K *= K_change;
 
     numOfResourcesOnField["Capture"] = Range(0, 0, K); //Range(9 + cb, 13 + cb, K);
-    numOfResourcesOnField["Go"] = Range(6 + ab, 11 + ab, K);
     numOfResourcesOnField["Recruit"] = Range(0, 0, K); //Range(6, 10, K);
     numOfResourcesOnField["Liberate"] = Range(6, 10, K);
+    numOfResourcesOnField["Go"] = Range(6 + ab, 11 + ab, K);
     numOfResourcesOnField["Attack"] = Range(5 + ab, 9 + ab, K);
     numOfResourcesOnField["Agite"] = Range(3, 8, K);
     numOfResourcesOnField["Retreat"] = Range(3, 5, K);
@@ -161,7 +157,7 @@ void GameRules::recountGenerationParameters()
     numOfResourcesOnField["Siege"] = Range(3, 5, K);
     numOfResourcesOnField["Cure"] = Range(3, 5, K);
 }
-void GameRules::FormPlayersList(Random *rand)
+void GameRules::formPlayersList(Random *rand)
 {
     // составляем список цветов игроков
     QList <QString> vars = AllPlayers;
@@ -227,6 +223,7 @@ GameRules::GameRules(QList<qint32> hash)
     recountGenerationParameters();
 }
 
+// чтение и запись
 QTextStream &operator << (QTextStream &stream, const GameRules *r)
 {
     stream << "Field: " << r->fieldH << "x" << r->fieldW << "\n";
@@ -268,7 +265,6 @@ QTextStream &operator >>(QTextStream &stream, GameRules * r)
     r->recountGenerationParameters();
     return stream;
 }
-
 QDataStream &operator << (QDataStream &stream, const GameRules *r)
 {
     stream << r->fieldH << r->fieldW

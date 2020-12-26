@@ -6,7 +6,7 @@ WAY Game::oppositeWay(WAY way)
         debug << "ERROR: NO WAY came to opposite way error!\n";
     return WAY((int(way) + 3) % 6);
 }
-Coord Game::adjacentHex(Coord which, WAY way)
+Coord Game::adjacentHex(Coord which, WAY way)  // гексагональная геометрия ^_^
 {
     if (way == UP ||
         (way == RIGHT_UP && which.y % 2 == 0) ||

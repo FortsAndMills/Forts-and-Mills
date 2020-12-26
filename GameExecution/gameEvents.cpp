@@ -105,7 +105,8 @@ GameUnit * Game::NewUnit(GamePlayer * player, UnitType type, Coord where)
     player->units << New;
     AddEvent()->NewUnitAppear(New, hex(where));
 
-    // кролики
+    // установка статуса клетки и кролики
+    hex(where)->generated_units += 1;
     if (hex(where)->status != GameHex::HOME)
     {
         hex(where)->status = GameHex::HOME;
@@ -132,8 +133,12 @@ void Game::DestroyUnit(GameUnit *unit)
         }
     }
 
-    hex(unit->home)->status = GameHex::TOMBSTONE;
-    AddEvent()->HexStatusChanged(hex(unit->home), GameHex::TOMBSTONE, unit->color, unit, unit->death_authors);
+    hex(unit->home)->generated_units -= 1;
+    if (hex(unit->home)->generated_units == 0)
+    {
+        hex(unit->home)->status = GameHex::TOMBSTONE;
+        AddEvent()->HexStatusChanged(hex(unit->home), GameHex::TOMBSTONE, unit->color, unit, unit->death_authors);
+    }
 
     AddEvent()->UnitDies(unit, burned, activeOrderBurns, unit->death_authors);
     africa << unit;
