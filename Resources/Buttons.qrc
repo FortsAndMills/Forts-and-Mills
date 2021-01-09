@@ -37,5 +37,6 @@
         <file>Content/Buttons/GreenNext.png</file>
         <file>Content/Buttons/RedNext.png</file>
         <file>Content/Buttons/YellowNext.png</file>
+        <file>Content/Buttons/Question.png</file>
     </qresource>
 </RCC>

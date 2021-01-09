@@ -117,6 +117,11 @@ public:
     static qreal howToPlayLabelWidth;
     static qreal howToPlayLabelHeight;
 
+    static qreal questionX;
+    static qreal questionY;
+    static qreal questionWidth;
+    static qreal questionHeight;
+
     static qreal playersTuneX;
     static qreal playersTuneY;
     static qreal playersTuneWidth;

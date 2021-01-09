@@ -29,7 +29,7 @@ qreal Constants::shieldReconfigureTime = 300;  // время расположе�
 qreal Constants::shieldTurnTime = 300;
 
 qreal Constants::unitDisappearTime = 900;  // время исчезновения юнита
-qreal Constants::unitReconfigureTime = 600;  // время перемещения юнитов на их законные места
+qreal Constants::unitReconfigureTime = 500;  // время перемещения юнитов на их законные места
 
 qreal Constants::unitPanelAppearTime = 250;  // время появления и исчезновения панели
 qreal Constants::unitOrderReconfigureTime = 100;  // время полёта картинки приказа от панели к юниту
@@ -109,6 +109,11 @@ qreal Constants::howToPlayLabelX = 0.35;//0.425;
 qreal Constants::howToPlayLabelY = 0.85;//0.865;
 qreal Constants::howToPlayLabelWidth = 0.3;//0.15;
 qreal Constants::howToPlayLabelHeight = 0.12;//0.9;
+
+qreal Constants::questionX = 0.8;
+qreal Constants::questionY = 0.85;
+qreal Constants::questionWidth = 0.07;
+qreal Constants::questionHeight = 0.12;
 
 qreal Constants::playersTuneX = 0.05;
 qreal Constants::playersTuneY = 0.05;

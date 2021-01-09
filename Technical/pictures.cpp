@@ -144,6 +144,7 @@ void Images::InitPictures()
                  "YellowNext",
                  "GreenNext",
                  "WhiteFlag",
+                 "Question",
                  "CreateNewGame",
                  "CreateButton",
                  "CancelLabelButton",

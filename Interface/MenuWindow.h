@@ -5,6 +5,7 @@
 #include "Technical/Constants.h"
 #include "Technical/Client.h"
 #include "BasicElements/GraphicObject.h"
+#include "SpecialButton.h"
 #include "GameLabel.h"
 #include "Dialog.h"
 
@@ -15,6 +16,8 @@ class MenuWindow : public GraphicObject
     Object * logo, *logo2;
 
     Dialog * dialog;
+
+    SpecialButton * question;
 
     QVector < GameLabel * > games;
     GameLabel * game(int i)
@@ -60,6 +63,9 @@ public:
         connect(HowToPlayFrame, SIGNAL(leftClicked()), SLOT(leaveJoined()));
         HowToPlayLabel = new Object(this, "HowToPlayButton");
 
+        question = new SpecialButton(this, "Question");
+        connect(question, SIGNAL(leftClicked()), SLOT(questionClicked()));
+
         CheckForLessonsPassed();
     }
     void turn(bool on)
@@ -83,18 +89,23 @@ public:
 
         if (dialog)
             dialog->setGeometry(W * (1 - constants->dialogWidth) / 2,
-                                               H * (1 - constants->dialogHeight) / 2 + H / 10,
-                                               W * constants->dialogWidth, H * constants->dialogHeight);
+                                H * (1 - constants->dialogHeight) / 2 + H / 10,
+                                W * constants->dialogWidth, H * constants->dialogHeight);
 
         CreateNewGame->setGeometry(W / 2 - 2 * W / 9, H / 18, 4 * W / 9, H / 9);
         HowToPlayFrame->setGeometry(constants->howToPlayButtonX * W,
-                                                               constants->howToPlayButtonY * H,
-                                                               constants->howToPlayButtonWidth * W,
-                                                               constants->howToPlayButtonHeight * H);
+                                    constants->howToPlayButtonY * H,
+                                    constants->howToPlayButtonWidth * W,
+                                    constants->howToPlayButtonHeight * H);
         HowToPlayLabel->setGeometry(constants->howToPlayLabelX * W,
-                                                               constants->howToPlayLabelY * H,
-                                                               constants->howToPlayLabelWidth * W,
-                                                               constants->howToPlayLabelHeight * H);
+                                    constants->howToPlayLabelY * H,
+                                    constants->howToPlayLabelWidth * W,
+                                    constants->howToPlayLabelHeight * H);
+
+        question->setGeometry(constants->questionX * W,
+                              constants->questionY * H,
+                              constants->questionWidth * W,
+                              constants->questionHeight * H);
 
         resizeGameLabels();
     }
@@ -184,6 +195,11 @@ public slots:
 
         isBlocked = true;
         debug << "Version is too old\n";
+    }
+
+    void questionClicked()
+    {
+        help->HelpAsked("HowToAskHelp");
     }
 
     // РАБОТА СО СПИСКОМ КОМНАТ
