@@ -42,7 +42,7 @@ public:
     explicit Range(int a) : Range(a, a) {}
     explicit Range() : Range(0) {}
 
-    int get_rand(Random * rand)
+    int get_rand(Random * rand) const
     {
         return rand->next() % (max - min + 1) + min;
     }

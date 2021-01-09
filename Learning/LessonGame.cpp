@@ -26,7 +26,7 @@ void LessonGame::GenerateField()
         types[3][9] = "Mill";
         types[5][1] = "Mill";
 
-        types[5][0] = "Mountain";
+        types[4][9] = "Lake";
         types[5][2] = "Lake";
     }
     if (N == 1)
@@ -36,7 +36,7 @@ void LessonGame::GenerateField()
         types[0][0] = "Fort";
         types[0][1] = "Fort";
 
-        types[4][3] = "Mountain";
+        types[4][3] = "Lake";
     }
     if (N == 2)
     {
@@ -52,30 +52,18 @@ void LessonGame::GenerateField()
         types[1][3] = "Mountain";
         types[4][3] = "Lake";
     }
-//    if (N == 3)
-//    {
-//        types[1][2] = "Fort";
-//        types[2][2] = "Fort";
-//        types[3][2] = "Mill";
-//        types[3][5] = "Mill";
-//        types[4][7] = "Mountain";
-//        types[4][6] = "Mountain";
-//        types[2][7] = "Mountain";
-//        types[3][7] = "Mountain";
-//        types[1][0] = "Mountain";
-//        types[2][0] = "Mountain";
-//    }
     if (N == 3)
     {
         types[4][5] = "Fort";
         types[0][1] = "Fort";
         types[2][2] = "Fort";
         types[2][3] = "Fort";
+        types[5][2] = "Fort";
 
         types[3][0] = "Mill";
         types[2][0] = "Mill";
-        types[3][1] = "Mill";
-        types[1][1] = "Mill";
+        types[1][3] = "Mill";
+        types[3][5] = "Mill";
 
         types[4][0] = "Mountain";
         types[0][0] = "Mountain";
@@ -98,6 +86,10 @@ void LessonGame::GenerateField()
     {
         hexes[4][1]->rivers[DOWN] = true;
         hexes[5][1]->rivers[UP] = true;
+        hexes[4][1]->rivers[LEFT_DOWN] = true;
+        hexes[5][0]->rivers[RIGHT_UP] = true;
+        hexes[4][0]->rivers[DOWN] = true;
+        hexes[5][0]->rivers[UP] = true;
     }
     if (N == 1)
     {
@@ -129,29 +121,26 @@ void LessonGame::GenerateField()
         hexes[2][3]->rivers[RIGHT_UP] = true;
         hexes[2][4]->rivers[LEFT_DOWN] = true;
     }
-//    if (N == 3)
-//    {
-//        hexes[2][1]->resources << "Capture" << "Capture" << "Attack" << "Go" << "Siege";
-//        hexes[4][5]->resources << "Capture" << "Attack";
-//    }
     if (N == 3)
     {
         hexes[4][5]->resources << "Capture";
         hexes[0][1]->resources << "Capture";
         hexes[2][2]->resources << "Capture";
         hexes[2][3]->resources << "Capture";
+        hexes[5][2]->resources << "Capture";
 
         hexes[3][0]->resources << "Recruit";
         hexes[2][0]->resources << "Recruit";
-        hexes[3][1]->resources << "Recruit";
-        hexes[1][1]->resources << "Recruit";
+        hexes[1][3]->resources << "Recruit";
+        hexes[3][5]->resources << "Recruit";
 
         hexes[1][0]->resources << "Attack";
+        hexes[1][2]->resources << "Liberate";
         hexes[3][2]->resources << "Go";
         hexes[3][3]->resources << "Attack" << "Go";
 
         hexes[3][4]->resources << "Go";
-        hexes[3][5]->resources << "Attack" << "Attack" << "Liberate";
+        hexes[1][1]->resources << "Attack" << "Attack" << "Liberate";
         hexes[3][6]->resources << "Go" << "Go";
 
         hexes[4][1]->resources << "Go";
@@ -161,6 +150,36 @@ void LessonGame::GenerateField()
         hexes[4][4]->resources << "Go";
         hexes[4][6]->resources << "Attack" << "Attack";
         hexes[4][7]->resources << "Go";
+
+        hexes[1][3]->rivers[RIGHT_UP] = true;
+        hexes[1][4]->rivers[LEFT_DOWN] = true;
+        hexes[1][3]->rivers[RIGHT_DOWN] = true;
+        hexes[2][4]->rivers[LEFT_UP] = true;
+        hexes[2][3]->rivers[RIGHT_UP] = true;
+        hexes[2][4]->rivers[LEFT_DOWN] = true;
+        hexes[3][4]->rivers[UP] = true;
+        hexes[2][4]->rivers[DOWN] = true;
+        hexes[3][4]->rivers[RIGHT_UP] = true;
+        hexes[2][5]->rivers[LEFT_DOWN] = true;
+        hexes[3][5]->rivers[UP] = true;
+        hexes[2][5]->rivers[DOWN] = true;
+        hexes[3][5]->rivers[RIGHT_UP] = true;
+        hexes[3][6]->rivers[LEFT_DOWN] = true;
+        hexes[4][6]->rivers[UP] = true;
+        hexes[3][6]->rivers[DOWN] = true;
+
+        hexes[1][0]->rivers[LEFT_UP] = true;
+        hexes[1][0]->rivers[LEFT_DOWN] = true;
+        hexes[2][0]->rivers[LEFT_UP] = true;
+        hexes[2][0]->rivers[LEFT_DOWN] = true;
+        hexes[3][0]->rivers[LEFT_UP] = true;
+        hexes[3][0]->rivers[LEFT_DOWN] = true;
+        hexes[0][9]->rivers[RIGHT_DOWN] = true;
+        hexes[1][9]->rivers[RIGHT_UP] = true;
+        hexes[1][9]->rivers[RIGHT_DOWN] = true;
+        hexes[2][9]->rivers[RIGHT_UP] = true;
+        hexes[2][9]->rivers[RIGHT_DOWN] = true;
+        hexes[3][9]->rivers[RIGHT_UP] = true;
     }
 }
 
@@ -179,7 +198,7 @@ void LessonGame::StartGame()
         players[rules->players[0]]->resources["Attack"] = 6;
         players[rules->players[1]]->resources["Attack"] = 6;
 
-        AddEvent()->GetReadyToPlan();
+        StartPlanning();
         AddEvent()->DefaultUnitClickReaction(Reaction(BLOCK));
 
         AddEvent()->HidePlayerPanels();
@@ -190,26 +209,23 @@ void LessonGame::StartGame()
 
         // Вступление
         AddEvent()->ShowMessage("Добро пожаловать в «Форты и мельницы», уникальную стратегию современности!");
-        AddEvent()->ShowMessage("Каждый раунд вам предстоит придумать план, который приведёт вас к победе или поражению. В этом уроке вы обучитесь главному игровому действию - как отдавать своим юнитам приказы.");
-
-        AddEvent()->ShowMessage("Наша задача - составить для своих юнитов план действий, то есть что они будут делать в этот раунд.");
-
+        AddEvent()->ShowMessage("Каждый раунд вам предстоит придумать план: раздать всем своим юнитам приказы, кому что делать.");
         AddEvent()->ShowMessageAndPicture("Мы играем за синих. Давайте попробуем захватить расположенный на карте форт.", "Fort");
 
         // Отдаём приказ атаки на завтрак
         AddEvent()->ReactionOnUnitClick(unit1, Reaction(BLOCK, "Этот юнит не доберётся до форта..."));
-        AddEvent()->ReactionOnUnitClick(enemy_unit1, Reaction(BLOCK, "Это вражеский юнит. Нужно щёлкнуть по своему"));
+        AddEvent()->ReactionOnUnitClick(enemy_unit1, Reaction(BLOCK, "Это вражеский юнит. Ему отдавать приказы будет наш противник."));
         AddEvent()->ReactionOnUnitClick(unit2, Reaction(NEXT_PHASE));
-        AddEvent()->ShowMessage("Каждому юниту мы должны отдать три приказа – на завтрак, обед и ужин. Давайте отдадим первому юниту приказ атаки на завтрак – для этого по нему нужно кликнуть.", false);
+        AddEvent()->ShowMessage("Каждому юниту нам нужно выдать три приказа. Чтобы отдать юниту приказ, по нему нужно кликнуть.", false);
 
         AddEvent()->DefaultUnitClickReaction(Reaction(BLOCK));
         AddEvent()->ReactionOnOrderChoice("Capture", Reaction(BLOCK, "Это приказ захвата. Нам нужна атака!", "Attack"));
         AddEvent()->ReactionOnOrderChoice("Attack", Reaction(NEXT_PHASE));
         AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(BLOCK, "Это приказ пропуска хода. Нам нужна атака!", "Attack"));
         AddEvent()->ReactionOnOrderChoice(DeleteLastOrder, Reaction(BLOCK, "Эта кнопка отменяет последний приказ. Выберите атаку!", "Attack"));
-        AddEvent()->ShowMessageAndPicture("Теперь выберем приказ, который мы хотим отдать - приказ атаки", "Attack", false, true);
+        AddEvent()->ShowMessageAndPicture("Теперь выберем приказ, который мы хотим отдать - приказ атаки в соседнюю клетку.", "Attack", false, true);
 
-        AddEvent()->DefaultHexChoiceReaction(Reaction(BLOCK, "Нам нужно добраться до форта за две атаки, поэтому стоит пойти в другом направлении", "Fort"));
+        AddEvent()->DefaultHexChoiceReaction(Reaction(BLOCK, "Нам нужно добраться до форта за две атаки, поэтому стоит пойти в другом направлении!", "Fort"));
         AddEvent()->ReactionOnHexChoice(hexes[3][4], Reaction(NEXT_PHASE));
         AddEvent()->ShowMessageAndPicture("Осталось выбрать клетку, которую юнит атакует. Нам нужно идти к форту.", "Fort", false, true);
 
@@ -218,11 +234,11 @@ void LessonGame::StartGame()
         AddEvent()->ReactionOnOrderChoice("Attack", Reaction(NEXT_PHASE));
         AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(BLOCK, "Это приказ пропуска хода. Нам нужна атака!", "Attack"));
         AddEvent()->ReactionOnOrderChoice(DeleteLastOrder, Reaction(BLOCK, "Эта кнопка отменяет последний приказ. Выберите атаку!", "Attack"));
-        AddEvent()->ShowMessageAndPicture("Приказ на завтрак запланирован. Теперь можно отдать ему приказ на обед - атаку в форт", "Attack", false, true);
+        AddEvent()->ShowMessageAndPicture("Первый приказ запланирован. Теперь можно отдать ему второй приказ - атаку в форт.", "Attack", false, true);
 
         AddEvent()->DefaultHexChoiceReaction(Reaction(BLOCK, "Нам нужно атаковать форт!", "Fort"));
         AddEvent()->ReactionOnHexChoice(hexes[3][5], Reaction(NEXT_PHASE));
-        AddEvent()->ShowMessageAndPicture("Выбираем атаковать форт", "Fort", false);
+        AddEvent()->ShowMessageAndPicture("Выбираем атаковать форт!", "Fort", false);
 
 
         // Отдаём приказ захвата
@@ -230,7 +246,7 @@ void LessonGame::StartGame()
         AddEvent()->ReactionOnOrderChoice("Attack", Reaction(BLOCK, "Это приказ атаки. Нам нужен захват!", "Capture"));
         AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(BLOCK, "Это приказ пропуска хода. Нам нужен захват!", "Capture"));
         AddEvent()->ReactionOnOrderChoice(DeleteLastOrder, Reaction(BLOCK, "Эта кнопка отменяет последний приказ. Выберите захват!", "Capture"));
-        AddEvent()->ShowMessageAndPicture("На ужин отдадим юниту приказ захвата клетки. Тогда форт будет наш!", "Capture", false, true);
+        AddEvent()->ShowMessageAndPicture("Наконец, третьим выполним приказ захвата клетки. Тогда форт будет наш!", "Capture", false, true);
 
 
         // Переходим к другому юниту
@@ -241,7 +257,7 @@ void LessonGame::StartGame()
         AddEvent()->ReactionOnUnitClick(unit1, Reaction(NEXT_PHASE));
         AddEvent()->ReactionOnUnitClick(unit2, Reaction(BLOCK, "Этому юниту мы уже составили план. У нас есть ещё один юнит, план для которого пока не составлен."));
         AddEvent()->ReactionOnUnitClick(enemy_unit1, Reaction(DEFAULT, "Это вражеский юнит"));
-        AddEvent()->ShowMessage("Щёлкните по другому нашему юниту. Поскольку ему ещё не отдан приказ на завтрак, произойдёт автоматическое переключение на завтрак", false, false, true);
+        AddEvent()->ShowMessage("Щёлкните по другому нашему юниту. Поскольку ему ещё не отдано ни одного приказа, интерфейс автоматически откатится к первому действию.", false, false, true);
 
 
         AddEvent()->DefaultUnitClickReaction(Reaction(BLOCK));
@@ -253,20 +269,20 @@ void LessonGame::StartGame()
 
         AddEvent()->DefaultHexChoiceReaction(Reaction(BLOCK, "Давайте пойдём в мельницу, расположенную клеткой ниже.", "Mill"));
         AddEvent()->ReactionOnHexChoice(hexes[5][1], Reaction(NEXT_PHASE));
-        AddEvent()->ShowMessageAndPicture("В горы и озёра ходить нельзя. Мы идём в мельницу!", "Mill", false, false);
+        AddEvent()->ShowMessageAndPicture("В озёра ходить нельзя.", "Lake", false, false);
 
         // Речка, циклическое поле и отмотка назад.
-        AddEvent()->ShowMessageAndPicture("Однако, юнит пересёк речку, и поэтому ему больше нельзя выдать приказы.", "River", true, false);
-        AddEvent()->ShowMessageAndPicture("Значит, эту мельницу нам не захватить. Есть другая мельница, но она далеко... Или нет?", "Mill", true, false);
+        AddEvent()->ShowMessageAndPicture("Однако, юнит пересёк речку, и поэтому ему больше нельзя выдать приказы.", "River");
+        AddEvent()->ShowMessageAndPicture("Значит, эту мельницу нам не захватить. Есть другая мельница, но она далеко... Или нет?", "Mill");
 
         AddEvent()->ShowFieldControl();
-        AddEvent()->ShowMessage("Вовсе нет, потому что карта циклическая. Для удобства её можно прокручивать стрелками внизу.", true, false, false);
+        AddEvent()->ShowMessage("Вовсе нет, потому что карта циклическая. Для удобства её можно прокручивать стрелками внизу.");
 
-        AddEvent()->ShowMessage("Нам надо стереть неверный приказ атаки и пойти в другом направлении.", true, false, false);
-        AddEvent()->ShowMessage("Выбрав юнита, у которого на данное время дня уже что-то запланировано, вы удаляете приказы на это и последующее время дня. Таким образом можно удалять ошибочные приказы", true, false, false);
+        AddEvent()->ShowMessage("Итак, нам надо стереть неверный приказ атаки и пойти в другом направлении.");
+        AddEvent()->ShowMessage("Выбирая юнита, у которого на данное время дня уже что-то запланировано, вы отменяете приказ вместе со всем последующим планом для этого юнита.");
 
         AddEvent()->ShowDayTimes();
-        AddEvent()->ShowMessage("Вы можете переключаться между завтраком, обедом и ужином на специальной панели внизу экрана.");
+        AddEvent()->ShowMessage("Вы можете переключаться между временами дня на специальной панели внизу экрана.");
 
         AddEvent()->DefaultUnitClickReaction(Reaction(BLOCK));
         AddEvent()->ReactionOnUnitClick(unit1, Reaction(NEXT_PHASE));
@@ -280,9 +296,9 @@ void LessonGame::StartGame()
         AddEvent()->DefaultHexChoiceReaction(Reaction(DEFAULT));
         AddEvent()->DefaultOrderChoiceReaction(Reaction(DEFAULT));
         AddEvent()->DefaultUnitClickReaction(Reaction(DEFAULT));
-        AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(DEFAULT, "Приказ пропуска хода выставляется по умолчанию - его не обязательно выставлять вручную, если только юнит не собирается делать что-то другое после него"));
+        AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(DEFAULT, "Приказ пропуска хода выставляется по умолчанию - его не обязательно выставлять вручную, если только юнит не собирается делать что-то другое после него."));
         AddEvent()->ReactionOnOrderChoice(DeleteLastOrder, Reaction(DEFAULT, "Эта кнопка стирает последний приказ."));
-        AddEvent()->ShowMessage("Итак, наша задача - захватить форт и мельницу. Когда ваш план будет готов, нажимайте кнопку Go", false, false, true);
+        AddEvent()->ShowMessage("Итак, наша задача - захватить форт и мельницу. Когда ваш план будет готов, нажимайте кнопку Go.", false, false, true, QSet<GameUnit*>(), "BlueGoButton");
     }
     if (N == 1)
     {
@@ -301,11 +317,11 @@ void LessonGame::StartGame()
         GatherResources(hexes[3][1], rules->players[0], QList<QString>() << "Capture" << "Capture" << "Attack" << "Attack");
         GatherResources(hexes[3][4], rules->players[1], QList<QString>() << "Capture" << "Capture" << "Go" << "Go");
 
-        AddEvent()->GetReadyToPlan();
+        AddEvent()->Plan();
         AddEvent()->DefaultUnitClickReaction(Reaction(BLOCK));
         AddEvent()->DefaultOrderChoiceReaction(Reaction(DEFAULT));
         AddEvent()->DefaultHexChoiceReaction(Reaction(DEFAULT));
-        AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(DEFAULT, "Приказ пропуска хода выставляется по умолчанию - его не обязательно выставлять вручную, если только юнит не собирается делать что-то другое после него"));
+        AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(DEFAULT, "Приказ пропуска хода выставляется по умолчанию - его не обязательно выставлять вручную, если только юнит не собирается делать что-то другое после него."));
 
         AddEvent()->HideGo();
         AddEvent()->HideHomes();
@@ -351,7 +367,7 @@ void LessonGame::StartGame()
         NewUnit(players[rules->players[1]], "Pig", Coord(5, 6));
         gatherResources();
 
-        AddEvent()->GetReadyToPlan();
+        AddEvent()->Plan();
         AddEvent()->DefaultUnitClickReaction(Reaction(BLOCK));
         AddEvent()->DefaultOrderChoiceReaction(Reaction(DEFAULT));
         AddEvent()->DefaultHexChoiceReaction(Reaction(DEFAULT));
@@ -376,50 +392,11 @@ void LessonGame::StartGame()
         AddEvent()->ReactionOnUnitClick(unit2, Reaction(DEFAULT, "Рядом нет клеток, которые мы могли бы соединить со своей мельницей."));
         AddEvent()->ShowMessage("Давайте рекрутируем нового юнита. Для это нужно найти клетку, где мы можем провести рекрутирование!", false);
     }
-//    if (N == 3)
-//    {
-//        unit1 = NewUnit(players[rules->players[0]], "Hippo", Coord(3, 1));
-//        unit1->home = Coord(2, 1);
-//        unit2 = NewUnit(players[rules->players[0]], "Karkun", Coord(3, 2));
-
-//        enemy_unit1 = NewUnit(players[rules->players[1]], "Hippo", Coord(3, 4));
-//        enemy_unit1->home = Coord(1, 2);
-//        enemy_unit2 = NewUnit(players[rules->players[1]], "Pig", Coord(4, 2));
-//        enemy_unit2->home = Coord(4, 5);
-//        enemy_unit3 = NewUnit(players[rules->players[1]], "Karkun", Coord(3, 5));
-
-//        CaptureHex(hexes[3][2], rules->players[0]);
-//        CaptureHex(hexes[2][1], rules->players[0]);
-//        CaptureHex(hexes[1][2], rules->players[1]);
-//        CaptureHex(hexes[3][5], rules->players[1]);
-//        CaptureHex(hexes[4][5], rules->players[1]);
-//        GatherResources(hexes[3][2], rules->players[0], QList<QString>() << "Capture" << "Attack" << "Go" << "Siege");
-//        GatherResources(hexes[4][5], rules->players[1], QList<QString>() << "Capture" << "Attack");
-
-//        AddEvent()->GetReadyToPlan();
-//        AddEvent()->DefaultUnitClickReaction(Reaction(BLOCK));
-//        AddEvent()->DefaultOrderChoiceReaction(Reaction(BLOCK));
-//        AddEvent()->DefaultHexChoiceReaction(Reaction(BLOCK));
-
-//        AddEvent()->HideGo();
-//        AddEvent()->ShowMessage("В этом уроке вы узнаете, как и откуда берутся новые войска.");
-//        AddEvent()->ShowMessageAndPicture("У каждого юнита есть свой дом - некоторая клетка на карте, форт, мельница или обычная клетка с ресурсами. Её можно узнать, наведя мышкой на юнит. ", "BlueUnitHome");
-//        AddEvent()->ShowMessage("Если потерять клетку с домом юнита, он погибнет в конце раунда. Давайте войдём в незащищённый вражеский форт - тогда мы уничтожим вражеского бегемота с домом в этой клетке! Заодно форт хорошо бы захватить.");
-
-//        AddEvent()->ShowGo();
-//        AddEvent()->DefaultUnitClickReaction(Reaction(DEFAULT));
-//        AddEvent()->DefaultOrderChoiceReaction(Reaction(DEFAULT));
-//        AddEvent()->DefaultHexChoiceReaction(Reaction(DEFAULT));
-//        AddEvent()->ReactionOnOrderChoice("Capture", Reaction(DEFAULT, "Захватывая новую клетку, вы получите на ней нового юнита в конце раунда. Тип юнита вы выбираете сами, когда планируете приказ."));
-
-//        AddEvent()->ShowMessage("Однако учтите, что вражеская хрюшка может попробовать войти в нашу единственную мельницу!", false);
-//    }
     if (N == 3)
     {
+        players["Red"]->playerType = GamePlayer::AI;
+
         ChooseOneOfTheStartHexes();
-        GameMessage * true_message = events.last();
-        AddEvent()->GetReadyToChooseHex(true_message);
-        events.removeAt(events.size() - 2);
 
         AddEvent()->DefaultUnitClickReaction(Reaction(DEFAULT));
         AddEvent()->DefaultOrderChoiceReaction(Reaction(DEFAULT));
@@ -437,9 +414,9 @@ bool LessonGame::checkIfPlanIsGood()
 {
     if (N == 0)
     {
-        if (checkIfCaptured(Coord(3, 9)))
+        if (checkIfCaptured(Coord(3, 9), "Blue"))
         {
-            if (checkIfCaptured(Coord(3, 5)))
+            if (checkIfCaptured(Coord(3, 5), "Blue"))
                 return true;
             else
             {
@@ -451,21 +428,21 @@ bool LessonGame::checkIfPlanIsGood()
                 return false;
             }
         }
-        else if (checkIfBlocked(Coord(3,9)))
+        else if (checkIfBlocked(Coord(3,9), "Blue"))
         {
             if (antirepeat)
-                AddEvent()->ShowErrorMessage("Так второй юнит только заходит в мельницу, но не захватывает её! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                AddEvent()->ShowErrorMessage("Так второй юнит только заходит в мельницу, но не захватывает её! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
             else
-                AddEvent()->ShowErrorMessage("Второй юнит не захватывает мельницу! Надо это исправить. Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                AddEvent()->ShowErrorMessage("Второй юнит не захватывает мельницу! Надо это исправить. Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
             antirepeat = !antirepeat;
             return false;
         }
         else
         {
             if (antirepeat)
-                AddEvent()->ShowErrorMessage("Не, этот план никуда не годится - второму юниту нужно дойти до мельницы и захватить её! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                AddEvent()->ShowErrorMessage("Не, этот план никуда не годится - второму юниту нужно дойти до мельницы и захватить её! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
             else
-                AddEvent()->ShowErrorMessage("Нам нужно захватить и форт, и мельницу, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                AddEvent()->ShowErrorMessage("Нам нужно захватить и форт, и мельницу, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
             antirepeat = !antirepeat;
             return false;
         }
@@ -474,84 +451,84 @@ bool LessonGame::checkIfPlanIsGood()
     {
         if (round == 0)
         {
-            if (checkIfCaptured(Coord(3, 3)))
+            if (checkIfCaptured(Coord(3, 3), "Blue"))
             {
                 return true;
             }
-            else if (checkIfBlocked(Coord(3, 3)))
+            else if (checkIfBlocked(Coord(3, 3), "Blue"))
             {
                 if (antirepeat)
-                    AddEvent()->ShowErrorMessage("Чтобы начать получать ресурсы, клетку нужно захватить, то есть исполнить приказ захвата! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                    AddEvent()->ShowErrorMessage("Чтобы начать получать ресурсы, клетку нужно захватить, то есть исполнить приказ захвата! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
                 else
-                    AddEvent()->ShowErrorMessage("Нужно не только войти в клетку, но и отдать приказ захвата! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                    AddEvent()->ShowErrorMessage("Нужно не только войти в клетку, но и отдать приказ захвата! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
                 antirepeat = !antirepeat;
                 return false;
             }
             else
             {
                 if (antirepeat)
-                    AddEvent()->ShowErrorMessage("Не, этот план не годится - нам нужны ресурсы! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                    AddEvent()->ShowErrorMessage("Не, этот план не годится - нам нужны ресурсы! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
                 else
-                    AddEvent()->ShowErrorMessage("Нам нужно захватить клетку с ресурсами, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                    AddEvent()->ShowErrorMessage("Нам нужно захватить клетку с ресурсами, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
                 antirepeat = !antirepeat;
                 return false;
             }
         }
         else if (round == 1)
         {
-            if (checkIfCaptured(Coord(4, 4)))
+            if (checkIfCaptured(Coord(4, 4), "Blue"))
             {
                 return true;
             }
-            else if (checkIfBlocked(Coord(4, 4)))
+            else if (checkIfBlocked(Coord(4, 4), "Blue"))
             {
                 if (antirepeat)
-                    AddEvent()->ShowErrorMessage("Нужно ещё захватить клетку с ресурсом, чтобы получить его! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту", "Liberate");
+                    AddEvent()->ShowErrorMessage("Нужно ещё захватить клетку с ресурсом, чтобы получить его! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.", "Liberate");
                 else
-                    AddEvent()->ShowErrorMessage("Клетка с освобождением не захвачена! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту", "Liberate");
+                    AddEvent()->ShowErrorMessage("Клетка с освобождением не захвачена! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.", "Liberate");
                 antirepeat = !antirepeat;
                 return false;
             }
             else
             {
                 if (antirepeat)
-                    AddEvent()->ShowErrorMessage("Не, этот план никуда не годится - нужно получить ресурс освобождения! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту", "Liberate");
+                    AddEvent()->ShowErrorMessage("Не, этот план никуда не годится - нужно получить ресурс освобождения! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.", "Liberate");
                 else
-                    AddEvent()->ShowErrorMessage("Нам нужно получить освобождение, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту", "Liberate");
+                    AddEvent()->ShowErrorMessage("Нам нужно получить освобождение, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.", "Liberate");
                 antirepeat = !antirepeat;
                 return false;
             }
         }
         else if (round == 2)
         {
-            if (checkIfExecuted(Coord(3, 5), "Liberate"))
+            if (checkIfExecuted(Coord(3, 5), "Liberate", "Blue"))
             {
-                if (checkIfBlocked(Coord(4, 6)))
+                if (checkIfBlocked(Coord(4, 6), "Blue"))
                 {
                     return true;
                 }
                 else
                 {
                     if (antirepeat)
-                        AddEvent()->ShowErrorMessage("Так мы освободим один форт, но не заблокируем второй! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                        AddEvent()->ShowErrorMessage("Так мы освободим один форт, но не заблокируем второй! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
                     else
-                        AddEvent()->ShowErrorMessage("Так один вражеский форт останется незаблокированным! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                        AddEvent()->ShowErrorMessage("Так один вражеский форт останется незаблокированным! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
                     antirepeat = !antirepeat;
                     return false;
                 }
             }
-            else if (checkIfExecuted(Coord(4, 6), "Recruit"))
+            else if (checkIfExecuted(Coord(4, 6), "Recruit", "Blue"))
             {
-                if (checkIfBlocked(Coord(3, 5)))
+                if (checkIfBlocked(Coord(3, 5), "Blue"))
                 {
                     return true;
                 }
                 else
                 {
                     if (antirepeat)
-                        AddEvent()->ShowErrorMessage("Так мы освободим один форт, но не заблокируем второй! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                        AddEvent()->ShowErrorMessage("Так мы освободим один форт, но не заблокируем второй! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
                     else
-                        AddEvent()->ShowErrorMessage("Так один вражеский форт останется незаблокированным! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                        AddEvent()->ShowErrorMessage("Так один вражеский форт останется незаблокированным! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
                     antirepeat = !antirepeat;
                     return false;
                 }
@@ -559,9 +536,9 @@ bool LessonGame::checkIfPlanIsGood()
             else
             {
                 if (antirepeat)
-                    AddEvent()->ShowErrorMessage("Не, этот план никуда не годится - нам нужно лишить противника фортов! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                    AddEvent()->ShowErrorMessage("Не, этот план никуда не годится - нам нужно лишить противника фортов! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
                 else
-                    AddEvent()->ShowErrorMessage("Нам нужно лишить противника фортов, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                    AddEvent()->ShowErrorMessage("Нам нужно лишить противника фортов, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
                 antirepeat = !antirepeat;
                 return false;
             }
@@ -571,125 +548,21 @@ bool LessonGame::checkIfPlanIsGood()
     {
         if (round == 0)
         {
-            if (checkIfExecuted(Coord(2, 2), "Recruit"))
+            if (checkIfExecuted(Coord(2, 2), "Recruit", "Blue"))
             {
                 return true;
             }
             else
             {
                 if (antirepeat)
-                    AddEvent()->ShowErrorMessage("Не, этот план никуда не годится - нам нужно зарекрутировать нового юнита! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                    AddEvent()->ShowErrorMessage("Не, этот план никуда не годится - нам нужно зарекрутировать нового юнита! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
                 else
-                    AddEvent()->ShowErrorMessage("Мы хотели зарекрутировать нового юнита, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
+                    AddEvent()->ShowErrorMessage("Мы хотели зарекрутировать нового юнита, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту.");
                 antirepeat = !antirepeat;
                 return false;
             }
         }
-//        else if (round == 1)
-//        {
-//            if (checkIfCaptured(Coord(1, 1)))
-//            {
-//                return true;
-//            }
-//            else
-//            {
-//                if (antirepeat)
-//                    AddEvent()->ShowErrorMessage("Не, этот план никуда не годится - нам нужны выстрелы! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
-//                else
-//                    AddEvent()->ShowErrorMessage("Нам нужно получить ресурс выстрела, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
-//                antirepeat = !antirepeat;
-//                return false;
-//            }
-//        }
-//        else if (round == 2)
-//        {
-//            if (!checkIfEmpty())
-//            {
-//                return true;
-//            }
-//            else
-//            {
-//                if (antirepeat)
-//                    AddEvent()->ShowErrorMessage("Вряд ли план ничего не делать - это хорошая идея...");
-//                else
-//                    AddEvent()->ShowErrorMessage("Ничего не делать целый раунд вряд ли как-то поможет...");
-//                antirepeat = !antirepeat;
-//                return false;
-//            }
-//        }
     }
-//    if (N == 3)
-//    {
-//        if (round == 0)
-//        {
-//            if (checkIfCaptured(Coord(1, 2)))
-//            {
-//                GameUnit * hippo = unit1;
-
-//                if (hippo->plan[0] == NULL ||
-//                        hippo->plan[0]->type == "Capture" ||
-//                        hippo->plan[0]->actions[1].target != Coord(3, 2))
-//                {
-//                    if (hippo->plan[0] != NULL &&
-//                            hippo->plan[0]->type != "Capture" &&
-//                            hippo->plan[0]->actions[1].target == Coord(4, 2))
-//                    {
-//                        if (antirepeat)
-//                            AddEvent()->ShowErrorMessage("Не, этот план никуда не годится - вражеская хрюшка преспокойно войдёт в нашу мельницу на завтрак, так и не встретившись с нашим бегемотом! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
-//                        else
-//                            AddEvent()->ShowErrorMessage("Так мы потеряем свою мельницу на завтрак, поскольку наш бегемот не пересечётся с вражеской хрюшкой, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
-//                        antirepeat = !antirepeat;
-//                        return false;
-//                    }
-//                    else
-//                    {
-//                        if (antirepeat)
-//                            AddEvent()->ShowErrorMessage("Не, этот план никуда не годится - наша мельница осталась незащищённой! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
-//                        else
-//                            AddEvent()->ShowErrorMessage("Так мы потеряем свою мельницу, ведь в неё сможет войти вражеская хрюшка! Поэтому этот план не годится. Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
-//                        antirepeat = !antirepeat;
-//                        return false;
-//                    }
-//                }
-
-//                return true;
-//            }
-//            else if (checkIfBlocked(Coord(1, 2)))
-//            {
-//                if (antirepeat)
-//                    AddEvent()->ShowMessage("Форт ещё нужно захватить! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту", false);
-//                else
-//                    AddEvent()->ShowMessage("Нужно не только отбить форт у противника, но и захватить! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту", false);
-//                antirepeat = !antirepeat;
-//                return false;
-//            }
-//            else
-//            {
-//                if (antirepeat)
-//                    AddEvent()->ShowMessage("Не, этот план никуда не годится - нам нужно захватить форт, сейчас принадлежащий противнику! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту", false);
-//                else
-//                    AddEvent()->ShowMessage("Нам нужно захватить форт противника, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту", false);
-//                antirepeat = !antirepeat;
-//                return false;
-//            }
-//        }
-//        if (round == 1)
-//        {
-//            if (checkIfCaptured(Coord(2, 2)))
-//            {
-//                return true;
-//            }
-//            else
-//            {
-//                if (antirepeat)
-//                    AddEvent()->ShowErrorMessage("Не, этот план никуда не годится - нам нужно захватить оставшийся форт! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
-//                else
-//                    AddEvent()->ShowErrorMessage("Нам нужно захватить оставшийся форт, поэтому этот план не годится! Неверные приказы всегда можно стереть, выбрав на панели времени дня нужное время, а затем щёлкнув по юниту");
-//                antirepeat = !antirepeat;
-//                return false;
-//            }
-//        }
-//    }
     return true;
 }
 
@@ -704,23 +577,23 @@ int LessonGame::NextStage()
         enemy_unit1->plan[1] = new GameOrder(rules, enemy_unit1->type, "Attack");
         enemy_unit1->plan[1]->actions[1].target = Coord(3, 5);
 
-        AddEvent()->ShowMessage("Наш противник уже спланировал свой ход. Что ж, теперь мы не можем повлиять на исход раунда. В пошаговом режиме мы можем посмотреть, что же получилось.", true, false, true);
+        AddEvent()->ShowMessage("Наш противник уже спланировал свой ход. Что ж, теперь мы не можем повлиять на исход раунда.", true, false, true);
 
         RealizePlan();
 
         int i = 0;
         while (events[i]->type != TIME_STARTED) {++i;}
-        AddEvent(i)->ShowMessage("Сначала юниты выполнят приказы на завтрак. Сделают они это как бы одновременно, но анимация произойдёт пошагово. Щёлкайте на кнопку перехода к следующему событию!", false, true, true, QSet <GameUnit *>() << events[i]->unit, "BlueNext");
+        AddEvent(i)->ShowMessage("Сначала юниты одновременно выполнят свои первые приказы. В пошаговом режиме мы можем посмотреть, что же получилось. Щёлкайте на кнопку перехода к следующему событию!", false, true, true, QSet <GameUnit *>() << events[i]->unit, "BlueNext");
 
         i = 0;
         while (events[i]->type != UNIT_LEAVES || events[i]->unit->color != rules->players[1]) {++i;}
-        AddEvent(i)->ShowMessage("Вражеская хрюшка на завтрак тоже выполняет приказ атаки...", false, true, true, QSet <GameUnit *>() << events[i]->unit);
+        AddEvent(i)->ShowMessage("Вражеская хрюшка тоже выполняет приказ атаки...", false, true, true, QSet <GameUnit *>() << events[i]->unit, "Attack");
 
         i = 0;
         while (events[i]->type != TIME_STARTED) {++i;}
         ++i;
         while (events[i]->type != TIME_STARTED) {++i;}
-        AddEvent(i)->ShowMessage("Завтрак окончен. Начался обед.", false, true, true);
+        AddEvent(i)->ShowMessage("Юниты переходят к выполнению своих вторых приказов.", false, true, true);
 
         while (events[i]->type != UNIT_LEAVES || events[i]->unit->color != rules->players[1]) {++i;}
         AddEvent(i)->ShowMessage("Наш юнит столкнулся с вражеским юнитом! Между ними должен произойти бой.", false, true, true, QSet <GameUnit *>() << events[i]->unit);
@@ -752,7 +625,8 @@ int LessonGame::NextStage()
 
         if (round == 0)
         {
-            AddEvent()->ShowMessage("Похоже, враг тоже попытался самому получить ресурсы!", false, true, true);
+            AddEvent()->DefaultUnitClickReaction(Reaction(BLOCK));
+            AddEvent()->ShowMessage("Похоже, враг тоже пытается заполучить ресурсы!", false, true, true);
 
             enemy_unit1->plan[0] = new GameOrder(rules, enemy_unit1->type, "Go");
             enemy_unit1->plan[0]->actions[1].target = Coord(3, 3);
@@ -766,6 +640,7 @@ int LessonGame::NextStage()
             defenceFill();
 
             int i = 0;
+            // TODO: подумать над выделением при помощи <span style=\"color:blue\">
             while (events[i]->type != UNIT_FINISHES_ENTER || events[i]->unit != enemy_unit1) {++i;}
             AddEvent(i-1)->ShowMessage("Враги используют приказ хода: перемещения со штрафом в бою -1.", false, true, true, events[i]->involved(), "Go");
 
@@ -775,7 +650,8 @@ int LessonGame::NextStage()
             while (events[i]->type != GATHER_RESOURCES) {++i;}
             AddEvent(i)->ShowMessage("Наступил конец раунда, и игроки получают ресурсы со всех принадлежащих им клеток.", true, true, true);
 
-            AddEvent()->GetReadyToPlan();
+            StartPlanning();
+            AddEvent()->DefaultUnitClickReaction(Reaction(BLOCK));
             AddEvent()->DisableGo();
 
             AddEvent()->ShowMessage("Наступил конец раунда, и игроки получают ресурсы со всех принадлежащих им клеток.", true, false, true);
@@ -783,6 +659,7 @@ int LessonGame::NextStage()
             AddEvent()->ShowMessageAndPicture("Каждый форт увеличивает лимит ресурсов одного типа на один.", "Fort");
 
             AddEvent()->EnableGo();
+            AddEvent()->DefaultUnitClickReaction(Reaction(DEFAULT));
             AddEvent()->ShowMessageAndPicture("Чтобы лишать противника клеток, понадобится приказ освобождения. Давайте получим его!", "Liberate", false);
             round = 1;
         }
@@ -791,7 +668,6 @@ int LessonGame::NextStage()
             enemy_unit2->plan[0] = new GameOrder(rules, enemy_unit2->type, "Go");
             enemy_unit2->plan[0]->actions[1].target = Coord(0, 1);
 
-            //AddEvent()->ShowMessage("У противника нету ресурсов, поэтому он не может ничего делать. Так что вражеская хрюшка \"исполняет\" приказ пропуска хода.", false, true, true, QSet <GameUnit *>(), DefaultOrder);
             AddEvent()->ShowMessage("Противник между тем вошёл в наш форт!", false, true, true, QSet <GameUnit *>() << enemy_unit2);
 
             RealizePlan();
@@ -799,14 +675,14 @@ int LessonGame::NextStage()
             defenceFill();
             burnExtraResources();
 
-            AddEvent()->GetReadyToPlan();
+            StartPlanning();
             AddEvent()->DisableGo();
             AddEvent()->ReactionOnOrderChoice("Liberate", Reaction(DEFAULT, "Как и захват, освобождение в случае сражения дало бы штраф -1.", "Liberate"));
-            AddEvent()->ShowMessage("Пока враг находится в вашей клетке, она перестаёт давать ресурсы. А форт ещё и перестаёт увеличивать лимит ресурсов!");
-            AddEvent()->ShowMessage("Мы же при помощи освобождения сможем полностью обездвижить противника!");
+            AddEvent()->ShowMessage("Пока в клетке находится враг, она перестаёт давать ресурсы. А форт ещё и перестаёт увеличивать лимит ресурсов!");
+            AddEvent()->ShowMessageAndPicture("Но клетка будет принадлежать игроку, пока враг не применит в ней приказ освобождения.", "Liberate");
 
             AddEvent()->EnableGo();
-            AddEvent()->ShowMessage("Давайте заблокируем оба форта противника!", false, false, true);
+            AddEvent()->ShowMessage("Сейчас мы при помощи освобождения сможем полностью обездвижить противника! Давайте заблокируем оба форта противника!", false, false, false);
             round = 2;
         }
         else if (round == 2)
@@ -817,15 +693,6 @@ int LessonGame::NextStage()
             gatherResources();
             defenceFill();
             burnExtraResources();
-
-//            int i = 0;
-//            while (events[i]->type != UNITS_FIGHT) {++i;}
-//            AddEvent(i)->ShowMessage("Наш бонус от штурма +2 тратится на то, чтобы пробить оборону форта, также равную 2", false, true, true, events[i]->involved());
-//            AddEvent(i + 2)->ShowMessage("В результате, наш Каркун побеждает и остаётся с 1 здоровья.", false, true, false, events[i + 1]->involved());
-
-//            i = 0;
-//            while (events[i]->type != UNIT_DECAPTURES_HEX) {++i;}
-//            AddEvent(i)->ShowMessage("Мы вошли в клетку противника, и поэтому она тут же перестала ему принадлежать.", false, true, true, QSet <GameUnit *>() << events[i]->unit);
 
             AddEvent()->ShowMessage("Противник потерял все ресурсы и полностью обездвижен! Ура!", false, false, true);
             AddEvent()->Exit();
@@ -886,7 +753,7 @@ int LessonGame::NextStage()
             while (events[i]->type != UNIT_DIES) {++i;}
             AddEvent(i)->ShowMessage("В разграбленном форте был дом ещё одного нашего юнита! В конце раунда он погибает. :(", true, true, true, events[i]->involved());
 
-            AddEvent()->GetReadyToPlan();
+            AddEvent()->Plan();
             AddEvent()->DisableGo();
 
             AddEvent()->ShowMessage("Безобразие!", true, false, true);
@@ -896,143 +763,23 @@ int LessonGame::NextStage()
             AddEvent()->Exit();
             round = 1;
         }
-//        else if (round == 1)
-//        {
-//            AddEvent()->ShowMessage("Противник обездвижен, так что мы можем не беспокоиться о его действиях!", false, true, true);
-
-//            RealizePlan();
-//            burnExtraResources();
-//            gatherResources();
-//            defenceFill();
-
-//            AddEvent()->GetReadyToPlan();
-//            AddEvent()->ReactionOnUnitClick(enemy_unit1, Reaction(DEFAULT, "Выбирая гекс, щёлкайте по гексу, а не по юниту!"));
-//            AddEvent()->ReactionOnOrderChoice("Fire", Reaction(DEFAULT, "Стрелять можно не далее чем на две клетки по прямой, однако стрелять через горы, форты и мельницы нельзя."));
-//            AddEvent()->ShowMessage("Теперь мы можем стрелять! Попадание в юнита отнимет у него 2 здоровья, но нужно учесть бонус бегемота в обороне +2! Поэтому на то, чтобы захватить форт, тут потребуется больше одного раунда.", false, false, true);
-
-//            round = 2;
-//        }
-//        else if (round == 2)
-//        {
-//            if (hexes[1][2]->color == "Neutral" && !checkIfCaptured(Coord(1,2)))
-//                AddEvent()->ShowMessage("Подсказка: надо захватить вторую мельницу, чтобы за раунд можно было использовать сразу два приказа выстрела!", false, true);
-
-//            RealizePlan();
-//            burnExtraResources();
-//            gatherResources();
-//            defenceFill();
-
-//            int i = 0;
-//            bool isDefenceMentioned = false;
-//            while (i < events.size() && events[i]->type != UNIT_DEFENCE_FILLED) {++i;}
-//            if (i < events.size())
-//            {
-//                isDefenceMentioned = true;
-//                AddEvent(i + 1)->ShowMessage("Раунд закончился, поэтому бонус бегемота в обороне восполнился. В следующем раунде нужно будет пробивать его снова.", false, true, true);
-//            }
-
-//            if (hexes[2][3]->color == rules->players[0])
-//            {
-//                AddEvent()->ShowMessage("Победа!", false, false, true);
-//                AddEvent()->Exit();
-//            }
-//            else if (africa.contains(unit1))
-//            {
-//                AddEvent()->ShowMessage("Поражение!", false, false, true);
-//                AddEvent()->Exit(false);
-//            }
-//            else
-//            {
-//                AddEvent()->GetReadyToPlan();
-//                if (isDefenceMentioned)
-//                {
-//                    AddEvent()->ShowMessage("Раунд закончился, поэтому бонус бегемота в обороне восполнился. В следующем раунде нужно будет пробивать его снова.", false, false, true);
-//                }
-//                else if (players[rules->players[1]]->units.size() == 3)
-//                    AddEvent()->ShowMessage("Учтите бонус бегемота в обороне +2!", false, false);
-//                else
-//                    AddEvent()->ShowMessage("Осталось только захватить!", false, false);
-//            }
-//        }
     }
-//    if (N == 3)
-//    {
-//        if (round == 0)
-//        {
-//            AddEvent()->ShowMessage("Да, так мы гарантированно защищаем свою мельницу!", false, true, true);
-
-//            enemy_unit2->plan[0] = new GameOrder(rules, enemy_unit2->type, "Attack");
-//            enemy_unit2->plan[0]->actions[1].target = Coord(3, 2);
-
-//            RealizePlan();
-//            destroyHomelessUnits();
-//            recruitNewUnits();
-//            killAllies();
-//            burnExtraResources();
-//            gatherResources();
-//            defenceFill();
-
-//            int i = 0;
-//            while (events[i]->type != UNIT_LEAVES || events[i]->unit->color != rules->players[1]) {++i;}
-//            AddEvent(i)->ShowMessage("Наш Каркун вышел из клетки в тот же момент, как в неё начала входить вражеская хрюшка, поэтому боя не произошло.", false, true, true, QSet <GameUnit *>() << events[i]->unit);
-
-//            i = 0;
-//            while (events[i]->type != UNIT_LEAVES || events[i]->unit != unit1) {++i;}
-//            AddEvent(i)->ShowMessage("Бонус бегемота не работает, так как он передвигается в другую клетку, что не является обороной.", false, true, true, QSet <GameUnit *>() << events[i]->unit);
-
-//            i = 0;
-//            while (events[i]->type != UNIT_IS_GOING_TO_RECRUIT) {++i;}
-//            AddEvent(i)->ShowMessage("В конце раунда в этой клетке появится новый юнит выбранного типа.", false, true, true, QSet <GameUnit *>() << events[i]->unit);
-
-//            i = 0;
-//            while (events[i]->type != UNIT_DIES || events[i]->unit->home != Coord(1, 2)) {++i;}
-//            AddEvent(i)->ShowMessage("Дом этого бегемота перестал принадлежать нашему оппоненту, поэтому он погибает в конце раунда.", false, true, true, QSet <GameUnit *>() << events[i]->unit);
-
-
-//            AddEvent()->GetReadyToPlan();
-//            AddEvent()->ShowMessage("Дело осталось за малым - захватить оставшийся форт!", false, false, true);
-//            round = 1;
-//        }
-//        else if (round == 1)
-//        {
-//            AddEvent()->ShowMessage("Вражеская хрюшка, которая погибла в прошлом раунде, имела дом в клетке с ресурсами, всё ещё принадлежащей врагу. В этой клетке противник может снова использовать приказ захвата, чтобы получить нового юнита.", false, true, true, QSet<GameUnit*>(), "NotRedUnitHome");
-
-//            enemy_unit1->plan[0] = new GameOrder(rules, enemy_unit1->type, "Attack");
-//            enemy_unit1->plan[0]->actions[1].target = Coord(4, 5);
-//            enemy_unit1->plan[1] = new GameOrder(rules, enemy_unit1->type, "Capture");
-//            enemy_unit1->plan[1]->actions[2].unitType = "Karkun";
-
-//            RealizePlan();
-//            destroyHomelessUnits();
-//            recruitNewUnits();
-//            killAllies();
-//            burnExtraResources();
-//            gatherResources();
-//            defenceFill();
-
-//            AddEvent()->ShowMessage("Победа!", false, false, true);
-//            AddEvent()->Exit();
-//        }
-//    }
     if (N == 3)
     {
         QList <Coord> vars;
-        vars << Coord(2, 2) << Coord(3, 5) << Coord(0, 1) << Coord(4, 6) << Coord(2, 0) << Coord(3, 0) << Coord(4, 3)
-             << Coord(4, 5) << Coord(4, 6) << Coord(4, 7) << Coord(1, 1) << Coord(1, 0) << Coord(3, 1) << Coord(2, 3);
+        vars << Coord(2, 2) << Coord(3, 3) << Coord(3, 5) << Coord(0, 1) << Coord(4, 6) << Coord(4, 3) << Coord(2, 0) << Coord(1, 1)
+             << Coord(4, 5) << Coord(5, 2) << Coord(4, 7) << Coord(3, 0) << Coord(1, 0) << Coord(3, 1) << Coord(2, 3);
         if (round == 0)
         {
             this->chosenHex[rules->players[1]] = vars[0];
-            if (chosenHex[rules->players[0]] == vars[0])
+            if (chosenHex[rules->players[0]] == vars[0])  // первый выбор точно делаем разным
                 chosenHex[rules->players[1]] = vars[1];
 
             AddEvent()->ShowMessage("Игроки выбрали разные клетки, поэтому каждый получает желаемое! На игроков уже действует лимит ресурсов от фортов.", true, true, true);
 
             Game::NextStage();
-            GameMessage* true_message = events.last();
-            AddEvent()->GetReadyToChooseHex(true_message);
-            events.removeAt(events.size() - 2);
 
-            AddEvent()->DefaultHexChoiceReaction(Reaction(BLOCK));
+            AddEvent()->DefaultHexChoiceReaction(Reaction(NEXT_PHASE));
             AddEvent()->ShowMessage("Игроки выбрали разные клетки, поэтому каждый получает желаемое! На игроков уже действует лимит ресурсов от фортов.", true, false, true);
 
             AddEvent()->DefaultHexChoiceReaction(Reaction(DEFAULT));
@@ -1043,25 +790,23 @@ int LessonGame::NextStage()
         {
             chosenHex[rules->players[1]] = chosenHex[rules->players[0]];
 
-            AddEvent()->ShowMessage("Игроки выбрали одну и ту же клетку, поэтому она никому не достаётся и выкидывается из вариантов.", false, true, true);
-
             Game::NextStage();
-            GameMessage* true_message = events.last();
-            AddEvent()->GetReadyToChooseHex(true_message);
-            events.removeAt(events.size() - 2);
-            round = 2;
 
-            AddEvent()->DefaultHexChoiceReaction(Reaction(BLOCK));
+            AddEvent()->DefaultHexChoiceReaction(Reaction(NEXT_PHASE));
             AddEvent()->ShowMessage("Игроки выбрали одну и ту же клетку, поэтому она никому не достаётся и выкидывается из вариантов.", true, false, true);
 
             AddEvent()->DefaultHexChoiceReaction(Reaction(DEFAULT));
             AddEvent()->ShowMessage("Выбор стартовых клеток повторяется 7 раз.", false, false, true);
+            round = 2;
         }
         else
         {
-            int i = 0;
-            while (!hexes[vars[i].x][vars[i].y]->canBeChosenAsStartPoint) { ++i; }
-            chosenHex[rules->players[1]] = vars[i];
+            if (round <= 6)
+            {
+                int i = 0;
+                while (!hexes[vars[i].x][vars[i].y]->canBeChosenAsStartPoint) { ++i; }
+                chosenHex[rules->players[1]] = vars[i];
+            }
 
             if (round == 2)
             {
@@ -1073,27 +818,45 @@ int LessonGame::NextStage()
 
             if (round < 6)
             {
-                GameMessage* true_message = events.last();
-                AddEvent()->GetReadyToChooseHex(true_message);
-                events.removeAt(events.size() - 2);
-                round++;
-
-                if (round == 5 && players["Blue"]->resources["Capture"] == 0)
+                if (round == 4 && players["Blue"]->resources["Capture"] == 0)
                 {
                     final_message = "Стоит взять хотя бы один форт, иначе вы останетесь без ресурсов!";
                 }
                 AddEvent()->ShowMessage(final_message, false, false, true);
+                round++;
+            }
+            else if (round == 6)
+            {
+                AddEvent()->DisableGo();
+                AddEvent()->ShowMessage("Старт закончился, и началась игра! Цель игры - уничтожить всех юнитов противника!", true, false, true);
+
+                AddEvent()->EnableGo();
+                AddEvent()->ShowMessage("Теперь вы знаете все правила \"Фортов и мельниц\"! Попробуйте победить глупенького бота!", false, false, false);
+                round += 1;
             }
             else
             {
-                events.removeLast();
-                AddEvent()->GetReadyToPlan();
-                AddEvent()->DefaultUnitClickReaction(Reaction(BLOCK));
-                AddEvent()->DisableGo();
+                if (events.last()->type == WIN)
+                {
+                    bool win = events.last()->color == "Blue";
+                    events.removeLast();
+                    AddEvent()->DisappearNext();
 
-                AddEvent()->ShowMessage("Старт закончился, и началась игра! Цель игры - уничтожить всех юнитов противника!", true, false, true);
-                AddEvent()->ShowMessage("Теперь вы знаете все правила \"Фортов и мельниц\"! Успехов в игре!", true, false, false);
-                AddEvent()->Exit();
+                    if (win)
+                    {
+                        AddEvent()->ShowMessage("Победа! Попробуйте теперь сыграть с людьми.");
+                        AddEvent()->Exit();
+                    }
+                    else
+                    {
+                        AddEvent()->ShowMessage("Поражение! Попробуйте ещё раз.");
+                        AddEvent()->Exit(false);
+                    }
+                }
+                else
+                {
+                    AddEvent()->Pause();
+                }
             }
         }
     }

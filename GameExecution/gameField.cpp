@@ -15,7 +15,7 @@ void Game::GenerateField()
     }
 
     // генерим форты, мельницы, озёра и горы
-    for (QMap <HexType, Range>::iterator it = rules->numOfHexTypes.begin();
+    for (QMap <HexType, Range>::const_iterator it = rules->numOfHexTypes.begin();
                                          it != rules->numOfHexTypes.end(); ++it)
     {
         int amount = it->get_rand(rand);

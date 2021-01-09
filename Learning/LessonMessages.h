@@ -34,14 +34,16 @@ enum LessonMessageType
     ENABLE_GO,
     DISABLE_GO,
     ENABLE_NEXT,
-    GET_READY_TO_PLAN,
-    GET_READY_TO_CHOOSE_HEX,
+    DISAPPEAR_NEXT,
+    LESSON_PLAN,
+    LESSON_CHOOSE_HEX,
     DEFAULT_UNIT_CLICK_REACTION,
     DEFAULT_ORDER_CHOICE_REACTION,
     DEFAULT_HEX_CHOICE_REACTION,
     REACTION_ON_UNIT_CLICK,
     REACTION_ON_ORDER_CHOICE,
     REACTION_ON_HEX_CHOICE,
+    PAUSE,
     EXIT
 };
 
@@ -60,6 +62,7 @@ public:
     bool success;
     bool clearHistory;
     bool addToHistory;
+    bool enable;
 
     explicit LessonMessage() : GameMessage() {}
 
@@ -139,22 +142,28 @@ public:
         type = LESSON;
         ltype = ENABLE_GO;
     }
-    void EnableNext(QSet <GameUnit *> involved = QSet <GameUnit *>())
+    void EnableNext(QSet <GameUnit *> involved = QSet <GameUnit *>(), bool enable=true)
     {
         type = LESSON;
         ltype = ENABLE_NEXT;
         this->fighters = involved;
+        this->enable = enable;
     }
-    void GetReadyToPlan()
+    void DisappearNext()
     {
         type = LESSON;
-        ltype = GET_READY_TO_PLAN;
+        ltype = DISAPPEAR_NEXT;
     }
-    void GetReadyToChooseHex(GameMessage * message)
+    void Plan() override
     {
         type = LESSON;
-        ltype = GET_READY_TO_CHOOSE_HEX;
-        this->variants = message->variants;
+        ltype = LESSON_PLAN;
+    }
+    void ChooseHex(QList<Coord> variants) override
+    {
+        type = LESSON;
+        ltype = LESSON_CHOOSE_HEX;
+        this->variants = variants;
     }
     void DefaultUnitClickReaction(Reaction reaction)
     {
@@ -194,6 +203,11 @@ public:
         ltype = REACTION_ON_HEX_CHOICE;
         this->hex = hex;
         this->reaction = reaction;
+    }
+    void Pause()
+    {
+        type = LESSON;
+        ltype = PAUSE;
     }
     void Exit(bool success = true)
     {

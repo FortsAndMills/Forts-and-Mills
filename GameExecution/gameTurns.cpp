@@ -127,4 +127,64 @@ bool Game::must_be_last(GameUnit * unit, DayTime time)
     return false;
 }
 
+bool Game::checkIfCaptured(Coord c, PlayerColor color)
+{
+    foreach (GameUnit * unit, players[color]->units)
+    {
+        Coord unit_c = unit->position;
+        for (int i = 0; i < rules->dayTimes; ++i)
+        {
+            if (unit->plan[i] == NULL)
+                break;
 
+            unit_c = unit->plan[i]->moves(unit_c);
+
+            if (unit->plan[i]->type == "Capture")
+            {
+                if (c == unit_c)
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+bool Game::checkIfBlocked(Coord c, PlayerColor color)
+{
+    foreach (GameUnit * unit, players[color]->units)
+    {
+        Coord unit_c = unit->position;
+
+        for (int i = 0; i < rules->dayTimes; ++i)
+        {
+            if (unit->plan[i] == NULL)
+                break;
+
+            unit_c = unit->plan[i]->moves(unit_c);
+        }
+
+        if (unit_c == c)
+            return true;
+    }
+    return false;
+}
+bool Game::checkIfExecuted(Coord c, OrderType order, PlayerColor color)
+{
+    foreach (GameUnit * unit, players[color]->units)
+    {
+        Coord unit_c = unit->position;
+        for (int i = 0; i < rules->dayTimes; ++i)
+        {
+            if (unit->plan[i] == NULL)
+                break;
+
+            unit_c = unit->plan[i]->moves(unit_c);
+
+            if (unit->plan[i]->type == order)
+            {
+                if (c == unit_c)
+                    return true;
+            }
+        }
+    }
+    return false;
+}

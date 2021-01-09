@@ -19,6 +19,7 @@ public:
     int fightInfluence = 0;  // модификатор боя
     bool burnsWhenFight = false;  // сгорает ли при попадании в битву
 
+    GameOrderParameters() {}
     GameOrderParameters(GameRules *rules, UnitType owner, OrderType type);
 
     // тех. функция для удобства
@@ -82,6 +83,7 @@ public:
         actions[actionWithParameter].unit = unit;
     }
 
+    GameOrder() : GameOrderParameters() { actionWithParameter = UNDEFINED; }
     GameOrder(GameRules * rules, UnitType owner, OrderType type) :
         GameOrderParameters(rules, owner, type)
     {
@@ -101,7 +103,7 @@ public:
     }
 
     // куда перемещается юнит после исполнения
-    Coord moves(Coord current)
+    Coord moves(Coord current) const
     {
         foreach (GameAction action, actions)
         {

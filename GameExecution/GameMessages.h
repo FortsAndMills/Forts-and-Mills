@@ -81,7 +81,7 @@ public:
 
     explicit GameMessage(){}
     virtual ~GameMessage(){}
-    void ChooseHex(QList <Coord> variants)
+    virtual void ChooseHex(QList <Coord> variants)
     {
         type = CHOOSE_HEX;
         this->variants = variants;
@@ -116,7 +116,7 @@ public:
         this->resources = resources;
         this->burn = burn;
     }
-    void Plan()
+    virtual void Plan()
     {
         type = PLAN;
     }

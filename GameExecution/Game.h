@@ -7,8 +7,9 @@
 class Game
 {
 public:
-    explicit Game(GameRules * rules, Random * rand);
-    virtual ~Game() {}
+    explicit Game(GameRules *rules, Random * rand);
+    Game(const Game *game);
+    virtual ~Game();
 
     // -------------------------------------------------------------------------------
     // функции внешнего вызова
@@ -67,9 +68,7 @@ protected:
     // -------------------------------------------------------------------------------
     // бой
     // GameFight.cpp
-    QMap<GameUnit *, FightStatus> fs;
-
-    Strike getStrike(QSet <GameUnit *> fighters);
+    Strike getStrike(QSet <GameUnit *> fighters, const QMap<GameUnit *, FightStatus> &fs);
     void CountStrike(QSet <GameUnit *> units, Strike strike);
 
     void UnitsFight(QSet<GameUnit *> fighters);
@@ -159,6 +158,11 @@ public:
     // обязан ли приказ быть последним (проверка пересечения речки)
     bool must_be_last(GameUnit * unit, DayTime time);
 
+    // проверки совершения какого-либо действия в текущем плане
+    bool checkIfCaptured(Coord c, PlayerColor color);
+    bool checkIfBlocked(Coord c, PlayerColor color);
+    bool checkIfExecuted(Coord c, OrderType order, PlayerColor color);
+
     // кто-то из игроков сдался
     void playerGiveUp(int index);
 
@@ -171,16 +175,17 @@ protected:
     QSet<GameUnit *> find(SEARCH_TYPE ST, GameUnit * for_whom,
                     Coord staying = ANY, Coord going_to = ANY);
 
-    QSet <GameHex *> Connected(PlayerColor color, bool consider_occupied = false, const QSet<Coord> &additional_captures = QSet<Coord>());
     bool isOccupied(GameHex * hex);
 
     bool isAgitatedByEnemy(Coord which, PlayerColor me);
-    int resourcesLimit(PlayerColor color, bool consider_occupied = true);
 
     PlayerColor isGameFinished();
 
 public:
     GameUnit * getUnitById(qint16 id);
+    int resourcesLimit(PlayerColor color, bool consider_occupied = true);
+    QSet <GameHex *> Connected(PlayerColor color, bool consider_occupied = false, const QSet<Coord> &additional_captures = QSet<Coord>());
+
 
     // проверка на сдавшихся игроков
     QString lastPlayerInGame();

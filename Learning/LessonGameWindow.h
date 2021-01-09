@@ -57,7 +57,8 @@ public:
 
     void ShowLesson(Lesson L)
     {
-        dialog->set(mainPlayerColor, L.text, false, false, L.with_ok_button || lesson_shown < lessons.size() - 1, lesson_shown != 0, L.pictureName);
+        // здесь раньше был mainPlayerColor
+        dialog->set("Neutral", L.text, false, false, L.with_ok_button || lesson_shown < lessons.size() - 1, lesson_shown != 0, L.pictureName);
         resizeDialog(width(), height());
     }
     void ShowLesson(QString text, bool with_ok_button = false, QString pictureName = "", bool addToHistory = false)
@@ -159,27 +160,20 @@ public:
             }
             else if (Le->ltype == ENABLE_NEXT)
             {
-                next->enable(true);
+                next->enable(Le->enable);
                 return WaitingType();
             }
-            else if (Le->ltype == GET_READY_TO_PLAN)
+            else if (Le->ltype == DISAPPEAR_NEXT)
             {
-                foreach (GamePlayer * player, game->players)
-                {
-                    foreach (GameUnit * unit, player->units)
-                    {
-                        foreach (GameOrder * order, unit->plan)
-                        {
-                            delete order;
-                        }
-                        unit->plan.clear();
-                    }
-                }
-
+                next->AnimationStart(OPACITY, 0);
+                return WaitingType();
+            }
+            else if (Le->ltype == LESSON_PLAN)
+            {
                 getReadyToPlanning();
                 return WaitingType();
             }
-            else if (Le->ltype == GET_READY_TO_CHOOSE_HEX)
+            else if (Le->ltype == LESSON_CHOOSE_HEX)
             {
                 getReadyToChooseHex(Le->variants);
                 return WaitingType();
@@ -229,6 +223,10 @@ public:
                 HexChoiceReactions[Le->hex] = Le->reaction;
                 return WaitingType();
             }
+            else if (Le->ltype == PAUSE)
+            {
+                return WaitingType(WAIT_FOR_INTERACTION);
+            }
             else if (Le->ltype == EXIT)
             {
                 if (Le->success)
@@ -270,6 +268,7 @@ public:
         if (allowHomes)
             GameWindow::hexEntered(c);
     }
+    void giveup() override {}
 
     QMap<GameUnit *, Reaction> UnitClickReactions;
     Reaction DefaultUnitClickReaction;

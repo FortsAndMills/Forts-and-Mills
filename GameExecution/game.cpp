@@ -2,9 +2,9 @@
 
 Game::Game(GameRules *rules, Random *rand)
 {
+    rules->formPlayersList(rand);
     this->rules = rules;
     this->rand = rand;
-    rules->formPlayersList(rand);
 
     for (int i = 0; i < rules->players.size(); ++i)
         players[rules->players[i]] = new GamePlayer(rules->players[i]);
@@ -13,6 +13,37 @@ Game::Game(GameRules *rules, Random *rand)
         chosenUnitType[color] = rules->unitsInGame[0];
 
     GenerateField();
+}
+Game::Game(const Game *other) : Game(*other)
+{
+    this->africa.clear();
+    this->events.clear();
+
+    // копируем игроков и их юнитов
+    this->players.clear();
+    foreach (GamePlayer * player, other->players)
+        this->players[player->color] = new GamePlayer(*player);
+
+    // копируем поле
+    this->hexes.clear();
+    foreach (QList<GameHex *> hex_row, other->hexes)
+    {
+        this->hexes << QList<GameHex*>();
+        foreach (GameHex * hex, hex_row)
+            this->hexes.last() << new GameHex(*hex);
+    }
+}
+Game::~Game()
+{
+    foreach (GameUnit * unit, africa)
+        delete unit;
+    foreach (GameMessage * message, events)
+        delete message;
+    foreach (GamePlayer * player, players)
+        delete player;
+    foreach (QList<GameHex *> hex_row, hexes)
+        foreach (GameHex * hex, hex_row)
+            delete hex;
 }
 
 void Game::StartGame()

@@ -11,7 +11,7 @@ int fb_priority(FightBrid fb)
     return 1;
 }
 
-Strike Game::getStrike(QSet <GameUnit*> fighters)
+Strike Game::getStrike(QSet <GameUnit*> fighters, const QMap<GameUnit *, FightStatus>& fs)
 {
     // определяем, есть ли игрок, который пока сражается укреплениями
     PlayerColor defender = "none";
@@ -229,7 +229,7 @@ void Game::CountStrike(QSet<GameUnit *> fighters, Strike strike)
 void Game::UnitsFight(QSet <GameUnit *> fighters)
 {
     // заполняем FightStatus: защищается ли юнит, обороняется или он стреляет.
-    fs.clear();
+    QMap<GameUnit *, FightStatus> fs;
     foreach (GameUnit * u, fighters)
     {
         if (u->distantAttack > 0)
@@ -245,7 +245,7 @@ void Game::UnitsFight(QSet <GameUnit *> fighters)
 
     do
     {
-        Strike strike = getStrike(fighters);
+        Strike strike = getStrike(fighters, fs);
 
         // неявное завершение боя (напр. при дистанционной атаке)
         if (strike.fight_finished)

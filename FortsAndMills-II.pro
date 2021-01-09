@@ -18,6 +18,7 @@ RC_FILE = icon.rc
 
 
 SOURCES += main.cpp \
+    AI/plan.cpp \
     GameExecution/gameGeometry.cpp \
     GameExecution/gameLog.cpp \
     GameExecution/gameUtils.cpp \
@@ -55,6 +56,7 @@ SOURCES += main.cpp \
     Technical/Help.cpp
 
 HEADERS  += mainwindow.h \
+    AI/AI.h \
     GameExecution/GameLog.h \
     GameExecution/GameStructures.h \
     Interface/StartChoiceProgress.h \

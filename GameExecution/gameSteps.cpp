@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "AI/AI.h"
 
 // обработка выбора стартовых клеток в начале игры
 void Game::ProcessChosenHexes()
@@ -283,5 +284,15 @@ void Game::StartPlanning()
     }
 
     ready.clear();
+
+    foreach (GamePlayer * player, players)
+    {
+        if (player->playerType == GamePlayer::AI)
+        {
+            AI(this).plan(player->color);
+            ready[player->color] = true;
+        }
+    }
+
     AddEvent()->Plan();
 }

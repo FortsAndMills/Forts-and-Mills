@@ -128,7 +128,7 @@ protected slots:
     virtual void homeButtonClicked();
 
 public:
-    void giveup();
+    virtual void giveup();
 
 signals:
     void writeToOpponent(QByteArray);
