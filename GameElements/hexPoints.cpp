@@ -80,19 +80,24 @@ void Hex::recountPoints()
                 }
             }
 
-            // и раздвигаем их все!
-            if (num <= ShiftMap.size())  // защита на случай немеренного количества объектов
+            // и раздвигаем их все!            
+            int index = 0;
+            QPointF base = points[i];
+            for (QSet<int>::iterator jt = it; jt != ids.end(); ++jt)
             {
-                int index = 0;
-                QPointF base = points[i];
-                for (QSet<int>::iterator jt = it; jt != ids.end(); ++jt)
+                int j = *jt;
+                if (points[j] == base)
                 {
-                    int j = *jt;
-                    if (points[j] == base)
+                    if (num <= ShiftMap.size())  // защита на случай немеренного количества объектов
                     {
                         points[j] += this->ShiftMap[num][index];
-                        ++index;
                     }
+                    else
+                    {
+                        points[j] += QPoint(width() / 4.0 * ((qrand() % 2000) / 1000.0 - 1),
+                                            height() / 4.0 * ((qrand() % 2000) / 1000.0 - 1));
+                    }
+                    ++index;
                 }
             }
         }

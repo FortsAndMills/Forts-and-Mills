@@ -250,6 +250,7 @@ void Hex::resizeChildren(qreal W, qreal H)
     ShiftMap[2] << QPoint(W / 6, 0) << QPoint(-W / 6, 0);
     ShiftMap[3] << QPoint(0, -H / 6) << QPoint(W / 6 / 1.7, H / 6 / 1.7) << QPoint(-W / 6 / 1.7, H / 6 / 1.7);
     ShiftMap[4] << QPoint(W / 6 / 1.7, -H / 6 / 1.7) << QPoint(W / 6 / 1.7, H / 6 / 1.7) << QPoint(-W / 6 / 1.7, H / 6 / 1.7) << QPoint(-W / 6 / 1.7, -H / 6 / 1.7);
+    ShiftMap[5] << QPoint(W / 6 / 1.7, -H / 6 / 1.7) << QPoint(W / 6 / 1.7, H / 6 / 1.7) << QPoint(-W / 6 / 1.7, H / 6 / 1.7) << QPoint(-W / 6 / 1.7, -H / 6 / 1.7) << QPoint(0, 0);
 
     recountPoints();
     resizeOrders();
