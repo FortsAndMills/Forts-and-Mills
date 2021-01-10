@@ -14,6 +14,7 @@ class GameLabel : public StateObject
 
     MergingObject * light;
 
+    TimerElement * timer;
     QVector <PlayersElement *> players;
     FieldTune * field;
     UnitsTune * units;
@@ -35,6 +36,7 @@ public:
         addPicture("on", "ChosenGameLabelPanel");
         light = NULL;
 
+        timer = new TimerElement(this, -1, this->rules->timer, true, false);
         for (int i = 0; i < rules->numOfPlayers; ++i)
             players.push_back(new PlayersElement(this, i, i < pl, false));
         field = new FieldTune(this, rules, false);
@@ -50,6 +52,8 @@ public:
     {
         if (light != NULL)
             light->Delete();
+
+        timer->Delete();
         foreach (PlayersElement * pe, players)
             pe->Delete();
         field->Delete();
@@ -66,9 +70,16 @@ public:
         if (light != NULL)
             light->setGeometry(0, 0, W, H);
 
+        // располагаем таймер
         qreal X = constants->labelsMarginX / 2 * W;
-        qreal length = constants->unitsLabelX * W - 2 * X;
         qreal size = qMin(H * (1 - 2 * constants->playersTuneMargin),
+                          W * (constants->playersLabelX - constants->labelsMarginX / 2));
+        timer->setGeometry(X, (H - size) / 2, size, size);
+
+        // располагаем глобусы игроков
+        X = constants->playersLabelX * W + constants->labelsMarginX / 2 * W;
+        qreal length = constants->unitsLabelX * W - (constants->labelsMarginX / 2 * W + X);
+        size = qMin(H * (1 - 2 * constants->playersTuneMargin),
                             (length + players.size() * constants->playersTuneInsideMargin) / (players.size() * (1 + constants->playersTuneInsideMargin)));
         qreal real_length = players.size() * size + (players.size() - 1) * size * constants->playersTuneInsideMargin;
 

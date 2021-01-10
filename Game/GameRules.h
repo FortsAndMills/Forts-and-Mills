@@ -11,6 +11,7 @@ public:
     // список всех потенциально возможных цветов игроков, приказов, юнитов
     // для проверок на корректность и переборов вариантов в меню
     static QList <QString> AllPlayers;
+    static QList <QString> AllTimerTypes;
     static QList <QString> AllOrders;
     static QList <QString> AllUnits;
 
@@ -22,6 +23,19 @@ public:
     int numOfPlayers;
     QList <PlayerColor> players;
     void formPlayersList(Random * rand);
+
+    // таймер
+    TimerType timer;
+    static QMap <TimerType, int> timer_per_plan;
+    static QMap <TimerType, int> timer_per_choice;
+    static QMap <TimerType, int> timer_per_choice_after_opponent;
+    static QMap <TimerType, int> timer_per_plan_after_opponent;
+    qint8 timerTypeIndex(TimerType type) const
+    {
+        qint8 i = 0;
+        while (AllTimerTypes[i] != type) { ++i; }
+        return i;
+    }
 
     // включёные в игру приказы
     QList <OrderType> ordersInGame;
@@ -55,6 +69,9 @@ public:
     int dayTimes;
     bool changingDayTimes;
 
+    // количество оставшихся стартовых выборов
+    int start_choices_left;
+
     // диапазон для генерации каждого из типов клеток и приказов
     QMap <HexType, Range> numOfHexTypes;
     QMap <OrderType, Range> numOfResourcesOnField;
@@ -80,10 +97,6 @@ public:
     int mill_gp_min, mill_gp_max;
     int river_gp_min, river_gp_max;
     double K_change;               // коэф. увеличения доли ресурсов на карте
-
-    int timer_per_round;  // флаг: если да, то время даётся на раунд; иначе после готовности противника
-    int timer_per_choice, timer_per_plan;
-    int timer_per_choice_after_opponent, timer_per_plan_after_opponent;
 
     explicit GameRules();
     explicit GameRules(QList <qint32> hash);

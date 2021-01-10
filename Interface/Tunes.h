@@ -117,6 +117,114 @@ private slots:
     }
 };
 
+class TimerElement : public StateObject
+{
+    Q_OBJECT
+
+public:
+    bool isOn = true;
+    bool active;
+    TimerType type;
+    int i;
+
+    TimerElement(GraphicObject * parent, int i, TimerType type, bool isOn, bool active) :
+        StateObject(parent, "on", "timer_" + type, (active * CLICKABLE) | RIGHT_CLICKABLE, "", "SimpleLayer")
+    {
+        this->type = type;
+        this->i = i;
+        this->active = active;
+        addPicture("off", "timer_" + type + "_off");
+        turnOn(isOn);
+    }
+
+    void leftClick() { emit whenClicked(i); }
+    void rightClick() { emit help->HelpAsked(active ? "timer_" + type : "timer_" + type); }
+    void turnOn(bool on)
+    {
+        isOn = on;
+        setPictureState(isOn ? "on" : "off");
+    }
+
+signals:
+    void whenClicked(int i);
+};
+class TimerTune : public GraphicObject
+{
+    Q_OBJECT
+
+    Object * Label;
+    int turned_i = 0;
+
+public:
+    QList < TimerElement * > options;
+
+    TimerTune(GraphicObject * parent) : GraphicObject(parent, RIGHT_CLICKABLE)
+    {
+        Label = new GraphicObject(this, 0, "TimerLabel");
+        for (int i = 0; i < settings->rules->AllTimerTypes.size(); ++i)
+        {
+            bool on = settings->rules->timer == settings->rules->AllTimerTypes[i];
+            options.push_back(new TimerElement(this, i, settings->rules->AllTimerTypes[i], on, true));
+            connect(options[i], SIGNAL(whenClicked(int)), SLOT(whenClicked(int)));
+
+            if (on)
+                this->turned_i = i;
+        }
+    }
+    virtual void Delete()
+    {
+        Label->Delete();
+        foreach (TimerElement * te, options)
+            te->Delete();
+
+        GraphicObject::Delete();
+    }
+
+    void resizeChildren(qreal W, qreal H)
+    {
+        Label->setGeometry(0, 0, W, H / 2);
+
+        int n = options.size();
+        qreal size = H / 2 * (1 - 2 * constants->timerTuneMargin);
+        qreal X = (W - size * n - size *(n - 1) * constants->timerTuneInsideMargin) / 2;
+        qreal Y = H / 2 * (1 + constants->timerTuneMargin);
+        for (int i = 0; i < n; ++i)
+        {
+            options[i]->setGeometry(X, Y, size, size);
+            X += size * (1 + constants->timerTuneInsideMargin);
+        }
+    }
+
+    void rightClick() { emit help->HelpAsked("TimerTune"); }
+
+    QRectF boundingRect() const
+    {
+        return QRectF(0, 0, width(), height());
+    }
+    QPainterPath shape() const
+    {
+        QPainterPath qp;
+        qp.addRect(boundingRect());
+        return qp;
+    }
+    bool contains(const QPointF &point) const
+    {
+        return boundingRect().contains(point);
+    }
+
+private slots:
+    void whenClicked(int i)
+    {
+        if (settings->rules->timer != options[i]->type)
+        {
+            options[turned_i]->turnOn(false);
+            turned_i = i;
+            options[turned_i]->turnOn(true);
+            settings->rules->timer = options[i]->type;
+        }
+    }
+};
+
 class FieldTune : public GraphicObject
 {
     Q_OBJECT

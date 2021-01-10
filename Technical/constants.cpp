@@ -122,6 +122,13 @@ qreal Constants::playersTuneHeight = 0.2;
 qreal Constants::playersTuneMargin = 0.1;
 qreal Constants::playersTuneInsideMargin = 0.2;
 
+qreal Constants::timerTuneX = 0.7;
+qreal Constants::timerTuneY = 0.76;
+qreal Constants::timerTuneWidth = 0.23;
+qreal Constants::timerTuneHeight = 0.2;
+qreal Constants::timerTuneMargin = 0.1;
+qreal Constants::timerTuneInsideMargin = 0.2;
+
 qreal Constants::textXShift = 0.3;
 
 qreal Constants::fieldTuneX = 0.65;
@@ -150,10 +157,11 @@ qreal Constants::dayTimesTuneWidth = 0.4;
 qreal Constants::dayTimesTuneHeight = 0.1;
 
 qreal Constants::labelsMarginX = 0.02;
-qreal Constants::fieldLabelX = 0.38;
-qreal Constants::unitsLabelX = 0.18;
-qreal Constants::ordersLabelX = 0.5;
-qreal Constants::dayTimesLabelX = 0.75;
+qreal Constants::playersLabelX = 0.06;
+qreal Constants::unitsLabelX = 0.24;
+qreal Constants::fieldLabelX = 0.4;
+qreal Constants::ordersLabelX = 0.52;
+qreal Constants::dayTimesLabelX = 0.78;
 qreal Constants::joinButtonX = 0.9;
 qreal Constants::joinButtonY = 0.25;
 

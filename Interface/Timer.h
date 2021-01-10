@@ -78,15 +78,16 @@ public:
     }
     void activate(Game * game)
     {
-        if (game->rules->timer_per_round == 0 && hidden)
+        int seconds = 0;
+        if (hidden && game->rules->start_choices_left < game->rules->start_choices)
         {
-            int seconds;
             if (game->state == Game::GS_CHOOSE_HEX)
-                seconds = game->rules->timer_per_choice_after_opponent;
+                seconds = game->rules->timer_per_choice_after_opponent[game->rules->timer];
             else
-                seconds = game->rules->timer_per_plan_after_opponent;
+                seconds = game->rules->timer_per_plan_after_opponent[game->rules->timer];
 
-            launch(seconds);
+            if (seconds != 0)
+                launch(seconds);
         }
     }
     void launch(int seconds)

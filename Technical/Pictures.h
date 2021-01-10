@@ -67,7 +67,7 @@ public:
         if (pictures.contains(name))
             return *pictures[name];
 
-        debug << "ERROR: no picture with name \"" + name + "\"!!!";
+        debug << "ERROR: no picture with name \"" + name + "\"!!!" << Qt::endl;
         return QPixmap();
     }
 };

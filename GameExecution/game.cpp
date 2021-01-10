@@ -65,18 +65,12 @@ int Game::NextStage()
                 StartPlanning();
 
                 // запускаем таймер
-                if (rules->timer_per_round)
-                {
-                    return rules->timer_per_plan;
-                }
+                return rules->timer_per_plan[rules->timer];
             }
             else
             {
                 // запускаем таймер
-                if (rules->timer_per_round)
-                {
-                    return rules->timer_per_choice;
-                }
+                return rules->timer_per_choice[rules->timer];
             }
         }
         else
@@ -90,20 +84,18 @@ int Game::NextStage()
             defenceFill();
             agitationEnds();
 
-            if (isGameFinished() == "Neutral")
+            PlayerColor winner = isGameFinished();
+            if (winner == "Neutral")
             {
                 addDayTime();
                 StartPlanning();
 
                 // запускаем таймер
-                if (rules->timer_per_round)
-                {
-                    return rules->timer_per_plan;
-                }
+                return rules->timer_per_plan[rules->timer];
             }
             else
             {
-                win(isGameFinished());
+                win(winner);
             }
         }
 

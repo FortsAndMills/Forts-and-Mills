@@ -62,6 +62,7 @@ class Client;
 #define DefaultOrder "Wait"
 #define DeleteLastOrder "DeleteLastOrder"
 #define PlayerColor QString
+#define TimerType QString
 #define Resource QString
 #define DayTime int
 enum WAY {UP, RIGHT_UP, RIGHT_DOWN, DOWN, LEFT_DOWN, LEFT_UP, NO_WAY};

@@ -129,6 +129,13 @@ public:
     static qreal playersTuneMargin;
     static qreal playersTuneInsideMargin;
 
+    static qreal timerTuneX;
+    static qreal timerTuneY;
+    static qreal timerTuneWidth;
+    static qreal timerTuneHeight;
+    static qreal timerTuneMargin;
+    static qreal timerTuneInsideMargin;
+
     static qreal textXShift;
 
     static qreal fieldTuneX;
@@ -157,6 +164,7 @@ public:
     static qreal borderHeight;
 
     static qreal labelsMarginX;
+    static qreal playersLabelX;
     static qreal fieldLabelX;
     static qreal unitsLabelX;
     static qreal ordersLabelX;

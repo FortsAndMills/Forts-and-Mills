@@ -4,6 +4,7 @@
 // обработка выбора стартовых клеток в начале игры
 void Game::ProcessChosenHexes()
 {
+    --rules->start_choices_left;
     AddEvent()->StartChoiceMade();
 
     QSet <GameHex *> ch;
@@ -247,8 +248,7 @@ void Game::win(PlayerColor winner)
 // возвращает false если выбор закончился
 bool Game::ChooseOneOfTheStartHexes()
 {
-    if (rules->start_choices <= 0) return false;
-    --rules->start_choices;
+    if (rules->start_choices_left <= 0) return false;
 
     // составляем список вариантов
     QList <Coord> variants;

@@ -2,8 +2,26 @@
 #include "GameUnit.h"
 
 QList <QString> GameRules::AllPlayers = {"Blue", "Red", "Green", "Yellow"};
+QList <QString> GameRules::AllTimerTypes = {"1", "2", "3", "sp", "no"};
 QList <QString> GameRules::AllOrders = {"Capture", "Recruit", "Liberate", "Agite", "Attack", "Go", "Retreat", "Siege", "Fire", "Pursue", "Cure", "Fortify"};
 QList <QString> GameRules::AllUnits = {"Scrat", "Pig", "Hippo", "Karkun", "Mumusha", "Rabbit"};
+
+QMap <TimerType, int> GameRules::timer_per_plan = {
+    {"1", 120},
+    {"2", 240},
+    {"3", 360}
+};
+QMap <TimerType, int> GameRules::timer_per_choice = {
+    {"1", 30},
+    {"2", 60},
+    {"3", 90}
+};
+QMap <TimerType, int> GameRules::timer_per_plan_after_opponent = {
+    {"sp", 120}
+};
+QMap <TimerType, int> GameRules::timer_per_choice_after_opponent = {
+    {"sp", 30}
+};
 
 // вспомогательная функция: упорядочивает
 // элементы a в зависимости от их порядка в example
@@ -30,6 +48,7 @@ GameRules::GameRules()
     fieldH = 6;
 
     numOfPlayers = 2;
+    timer = "3";
 
     ordersInGame << "Capture" << "Recruit"  << "Liberate"
                  << "Attack" << "Go" << "Cure" << "Fortify";
@@ -58,13 +77,6 @@ void GameRules::setTestOptions()
     river_gp_max = 4;
     K_change = 1;
 
-    // таймеры
-    timer_per_round = 1;
-    timer_per_choice = 90;
-    timer_per_plan = 360;
-    timer_per_choice_after_opponent = 30;
-    timer_per_plan_after_opponent = 120;
-
     QFile * hostFile = new QFile("Experiments_options.txt");
     if (hostFile->open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -78,12 +90,7 @@ void GameRules::setTestOptions()
                       >> s >> fort_gp_min >> fort_gp_max
                       >> s >> mill_gp_min >> mill_gp_max
                       >> s >> river_gp_min >> river_gp_max
-                      >> s >> K_change
-                      >> s >> timer_per_round
-                      >> s >> timer_per_choice
-                      >> s >> timer_per_plan
-                      >> s >> timer_per_choice_after_opponent
-                      >> s >> timer_per_plan_after_opponent;
+                      >> s >> K_change;
 
         if(tstream.status() != QTextStream::Ok)
         {
@@ -104,13 +111,7 @@ void GameRules::setTestOptions()
                       << "FortsGenerationLimits: " << fort_gp_min << " " << fort_gp_max << Qt::endl
                       << "MillsGenerationLimits: " << mill_gp_min << " " << mill_gp_max << Qt::endl
                       << "RiversGenerationLimits: " << river_gp_min << " " << river_gp_max << Qt::endl
-                      << "ResourcesAmountCoeff: " << K_change << Qt::endl
-                      << Qt::endl
-                      << "timer_per_round: " << timer_per_round << Qt::endl
-                      << "timer_per_choice: " << timer_per_choice << Qt::endl
-                      << "timer_per_plan: " << timer_per_plan << Qt::endl
-                      << "timer_per_choice_after_opponent: " << timer_per_choice_after_opponent << Qt::endl
-                      << "timer_per_plan_after_opponent: " << timer_per_plan_after_opponent << Qt::endl;
+                      << "ResourcesAmountCoeff: " << K_change << Qt::endl;
         hostFile->close();
     }
 }
@@ -125,6 +126,7 @@ void GameRules::recountGenerationParameters()
     doesEnteringEnemyHexLiberates = !ordersInGame.contains("Liberate");
     if (changingDayTimes)
         dayTimes = 1;
+    start_choices_left = start_choices;
 
     qreal K = (fieldW * fieldH) / 60.0;  // во сколько раз увеличить кол. всех ресурсов
 
@@ -174,22 +176,22 @@ void GameRules::formPlayersList(Random *rand)
 QList<qint32> GameRules::get()
 {
     QList <qint32> ans;
-    ans << numOfPlayers << fieldW << fieldH;
+    ans << numOfPlayers << qint32(timerTypeIndex(timer)) << fieldW << fieldH;
 
     ans << 0;
     foreach (QString u, AllUnits)
     {
-        ans[3] <<= 1;
+        ans[4] <<= 1;
         if (unitsInGame.contains(u))
-            ans[3] |= 1;
+            ans[4] |= 1;
     }
 
     ans << 0;
     foreach (QString r, AllOrders)
     {
-        ans[4] <<= 1;
+        ans[5] <<= 1;
         if (ordersInGame.contains(r))
-            ans[4] |= 1;
+            ans[5] |= 1;
     }
 
     ans << (changingDayTimes ? 179 : dayTimes);
@@ -199,25 +201,26 @@ QList<qint32> GameRules::get()
 GameRules::GameRules(QList<qint32> hash)
 {
     numOfPlayers = hash[0];
-    fieldW = hash[1];
-    fieldH = hash[2];
+    timer = AllTimerTypes[hash[1]];
+    fieldW = hash[2];
+    fieldH = hash[3];
 
     for (int i = AllUnits.size() - 1; i >= 0; --i)
     {
-        if (hash[3] % 2)
+        if (hash[4] % 2)
             unitsInGame.push_back(AllUnits[i]);
-        hash[3] >>= 1;
+        hash[4] >>= 1;
     }
 
     for (int i = AllOrders.size() - 1; i >= 0; --i)
     {
-        if (hash[4] % 2)
+        if (hash[5] % 2)
             ordersInGame.push_back(AllOrders[i]);
-        hash[4] >>= 1;
+        hash[5] >>= 1;
     }
 
-    changingDayTimes = hash[5] == 179;
-    dayTimes = hash[5] == 179 ? 1 : hash[5];
+    changingDayTimes = hash[6] == 179;
+    dayTimes = hash[6] == 179 ? 1 : hash[6];
 
     setTestOptions();
     recountGenerationParameters();
@@ -268,20 +271,24 @@ QTextStream &operator >>(QTextStream &stream, GameRules * r)
 QDataStream &operator << (QDataStream &stream, const GameRules *r)
 {
     stream << r->fieldH << r->fieldW
-                << r->numOfPlayers
-                << r->ordersInGame
-                << r->unitsInGame
-                << r->dayTimes << r->changingDayTimes;
+           << r->timerTypeIndex(r->timer)
+            << r->numOfPlayers
+            << r->ordersInGame
+            << r->unitsInGame
+            << r->dayTimes << r->changingDayTimes;
     return stream;
 }
 QDataStream &operator >>(QDataStream &stream, GameRules * r)
 {
+    qint8 timer_index;
     stream >> r->fieldH >> r->fieldW
-                >> r->numOfPlayers
-                >> r->ordersInGame
-                >> r->unitsInGame
-                >> r->dayTimes >> r->changingDayTimes;
+            >> timer_index
+            >> r->numOfPlayers
+            >> r->ordersInGame
+            >> r->unitsInGame
+            >> r->dayTimes >> r->changingDayTimes;
 
+    r->timer = r->AllTimerTypes[timer_index];
     r->recountGenerationParameters();
     return stream;
 }

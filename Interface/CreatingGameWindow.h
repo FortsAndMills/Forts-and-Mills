@@ -16,6 +16,7 @@ class CreatingGameWindow : public GraphicObject
 
     PlayersTune * players;
     FieldTune * field;
+    TimerTune * timers;
     UnitsTune * units;
     Object * border;
     OrdersTune * orders;
@@ -33,6 +34,8 @@ public:
         players = new PlayersTune(this);
 
         field = new FieldTune(this);
+
+        timers = new TimerTune(this);
 
         units = new UnitsTune(this);
         border = new Object(this, "Border");
@@ -79,6 +82,10 @@ public:
                                              constants->fieldTuneY * H,
                                              constants->fieldTuneWidth * W,
                                              constants->fieldTuneHeight * H);
+        timers->setGeometry(constants->timerTuneX * W,
+                                             constants->timerTuneY * H,
+                                             constants->timerTuneWidth * W,
+                                             constants->timerTuneHeight * H);
         units->setGeometry(0, constants->unitsTuneY * H, W, constants->unitsTuneHeight * H);
         border->setGeometry(W * (1 - constants->borderWidth) / 2,
                                             H * constants->borderY,
@@ -154,7 +161,7 @@ private slots:
             return false;
 
         if (!on)
-            if (type == "Capture" || type == "Attack" || type == "Go")
+            if (type == "Capture" || type == "Attack" || type == "Go" || type == "Liberate" || type == "Recruit")
                 return true;
 
         orders->orders[i]->turnOn(on);

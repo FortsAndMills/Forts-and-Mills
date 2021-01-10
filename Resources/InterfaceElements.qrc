@@ -14,5 +14,16 @@
         <file>Content/InterfaceElements/startChoiceBarYellow.png</file>
         <file>Content/InterfaceElements/startChoiceProgressBase.png</file>
         <file>Content/InterfaceElements/startChoiceProgressFrame.png</file>
+        <file>Content/InterfaceElements/timer_1.png</file>
+        <file>Content/InterfaceElements/timer_2.png</file>
+        <file>Content/InterfaceElements/timer_3.png</file>
+        <file>Content/InterfaceElements/timer_sp.png</file>
+        <file>Content/InterfaceElements/TimerLabel.png</file>
+        <file>Content/InterfaceElements/timer_no.png</file>
+        <file>Content/InterfaceElements/timer_1_off.png</file>
+        <file>Content/InterfaceElements/timer_2_off.png</file>
+        <file>Content/InterfaceElements/timer_3_off.png</file>
+        <file>Content/InterfaceElements/timer_no_off.png</file>
+        <file>Content/InterfaceElements/timer_sp_off.png</file>
     </qresource>
 </RCC>
