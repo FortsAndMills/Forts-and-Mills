@@ -174,6 +174,8 @@ protected:
 
     void deplanOrder(GameUnit *unit, int time);  // убрать запланированный план
 
+    virtual void riverCrossedInPlan() {};  // нужно для обучения
+
     // --------------------------------------------------------------------------------
     // Отдельные игровые события
     // Events.cpp

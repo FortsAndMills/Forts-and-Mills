@@ -208,6 +208,11 @@ public:
                 HexChoiceReactions.clear();
                 return WaitingType();
             }
+            else if (Le->ltype == REACTION_ON_RIVER_CROSS_IN_PLAN)
+            {
+                RiverCrossReaction = Le->reaction;
+                return WaitingType();
+            }
             else if (Le->ltype == REACTION_ON_UNIT_CLICK)
             {
                 UnitClickReactions[Le->unit] = Le->reaction;
@@ -269,6 +274,13 @@ public:
             GameWindow::hexEntered(c);
     }
     void giveup() override {}
+
+    Reaction RiverCrossReaction;
+    void riverCrossedInPlan()
+    {
+        if (RiverCrossReaction.text != "")
+            ShowLesson(RiverCrossReaction.text, RiverCrossReaction.picture);
+    }
 
     QMap<GameUnit *, Reaction> UnitClickReactions;
     Reaction DefaultUnitClickReaction;

@@ -272,7 +272,13 @@ void GameWindow::finishedChoosingOrderParameter()
     else  // если такого нет, то отображаем новоявленный приказ и переходим к след. времени
     {
         showPlannedOrder(selectedUnit->prototype);
-        if (!game->must_be_last(selectedUnit->prototype, dayTime) && setNextTime())  // если это было не последнее время, сразу же суём панельку
+
+        // првоерка пересечения реки
+        bool must_be_last = game->must_be_last(selectedUnit->prototype, dayTime);
+
+        if (must_be_last) riverCrossedInPlan(); // нужно для обучения
+
+        if (!must_be_last && setNextTime())  // если это было не последнее время, сразу же суём панельку
         {
             selectedUnit->showOrdersPanel(game->whatCanUse(selectedUnit->prototype));
         }

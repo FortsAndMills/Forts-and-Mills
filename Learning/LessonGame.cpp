@@ -385,11 +385,12 @@ void LessonGame::StartGame()
         AddEvent()->ShowMessageAndPicture("У каждого юнита есть свой дом - клетка, в которой он родился", "BlueUnitHome");
         AddEvent()->ShowMessageAndPicture("Чтобы узнать, где находится дом юнита, наведите на него мышкой.", "BlueUnitHome");
         AddEvent()->ShowMessageAndPicture("За всю игру в каждой клетке можно получить лишь одного юнита. Для этого нужно рекрутирование.", "Recruit");
-        AddEvent()->ShowMessageAndPicture("Клетка при этом должна быть захвачена и соединена вашими территориями с вашей мельницей", "Mill");
+        AddEvent()->ShowMessageAndPicture("Клетка при этом должна быть захвачена и соединена вашими территориями с вашей мельницей.", "Mill");
 
         AddEvent()->ShowGo();
         AddEvent()->DefaultUnitClickReaction(Reaction(DEFAULT));
         AddEvent()->ReactionOnUnitClick(unit2, Reaction(DEFAULT, "Рядом нет клеток, которые мы могли бы соединить со своей мельницей."));
+        AddEvent()->ReactionOnOrderChoice("Attack", Reaction(DEFAULT, "В горы тоже ходить нельзя.", "Mountain"));
         AddEvent()->ShowMessage("Давайте рекрутируем нового юнита. Для это нужно найти клетку, где мы можем провести рекрутирование!", false);
     }
     if (N == 3)
@@ -583,7 +584,7 @@ int LessonGame::NextStage()
 
         int i = 0;
         while (events[i]->type != TIME_STARTED) {++i;}
-        AddEvent(i)->ShowMessage("Сначала юниты одновременно выполнят свои первые приказы. В пошаговом режиме мы можем посмотреть, что же получилось. Щёлкайте на кнопку перехода к следующему событию!", false, true, true, QSet <GameUnit *>() << events[i]->unit, "BlueNext");
+        AddEvent(i)->ShowMessage("Сначала юниты одновременно выполнят свои первые приказы. Щёлкайте на кнопку перехода к следующему событию!", false, true, true, QSet <GameUnit *>() << events[i]->unit, "BlueNext");
 
         i = 0;
         while (events[i]->type != UNIT_LEAVES || events[i]->unit->color != rules->players[1]) {++i;}
@@ -660,6 +661,7 @@ int LessonGame::NextStage()
 
             AddEvent()->EnableGo();
             AddEvent()->DefaultUnitClickReaction(Reaction(DEFAULT));
+            AddEvent()->ReactionOnRiverCrossInPlan(Reaction(DEFAULT, "После пересечения реки юнит не может выполнять других приказов.", "River"));
             AddEvent()->ShowMessageAndPicture("Чтобы лишать противника клеток, понадобится приказ освобождения. Давайте получим его!", "Liberate", false);
             round = 1;
         }
@@ -796,12 +798,12 @@ int LessonGame::NextStage()
             AddEvent()->ShowMessage("Игроки выбрали одну и ту же клетку, поэтому она никому не достаётся и выкидывается из вариантов.", true, false, true);
 
             AddEvent()->DefaultHexChoiceReaction(Reaction(DEFAULT));
-            AddEvent()->ShowMessage("Выбор стартовых клеток повторяется 7 раз.", false, false, true);
+            AddEvent()->ShowMessage("Выбор стартовых клеток повторяется " + QString::number(rules->start_choices) + " раз.", false, false, true);
             round = 2;
         }
         else
         {
-            if (round <= 6)
+            if (round <= rules->start_choices - 1)
             {
                 int i = 0;
                 while (!hexes[vars[i].x][vars[i].y]->canBeChosenAsStartPoint) { ++i; }
@@ -816,7 +818,7 @@ int LessonGame::NextStage()
 
             Game::NextStage();
 
-            if (round < 6)
+            if (round < rules->start_choices - 1)
             {
                 if (round == 4 && players["Blue"]->resources["Capture"] == 0)
                 {
@@ -825,7 +827,7 @@ int LessonGame::NextStage()
                 AddEvent()->ShowMessage(final_message, false, false, true);
                 round++;
             }
-            else if (round == 6)
+            else if (round == rules->start_choices - 1)
             {
                 AddEvent()->DisableGo();
                 AddEvent()->ShowMessage("Старт закончился, и началась игра! Цель игры - уничтожить всех юнитов противника!", true, false, true);
@@ -863,4 +865,3 @@ int LessonGame::NextStage()
 
     return 0;
 }
-

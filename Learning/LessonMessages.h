@@ -43,6 +43,7 @@ enum LessonMessageType
     REACTION_ON_UNIT_CLICK,
     REACTION_ON_ORDER_CHOICE,
     REACTION_ON_HEX_CHOICE,
+    REACTION_ON_RIVER_CROSS_IN_PLAN,
     PAUSE,
     EXIT
 };
@@ -202,6 +203,12 @@ public:
         type = LESSON;
         ltype = REACTION_ON_HEX_CHOICE;
         this->hex = hex;
+        this->reaction = reaction;
+    }
+    void ReactionOnRiverCrossInPlan(Reaction reaction)
+    {
+        type = LESSON;
+        ltype = REACTION_ON_RIVER_CROSS_IN_PLAN;
         this->reaction = reaction;
     }
     void Pause()
