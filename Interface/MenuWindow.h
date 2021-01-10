@@ -191,7 +191,7 @@ public slots:
     void badVersion()
     {
         dialog->setVisible(true);
-        dialog->set("Neutral", "ВЕРСИЯ СЛИШКОМ СТАРАЯ!<br>Пожалуйста, скачайте новую версию по ссылке в readme-файле.");
+        dialog->set("Neutral", "Эта версия игры устарела!<br>Найдите новую версию.");
 
         isBlocked = true;
         debug << "Version is too old\n";
