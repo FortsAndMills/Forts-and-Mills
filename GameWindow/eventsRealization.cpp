@@ -422,7 +422,7 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
         return WaitingType(WAIT_FOR_INTERACTION, 0, false);
     }
 
-    qDebug() << e->type << " unproccesed!";
+    debug << e->type << " unproccesed!";
     return WaitingType();
 }
 

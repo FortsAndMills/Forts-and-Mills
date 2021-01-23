@@ -121,6 +121,7 @@ protected slots:
     void NextButtonClicked();
 
     void serverDisconnected();
+    void succesfullyReconnected();
     void opponentDisconnected(qint8 index);
     void opponentReconnected(qint8 index);
 

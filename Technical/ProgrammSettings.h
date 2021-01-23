@@ -75,7 +75,7 @@ public:
 
             if(tstream.status() != QTextStream::Ok)
             {
-                qDebug() << "ERROR: Ошибка чтения файла подключения\n";
+                debug << "ERROR: reading connection file gone wrong" << Qt::endl;
             }
             hostFile->close();
         }
@@ -88,7 +88,7 @@ public:
 
             if(stream.status() != QDataStream::Ok)
             {
-                qDebug() << "ERROR: Ошибка чтения файла программных настроек\n";
+                debug << "ERROR: reading programm settings gone wrong" << Qt::endl;
             }
             file->close();
         }
@@ -115,7 +115,6 @@ public:
             file->close();
             return;
         }
-        qDebug() << "NOTE: Не создал файл программных настроек, гад!";
     }
 };
 

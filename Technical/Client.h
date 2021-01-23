@@ -43,8 +43,8 @@ public:
     {
         this->setLocalPort(settings->PORT);
         connect(this, SIGNAL(readyRead()), SLOT(read()));
-        connect(this, SIGNAL(disconnected()), SLOT(reconnect()));
-        connect(this, SIGNAL(connected()), SLOT(sendLatestNews()));
+        connect(this, SIGNAL(disconnected()), SLOT(TryToReconnect()));
+        connect(this, SIGNAL(connected()), SLOT(reconnected()));
 
         ConnectionCheckTimer = new QTimer(this);
         ConnectionCheckTimer->start(constants->serverConnectionCheckTime);
@@ -57,16 +57,22 @@ private:
     qint16 mes_key = 0;
     QTimer * ConnectionCheckTimer;
 
+    void error_happened()
+    {
+        // TODO
+    }
+
 public slots:
     void TryToConnect()
     {
         this->connectToHost(settings->HOST_NAME, settings->PORT);
     }
-    void sendLatestNews()
+    void reconnected()
     {
         if (ID != -1)
         {
             sendReconnectionMessage();
+            emit SuccesfullyReconnected();
             
             QMap<int, QByteArray> mes = messages;
             messages.clear();
@@ -76,7 +82,7 @@ public slots:
             }
         }
     }
-    void reconnect()
+    void TryToReconnect()
     {
         if (blocked)
             return;
@@ -85,16 +91,17 @@ public slots:
         {
             this->abort();
             TryToConnect();
-            QTimer::singleShot(constants->serverReconnectionTime, this, SLOT(reconnect()));
+            QTimer::singleShot(constants->serverReconnectionTime, this, SLOT(TryToReconnect()));
         }
         else if (this->state() != SocketState::ConnectedState)
         {
-            QTimer::singleShot(constants->serverReconnectionTime, this, SLOT(reconnect()));
+            QTimer::singleShot(constants->serverReconnectionTime, this, SLOT(TryToReconnect()));
         }
     }
     void ConnectionCheck()
     {
-        // TODO: если сервер вырубился, тут происходит ошибка
+        if (this->state() != SocketState::ConnectedState)
+            return;
 
         QByteArray block;
         QDataStream out(&block, QIODevice::WriteOnly);
@@ -104,6 +111,7 @@ public slots:
         this->write(block);
     }
 
+    // чтение сообщений
     void read()
     {
         QDataStream in(this);
@@ -115,6 +123,13 @@ public slots:
 
             if (BlockSize == 0)
                 debug << "NET ERROR: BlockSize is 0!\n";
+
+            if (in.status() != QDataStream::Ok)
+            {
+                debug << "NET ERROR: can't read size of message!\n";
+                error_happened();
+                return;
+            }
          }
 
         if (this->bytesAvailable() < BlockSize)
@@ -124,13 +139,29 @@ public slots:
 
         qint8 MessageId;
         in >> MessageId;
+
+        if (in.status() != QDataStream::Ok)
+        {
+            debug << "NET ERROR: error while reading message ID\n";
+            error_happened();
+            return;
+        }
+
         ProcessMessage(in, MessageId, message_size);
+
+        if (in.status() != QDataStream::Ok)
+        {
+            debug << "NET ERROR: message with id" + QString::number(MessageId) + " came wrong!\n";
+            error_happened();
+            return;
+        }
 
         read();
     }
+private:
     void ProcessMessage(QDataStream &in, qint8 mes, qint64 message_size)
     {
-        switch (mes)  // <undone> проверка на корректность принимаемых данных и дефолтный кейс
+        switch (mes)
         {
         case BLOCKED:
         {
@@ -151,9 +182,6 @@ public slots:
             QList <qint8> players;
 
             in >> ids >> rules >> players;
-            if (in.status() != QDataStream::Ok)
-                debug << "ERROR: news from server read with error!\n";
-
             emit News(ids, rules, players);
 
             return;
@@ -162,14 +190,15 @@ public slots:
         {
             qint32 index;
             in >> index;
-            emit game_joined(index);
 
+            emit game_joined(index);
             return;
         }
         case GAME_LEFT:
         {
             qint32 index;
             in >> index;
+
             emit game_left(index);
             return;
         }
@@ -177,6 +206,7 @@ public slots:
         {
             qint32 index;
             in >> index;
+
             emit game_removed(index);
             return;
         }
@@ -186,8 +216,8 @@ public slots:
             qint8 mine;
             QList <qint32> rules;
             in >> id >> rules >> mine;
-            emit gameCreated(id, rules, mine);
 
+            emit gameCreated(id, rules, mine);
             return;
         }
         case START_GAME_MESSAGE:
@@ -213,6 +243,7 @@ public slots:
         {
             qint8 PlayerIndex;
             in >> PlayerIndex;
+
             emit OpponentDisconnected(PlayerIndex);
             return;
         }
@@ -220,6 +251,7 @@ public slots:
         {
             qint8 PlayerIndex;
             in >> PlayerIndex;
+
             emit OpponentReconnected(PlayerIndex);
             return;
         }
@@ -237,6 +269,8 @@ public slots:
         }
     }
 
+public slots:
+    // отправки сообщений
     void sendToOpponent(QByteArray message)
     {        
         messages[mes_key++] = message;
@@ -248,6 +282,7 @@ public slots:
         this->write(message);
     }
 
+public:
     void sendWantNewsMessage()
     {
         QByteArray block;
@@ -318,6 +353,7 @@ signals:
     void BadVersion();
     void OpponentDisconnected(qint8 index);
     void OpponentReconnected(qint8 index);
+    void SuccesfullyReconnected();
 
     void News(QList <qint32> ids, QList <QList <qint32> > rules, QList <qint8> players);
     void gameCreated(qint32 id, QList <qint32> rules, bool mine);

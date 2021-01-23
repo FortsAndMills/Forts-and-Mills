@@ -13,6 +13,8 @@ class MenuWindow : public GraphicObject
 {
     Q_OBJECT
 
+    enum MainWindowState {MW_START, MW_CONNECTED} state = MW_START;
+
     Object * logo, *logo2;
 
     Dialog * dialog;
@@ -150,9 +152,13 @@ private:
 public slots:
     void connected()
     {
-        dialog->setVisible(false);
-        client->sendWantNewsMessage();
-        CreateNewGame->setVisible(true);
+        if (state == MW_START)
+        {
+            state = MW_CONNECTED;
+            dialog->setVisible(false);
+            client->sendWantNewsMessage();
+            CreateNewGame->setVisible(true);
+        }
     }
     void recreateList()
     {

@@ -7,6 +7,7 @@ void GameWindow::initialConnections()
     connect(client, SIGNAL(OpponentDisconnected(qint8)), SLOT(opponentDisconnected(qint8)));
     connect(client, SIGNAL(OpponentReconnected(qint8)), SLOT(opponentReconnected(qint8)));
     connect(client, SIGNAL(disconnected()), SLOT(serverDisconnected()));
+    connect(client, SIGNAL(SuccesfullyReconnected()), SLOT(succesfullyReconnected()));
 
     for (int i = 0; i < game->rules->fieldH; ++i)
     {
@@ -624,6 +625,13 @@ void GameWindow::NextButtonClicked()
 void GameWindow::serverDisconnected()
 {
     dialog->set(mainPlayerColor, "ОШИБКА!<br>Соединение с сервером разорвано! Пытаемся переподключиться...", false, false, true);
+    resizeDialog(width(), height());
+
+    qApp->alert(dynamic_cast<QWidget *>(this->parent()));
+}
+void GameWindow::succesfullyReconnected()
+{
+    dialog->set(mainPlayerColor, "Соединение с сервером было восстановлено после сбоя.", false, false, true);
     resizeDialog(width(), height());
 
     qApp->alert(dynamic_cast<QWidget *>(this->parent()));

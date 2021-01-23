@@ -94,7 +94,7 @@ void GameRules::setTestOptions()
 
         if(tstream.status() != QTextStream::Ok)
         {
-            qDebug() << "ERROR: Ошибка чтения файла особых настроек\n";
+            debug << "ERROR: reading programm settings file error" << Qt::endl;
         }
         hostFile->close();
     }
@@ -173,6 +173,7 @@ void GameRules::formPlayersList(Random *rand)
 }
 
 // консервация и деконсервация в список int-ов
+// сервер использует тот факт, что первое число - число игроков.
 QList<qint32> GameRules::get()
 {
     QList <qint32> ans;

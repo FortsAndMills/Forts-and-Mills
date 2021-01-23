@@ -20,9 +20,10 @@ public:
 
 class Images
 {
-public:
+private:
     QList < PictureNameFolder > names;
 
+public:
     explicit Images()
     {
         InitPictures();

@@ -124,7 +124,7 @@ GameUnit *Game::getUnitById(qint16 id)
         }
     }
 
-    qDebug() << "ERROR: unit not found by id" << Qt::endl;
+    debug << "ERROR: unit not found by id" << Qt::endl;
     return NULL;
 }
 
