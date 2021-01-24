@@ -17,7 +17,6 @@ QPointF GameWindow::adjacentHexCoord(Hex *hex, WAY way)
     if (way == LEFT_DOWN)
         return p + QPointF(-constants->hexWidth * (1 - constants->hexShift), constants->hexHeight / 2);
 
-    debug << "ERROR: AdjacentHexCoordinates wrong way!\n";
     return p;
 }
 
@@ -40,6 +39,7 @@ void GameWindow::resizeUnits()
 }
 QPointF GameWindow::wayToStartCoordinate(UnitWay *way)
 {
+    // возможно, у этого гекса разрыв поля, и нам нужно "идти в пустоту"
     return adjacentHexCoord(hex(way->to),
           game->whereIs(way->from, way->to)) +
             hex(way->from)->points[way->from_point];

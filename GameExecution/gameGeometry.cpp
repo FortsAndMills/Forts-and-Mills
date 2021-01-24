@@ -66,6 +66,9 @@ QList<Coord> Game::adjacentHexes(Coord which)
 
 WAY Game::whereIs(Coord which, Coord from)
 {
+    if (which == from)
+        return NO_WAY;
+
     QMap<WAY, Coord > adjacent = adjacentHexesMap(from);
 
     for (QMap<WAY, Coord >::iterator it = adjacent.begin(); it != adjacent.end(); ++it)

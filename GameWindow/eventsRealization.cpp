@@ -141,6 +141,7 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
     }
     else if (e->type == UNIT_IS_GOING_TO_RECRUIT)
     {
+        hexes[e->hex]->hideInformation();
         hexes[e->hex]->showInformation(e->unitType, "UnitIsGoingToRecruit");
 
         return WaitingType(BUTTON, 0);

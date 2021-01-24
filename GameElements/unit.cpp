@@ -79,8 +79,8 @@ Unit::Unit(Unit *another) :
     this->setY(another->y());
     this->resize(another->width(), another->height());
 
-    if (another->brokenGlass != NULL)
-        broke();
+    //if (another->brokenGlass != NULL)
+    //    broke();
 
     this->setEnabled(false);
 }
@@ -105,8 +105,8 @@ void Unit::Delete()
         unitTypePanel->Delete();
     if (mainOrder != NULL)
         mainOrder->Delete();
-    if (brokenGlass != NULL)
-        brokenGlass->Delete();
+    //if (brokenGlass != NULL)
+    //    brokenGlass->Delete();
     foreach (Shield * s, shields)
         s->Delete();
 
@@ -251,10 +251,10 @@ void Unit::resizeChildren(qreal W, qreal H)
                                                   W * constants->unitLightingWidth,
                                                   H * constants->unitLightingHeight);
     }
-    if (brokenGlass != NULL)
-    {
-        brokenGlass->setGeometry(0, 0, W, H);
-    }
+    //if (brokenGlass != NULL)
+    //{
+    //    brokenGlass->setGeometry(0, 0, W, H);
+    //}
 
     // панель ресайзится по своим правилам!
     if (ordersPanel != NULL)
@@ -310,11 +310,11 @@ void Unit::blow()  // взрыв с последующим удалением
 }
 void Unit::broke()
 {
-    brokenGlass = new Object(this, "BrokenGlass");
-    brokenGlass->setGeometry(0, 0, width(), height());
+//    brokenGlass = new Object(this, "BrokenGlass");
+//    brokenGlass->setGeometry(0, 0, width(), height());
 
-    brokenGlass->setOpacity(0);
-    brokenGlass->AnimationStart(OPACITY, 1);
+//    brokenGlass->setOpacity(0);
+//    brokenGlass->AnimationStart(OPACITY, 1);
 }
 
 void Unit::mainOrderAppear(OrderType prototype)

@@ -39,7 +39,7 @@ private:
     SpriteObject * bigSelection = NULL;
     SpriteObject * lighting;
 
-    Object * brokenGlass = NULL;  // "разбитость" при потере дома.
+    //Object * brokenGlass = NULL;  // "разбитость" при потере дома.
     SpriteObject * explosion = NULL; // взрыв при удалении
 
     UnitPanel * ordersPanel;  // панель с приказами!

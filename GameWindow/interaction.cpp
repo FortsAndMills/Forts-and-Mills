@@ -83,7 +83,7 @@ void GameWindow::hexClicked(Coord c)
             }
         }
         else
-            debug << "ERROR: choosen not-mill hex when must choose mills!\n";
+            debug << "ERROR: choosen forbidden hex!\n";
     }
     else if (state == CHOOSE_ORDER_PARAMETER)
     {
