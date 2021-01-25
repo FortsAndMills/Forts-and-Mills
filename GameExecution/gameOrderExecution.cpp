@@ -146,6 +146,10 @@ void Game::Realize(QList<Action> act)
     {
         foreach (Action a, act)
         {
+            // не триггернутые перемещения (например, от PURSUE)
+            if (a.unit->going_to == NOWHERE)
+                continue;
+
             // если кто-то вышел навстречу, то они должны встретится и сразиться
             if (a.unit->health > 0)
             {
@@ -168,7 +172,7 @@ void Game::Realize(QList<Action> act)
         // успешно вышедшие входят в целевую клетку
         foreach (Action a, act)
         {
-            if (a.unit->health > 0)
+            if (a.unit->health > 0 && a.unit->going_to != NOWHERE)
                 AddEvent()->UnitEnters(a.unit, hex(a.unit->going_to), find(ENEMY, a.unit, a.unit->going_to, ANY));
         }
     }
