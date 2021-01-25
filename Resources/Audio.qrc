@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Content/Audio/ticking.wav</file>
+    </qresource>
+</RCC>

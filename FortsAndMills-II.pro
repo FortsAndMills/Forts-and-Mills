@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT       += core network
+QT       += multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets opengl
 
@@ -129,6 +130,7 @@ HEADERS  += mainwindow.h \
     Technical/HelpManager.h
 
 RESOURCES += \
+    Resources/Audio.qrc \
     Resources/Buttons.qrc \
     Resources/ColoredDecorations.qrc \
     Resources/Decorations.qrc \

@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QImage>
+#include <QMediaPlayer>
 #include <QApplication>
 #include <Qt>
 #include <QString>

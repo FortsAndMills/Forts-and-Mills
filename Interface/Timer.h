@@ -14,6 +14,8 @@ class Timer : public GraphicObject
     int seconds = 360;
     bool hidden = true;
 
+    QMediaPlayer * soundeffect;
+
 public:
     Timer(GraphicObject * parent) : GraphicObject(parent, RIGHT_CLICKABLE)
     {
@@ -26,6 +28,10 @@ public:
         connect(timer, SIGNAL(timeout()), SLOT(second()));
 
         this->setVisible(false);
+
+        soundeffect = new QMediaPlayer(this);
+        soundeffect->setMedia(QUrl("qrc:/Content/Audio/ticking.wav"));
+        soundeffect->setVolume(50);
     }
     virtual void Delete()
     {
@@ -33,8 +39,10 @@ public:
             d->Delete();
 
         GraphicObject::Delete();
+        soundeffect->deleteLater();
     }
 
+private:
     void resizeChildren(qreal W, qreal H)
     {
         qreal sizeX = W / (4 - 3 * constants->textXShift);
@@ -74,8 +82,11 @@ public:
     {
         hidden = true;
         timer->stop();
+        soundeffect->stop();
         this->AnimationStart(OPACITY, 0, constants->gameMainPhaseStartPanelsAppearTime);
     }
+
+public:
     void activate(Game * game)
     {
         int seconds = 0;
@@ -95,8 +106,13 @@ public:
         if (seconds == 0)
         {
             timer->stop();
+            soundeffect->stop();
             if (!hidden) disappear();
             return;
+        }
+        if (seconds > 30)
+        {
+            soundeffect->stop();
         }
 
         if (hidden) appear();
@@ -112,6 +128,9 @@ private:
         digits[0]->setN(seconds / 60);
         digits[2]->setN((seconds % 60) / 10);
         digits[3]->setN((seconds % 60) % 10);
+
+        if (seconds == 30)
+            soundeffect->play();
     }
 private slots:
     void second()
