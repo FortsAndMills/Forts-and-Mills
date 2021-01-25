@@ -40,6 +40,36 @@ public:
 
     void resize(qreal w, qreal h);
 
+protected:
+    // фикс с прямоугольной областью
+    // по умолчанию "мышка наведена" на объект только если он
+    // попадает на непрозрачный пиксель картинки. Иногда это неудобно.
+    bool is_rectangular = false;
+public:
+    QRectF boundingRect() const
+    {
+        if (is_rectangular)
+            return QRectF(0, 0, width(), height());
+        return QGraphicsPixmapItem::boundingRect();
+    }
+    QPainterPath shape() const
+    {
+        if (is_rectangular)
+        {
+            QPainterPath qp;
+            qp.addRect(boundingRect());
+            return qp;
+        }
+        return QGraphicsPixmapItem::shape();
+    }
+    bool contains(const QPointF &point) const
+    {
+        if (is_rectangular)
+            return boundingRect().contains(point);
+        return QGraphicsPixmapItem::contains(point);
+    }
+
+    // взаимодействие с пользователем
     bool isClicked = false;  // находимся ли в состоянии нажатой клавиши
 
 private:

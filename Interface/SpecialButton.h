@@ -12,7 +12,8 @@ class SpecialButton : public StateObject
 public:
     explicit SpecialButton(GraphicObject * parent, QString Name, bool simpleLayer = true) :
         StateObject(parent, "default", Name, CLICKABLE | HOVER, "", simpleLayer ? "SimpleLayer" : "")
-    {
+    {        
+        is_rectangular = true;
         addGeometry("entered", QRectF(constants->specialButtonShiftX,
                                       constants->specialButtonShiftY,
                                       constants->specialButtonWidthShift,

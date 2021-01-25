@@ -19,16 +19,20 @@ class Timer : public GraphicObject
 public:
     Timer(GraphicObject * parent) : GraphicObject(parent, RIGHT_CLICKABLE)
     {
+        is_rectangular = true;
+        this->setVisible(false);
+
+        // цифры
         digits.push_back(new DigitObject(this, 6, "Mill"));
         digits.push_back(new DigitObject(this, COLON_DIGIT, "Fort"));
         digits.push_back(new DigitObject(this, 0, "Mill"));
         digits.push_back(new DigitObject(this, 0, "Fort"));
 
+        // таймер
         timer = new QTimer(this);
         connect(timer, SIGNAL(timeout()), SLOT(second()));
 
-        this->setVisible(false);
-
+        // звук
         soundeffect = new QMediaPlayer(this);
         soundeffect->setMedia(QUrl("qrc:/Content/Audio/ticking.wav"));
         soundeffect->setVolume(50);
@@ -37,9 +41,9 @@ public:
     {
         foreach (DigitObject * d, digits)
             d->Delete();
+        soundeffect->deleteLater();
 
         GraphicObject::Delete();
-        soundeffect->deleteLater();
     }
 
 private:
@@ -55,21 +59,6 @@ private:
     }
 
     void rightClick() { emit help->HelpAsked("Timer"); }
-
-    QRectF boundingRect() const
-    {
-        return QRectF(0, 0, width(), height());
-    }
-    QPainterPath shape() const
-    {
-        QPainterPath qp;
-        qp.addRect(boundingRect());
-        return qp;
-    }
-    bool contains(const QPointF &point) const
-    {
-        return boundingRect().contains(point);
-    }
 
     void appear()
     {
