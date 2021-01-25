@@ -338,6 +338,7 @@ void GameWindow::showPlannedOrder(GameUnit *unit)
         }
         else if (a.type == GameAction::RECRUIT)
         {
+            hex(units[unit])->hideInformation();
             hex(units[unit])->showInformation(a.unitType, "UnitIsGoingToRecruit");
         }
     }
