@@ -41,9 +41,8 @@ GameOrderParameters::GameOrderParameters(GameRules * rules, UnitType owner, Orde
         burnsWhenFight = false;
         fightInfluence = -2;
 
-        // [сначала с приоритетом 100 выполнятся выходы обычных перемещений]
-        AddAction(140)->Ambush(1);  // мы стреляем во всех, кто вышел в нашу клетку
-        AddAction(160)->LeaveHex(); // выходим сами; далее стандартно
+        AddAction(100)->LeaveHex();
+        AddAction(150)->Ambush(1);  // мы стреляем во всех, кто вышел в нашу клетку
         AddAction(200)->Cross();
         AddAction(300)->EnterHexWithFight();
         AddAction(400)->FinishEntering();
@@ -56,7 +55,7 @@ GameOrderParameters::GameOrderParameters(GameRules * rules, UnitType owner, Orde
 
         // [сначала с приоритетом 100 выполнятся выходы обычных перемещений]
         AddAction(120)->Pursue();  // выходим в клетку, где находится цель
-        // [с приоритетом 140 происходит засада приказа Retreat]
+        // [с приоритетом 150 происходит засада приказа Retreat]
         AddAction(200)->Cross();
         AddAction(300)->EnterHexWithFight();
         AddAction(320)->Return();  // вместо входа в клетку разворачиваемся и

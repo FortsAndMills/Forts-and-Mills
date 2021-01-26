@@ -62,15 +62,28 @@ void Game::Realize(QList<Action> act)
     }
     else if (T == GameAction::PURSUE)
     {
-        // TODO: одновременный pursue друг в друга?
+        QMap<GameUnit *, Coord> triggered;
         foreach (Action a, act)
         {
-            // считаем клетку, в которую нужно идти, чтобы поймать целевого юнита
-            Coord target_pos = (a.action.unit->going_to == NOWHERE ? a.action.unit->position : a.action.unit->going_to);
-
-            // если целевой юнит не мёртв и он находится в соседней клетке
-            if (!africa.contains(a.action.unit) && isAdjacent(a.unit->position, target_pos))
+            if (!africa.contains(a.action.unit))
             {
+                // считаем клетку, в которую нужно идти, чтобы поймать целевого юнита
+                Coord target_pos = (a.action.unit->going_to == NOWHERE ? a.action.unit->position : a.action.unit->going_to);
+
+                // если целевой юнит не мёртв и он находится в соседней клетке
+                if (isAdjacent(a.unit->position, target_pos))
+                {
+                    triggered[a.unit] = target_pos;
+                }
+            }
+        }
+
+        foreach (Action a, act)
+        {
+            if (triggered.contains(a.unit))
+            {
+                Coord target_pos = triggered[a.unit];
+
                 // выходим из клетки (аналогично LEAVE_HEX)
                 a.unit->going_to = target_pos;
                 AddEvent()->UnitLeaves(a.unit, hex(target_pos));
