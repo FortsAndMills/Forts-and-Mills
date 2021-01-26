@@ -105,7 +105,7 @@ QList<QPointF> Hex::countTableCoordinates(qreal W, qreal H, int n)
     {
         line += margin;
 
-        if (line > H / 2)
+        if (line > H)
             debug << "ERROR: table of resources overflow\n";
 
         // shift - координата по x нашего прямоугольника.
