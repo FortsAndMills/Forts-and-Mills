@@ -1,5 +1,6 @@
 #include "GameRules.h"
 #include "GameUnit.h"
+#include "Technical/Constants.h"
 
 QList <QString> GameRules::AllPlayers = {"Blue", "Red", "Green", "Yellow"};
 QList <QString> GameRules::AllTimerTypes = {"1", "2", "3", "sp", "no"};
@@ -90,7 +91,8 @@ void GameRules::setTestOptions()
                       >> s >> fort_gp_min >> fort_gp_max
                       >> s >> mill_gp_min >> mill_gp_max
                       >> s >> river_gp_min >> river_gp_max
-                      >> s >> K_change;
+                      >> s >> K_change
+                      >> s >> constants->unitReconfigureTime;  // TODO: del
 
         if(tstream.status() != QTextStream::Ok)
         {
@@ -111,7 +113,9 @@ void GameRules::setTestOptions()
                       << "FortsGenerationLimits: " << fort_gp_min << " " << fort_gp_max << Qt::endl
                       << "MillsGenerationLimits: " << mill_gp_min << " " << mill_gp_max << Qt::endl
                       << "RiversGenerationLimits: " << river_gp_min << " " << river_gp_max << Qt::endl
-                      << "ResourcesAmountCoeff: " << K_change << Qt::endl;
+                      << "ResourcesAmountCoeff: " << K_change << Qt::endl
+                      << Qt::endl  // TODO: снести вместе с хэдером констант
+                      << "AnimationSpeed: " << constants->unitReconfigureTime << Qt::endl;
         hostFile->close();
     }
 }
