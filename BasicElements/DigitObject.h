@@ -18,6 +18,7 @@ public:
     DigitObject(GraphicObject * parent, int n, QString type = "Fort", Properties prop = 0) :
         GraphicObject(parent, prop, n >= 0 && n <= 9 ? type + "Digit" + QString::number(n) : (n == COLON_DIGIT ? "colon" : "x"))
     {
+        is_rectangular = true;
         this->type = type;
         this->n = n;
     }
@@ -27,22 +28,6 @@ public:
     {
         this->n = n;
         this->setPicture(type + "Digit" + QString::number(n));
-    }
-
-    // переопределение функций для корректного взаимодействия с мышкой
-    QRectF boundingRect() const
-    {
-        return QRectF(0, 0, width(), height());
-    }
-    QPainterPath shape() const
-    {
-        QPainterPath qp;
-        qp.addRect(boundingRect());
-        return qp;
-    }
-    bool contains(const QPointF &point) const
-    {
-        return boundingRect().contains(point);
     }
 };
 

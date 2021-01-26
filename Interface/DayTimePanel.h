@@ -17,7 +17,8 @@ public:
     enum DayTimePanelState {FREEZE, GAME_STATE};
     explicit DayTimePanel(GraphicObject * parent, int dt, DayTimePanelState state = GAME_STATE, bool MaximizeDayTimes = false) :
         GraphicObject(parent, 0, "", "", "SimpleLayer")
-    {
+    {        
+        is_rectangular = true;
         this->MaximizeDayTimes = MaximizeDayTimes;
 
         for (int time = 0; time < dt; ++time)
@@ -45,21 +46,6 @@ public:
             DayTimePictures[i]->setGeometry(X, (H - size) / 2, size, size);
             X += size * (1 + constants->dayTimeTableMargin);
         }
-    }
-
-    QRectF boundingRect() const
-    {
-        return QRectF(0, 0, width(), height());
-    }
-    QPainterPath shape() const
-    {
-        QPainterPath qp;
-        qp.addRect(boundingRect());
-        return qp;
-    }
-    bool contains(const QPointF &point) const
-    {
-        return boundingRect().contains(point);
     }
 
     void appear()

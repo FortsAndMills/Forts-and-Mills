@@ -29,7 +29,7 @@ qreal Constants::shieldReconfigureTime = 300;  // время расположе�
 qreal Constants::shieldTurnTime = 300;
 
 qreal Constants::unitDisappearTime = 900;  // время исчезновения юнита
-qreal Constants::unitReconfigureTime = 500;  // время перемещения юнитов на их законные места
+qreal Constants::unitReconfigureTime = 400;  // время перемещения юнитов на их законные места
 
 qreal Constants::unitPanelAppearTime = 250;  // время появления и исчезновения панели
 qreal Constants::unitOrderReconfigureTime = 100;  // время полёта картинки приказа от панели к юниту

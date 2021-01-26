@@ -52,6 +52,7 @@ public:
 
     PlayersTune(GraphicObject * parent) : GraphicObject(parent, RIGHT_CLICKABLE)
     {
+        is_rectangular = true;
         Label = new GraphicObject(this, 0, "PlayersLabel");
         for (int i = 0; i < settings->rules->AllPlayers.size(); ++i)
         {
@@ -84,21 +85,6 @@ public:
     }
 
     void rightClick() { emit help->HelpAsked("PlayersTune"); }
-
-    QRectF boundingRect() const
-    {
-        return QRectF(0, 0, width(), height());
-    }
-    QPainterPath shape() const
-    {
-        QPainterPath qp;
-        qp.addRect(boundingRect());
-        return qp;
-    }
-    bool contains(const QPointF &point) const
-    {
-        return boundingRect().contains(point);
-    }
 
 private slots:
     void whenClicked(int i)
@@ -134,6 +120,10 @@ public:
         this->i = i;
         this->active = active;
         addPicture("off", "timer_" + type + "_off");
+
+        pictures["on"]->is_rectangular = true;
+        pictures["off"]->is_rectangular = true;
+
         turnOn(isOn);
     }
 
@@ -160,6 +150,7 @@ public:
 
     TimerTune(GraphicObject * parent) : GraphicObject(parent, RIGHT_CLICKABLE)
     {
+        is_rectangular = true;
         Label = new GraphicObject(this, 0, "TimerLabel");
         for (int i = 0; i < settings->rules->AllTimerTypes.size(); ++i)
         {
@@ -197,21 +188,6 @@ public:
 
     void rightClick() { emit help->HelpAsked("TimerTune"); }
 
-    QRectF boundingRect() const
-    {
-        return QRectF(0, 0, width(), height());
-    }
-    QPainterPath shape() const
-    {
-        QPainterPath qp;
-        qp.addRect(boundingRect());
-        return qp;
-    }
-    bool contains(const QPointF &point) const
-    {
-        return boundingRect().contains(point);
-    }
-
 private slots:
     void whenClicked(int i)
     {
@@ -236,6 +212,7 @@ public:
     FieldTune(GraphicObject * parent, GameRules * rules = settings->rules, bool active = true) :
         GraphicObject(parent, RIGHT_CLICKABLE)
     {
+        is_rectangular = true;
         this->active = active;
 
         digits.push_back(new DigitObject(this, rules->fieldH / 10, "Fort", active * (WHEEL | CLICKABLE)));
@@ -278,21 +255,6 @@ public:
     }
 
     void rightClick() { emit help->HelpAsked(active ? "FieldTune" : "FieldSize"); }
-
-    QRectF boundingRect() const
-    {
-        return QRectF(0, 0, width(), height());
-    }
-    QPainterPath shape() const
-    {
-        QPainterPath qp;
-        qp.addRect(boundingRect());
-        return qp;
-    }
-    bool contains(const QPointF &point) const
-    {
-        return boundingRect().contains(point);
-    }
 
 private slots:
     void HeightWheeled(int n)
@@ -583,6 +545,7 @@ public:
     explicit DayTimesTune(GraphicObject * parent, GameRules * rules = settings->rules, bool active = true) :
         GraphicObject(parent, RIGHT_CLICKABLE | (active * HOVER) | (active * CLICKABLE), "", "LessonFrameSelection", "SimpleLayer")
     {
+        is_rectangular = true;
         this->active = active;
         dayTimes = rules->dayTimes;
         createPanel(rules->changingDayTimes);
@@ -609,21 +572,6 @@ public:
     }
 
     void rightClick() { emit help->HelpAsked(active ? "DayTimesTune" : "DayTimesInGame"); }
-
-    QRectF boundingRect() const
-    {
-        return QRectF(0, 0, width(), height());
-    }
-    QPainterPath shape() const
-    {
-        QPainterPath qp;
-        qp.addRect(boundingRect());
-        return qp;
-    }
-    bool contains(const QPointF &point) const
-    {
-        return boundingRect().contains(point);
-    }
 
     void leftClick()  // переключение ведётся не только между вариантами 1...5, но и шестым вариантом - их динамическим переключением
     {

@@ -40,12 +40,11 @@ public:
 
     void resize(qreal w, qreal h);
 
-protected:
+public:
     // фикс с прямоугольной областью
     // по умолчанию "мышка наведена" на объект только если он
     // попадает на непрозрачный пиксель картинки. Иногда это неудобно.
     bool is_rectangular = false;
-public:
     QRectF boundingRect() const
     {
         if (is_rectangular)
