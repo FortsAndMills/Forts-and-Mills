@@ -28,12 +28,19 @@ public:
             setProperties(0);
         }
     }
-
+    void appear()
+    {
+        QTimer::singleShot(constants->goButtonAppearTime, this, &GoButton::enable_slot);
+        this->AnimationStart(OPACITY, 1, constants->goButtonAppearTime);
+    }
     void leftClick()
     {
         setPictureState("pushed");
         setProperties(0);
     }
+
+private slots:
+    void enable_slot() {enable();}
 };
 
 class NextButton : public GraphicObject

@@ -25,8 +25,7 @@ void GameWindow::getReadyToPlanning()
     {
         state = PLANNING;  // мы не сдались и у нас ещё есть время
 
-        go->enable();
-        go->AnimationStart(OPACITY, 1, constants->goButtonAppearTime);
+        go->appear();
     }
 
     next->AnimationStart(OPACITY, 0, constants->goButtonAppearTime);

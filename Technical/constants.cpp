@@ -34,7 +34,7 @@ qreal Constants::unitReconfigureTime = 500;  // время перемещени�
 qreal Constants::unitPanelAppearTime = 250;  // время появления и исчезновения панели
 qreal Constants::unitOrderReconfigureTime = 100;  // время полёта картинки приказа от панели к юниту
 
-qreal Constants::goButtonAppearTime = 200;  // смена основных кнопок
+qreal Constants::goButtonAppearTime = 1000;  // смена основных кнопок
 
 qreal Constants::progressBarUpdateTime = 500;  // смена прогресс бара
 
