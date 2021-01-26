@@ -73,6 +73,7 @@ private:
     {
         hidden = true;
         timer->stop();
+        seconds = 0;
         soundeffect->stop();
         this->AnimationStart(OPACITY, 0, constants->gameMainPhaseStartPanelsAppearTime);
     }
