@@ -14,7 +14,7 @@ class Timer : public GraphicObject
     int seconds = 360;
     bool hidden = true;
 
-    QMediaPlayer * soundeffect;
+    QSound * soundeffect;
 
 public:
     Timer(GraphicObject * parent) : GraphicObject(parent, RIGHT_CLICKABLE)
@@ -33,10 +33,9 @@ public:
         connect(timer, SIGNAL(timeout()), SLOT(second()));
 
         // звук
-        soundeffect = new QMediaPlayer(this);
-        soundeffect->setMedia(QUrl("qrc:/Content/Audio/ticking.wav"));
-        soundeffect->setVolume(50);
-        connect(soundeffect, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(soundeefectStateChanged(QMediaPlayer::State)));
+        soundeffect = new QSound("qrc:/Content/Audio/ticking.wav", this);
+        soundeffect->setLoops(QSound::Infinite);
+        //connect(soundeffect, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(soundeefectStateChanged(QMediaPlayer::State)));
     }
     virtual void Delete()
     {
@@ -143,15 +142,6 @@ private slots:
         }
     }
 
-    // завершил проигрывание аудиофайла целиком
-    void soundeefectStateChanged(QMediaPlayer::State state)
-    {
-        if (state == QMediaPlayer::StoppedState)
-        {
-            if (seconds <= 30 && seconds > 0)
-                soundeffect->play();
-        }
-    }
 signals:
     void expired();
 };
