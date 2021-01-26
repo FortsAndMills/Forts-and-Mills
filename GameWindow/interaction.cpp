@@ -427,8 +427,6 @@ void GameWindow::GoButtonPushed()
     if (state == CHOOSE_ORDER_PARAMETER)
         breakChoosingOrderParameter();
 
-    go->enable(false);
-
     if (state == CHOOSING_HEX)
     {
         this->disableWholeField();
@@ -480,6 +478,8 @@ void GameWindow::DialogReturned(bool isOk, QString sig_mes)
 #define PLAN (qint8)3
 void GameWindow::sendPlan()
 {
+    go->enable(false);
+
     if (state == CHOOSING_HEX)
     {
         state = WAIT_FOR_ENEMY_START_POINT;
