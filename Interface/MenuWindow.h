@@ -192,6 +192,7 @@ public slots:
         dialog->set("Neutral", "СЕРВЕР ОБНОВЛЯЕТСЯ.");
 
         isBlocked = true;
+        CreateNewGame->setVisible(false);
         debug << "Server is upgrading\n";
     }
     void badVersion()
@@ -200,6 +201,7 @@ public slots:
         dialog->set("Neutral", "Эта версия игры устарела!<br>Найдите новую версию.");
 
         isBlocked = true;
+        CreateNewGame->setVisible(false);
         debug << "Version is too old\n";
     }
 
