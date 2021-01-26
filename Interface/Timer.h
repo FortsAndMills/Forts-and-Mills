@@ -36,6 +36,7 @@ public:
         soundeffect = new QMediaPlayer(this);
         soundeffect->setMedia(QUrl("qrc:/Content/Audio/ticking.wav"));
         soundeffect->setVolume(50);
+        connect(soundeffect, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(soundeefectStateChanged(QMediaPlayer::State)));
     }
     virtual void Delete()
     {
@@ -60,6 +61,7 @@ private:
 
     void rightClick() { emit help->HelpAsked("Timer"); }
 
+    // появление и исчезновение таймера
     void appear()
     {
         hidden = false;
@@ -76,7 +78,8 @@ private:
     }
 
 public:
-    void activate(Game * game)
+    // запуск в момент прихода плана оппонента
+    void activate_on_opponent_plan_received(Game * game)
     {
         int seconds = 0;
         if (hidden && game->rules->start_choices_left < game->rules->start_choices)
@@ -90,6 +93,7 @@ public:
                 launch(seconds);
         }
     }
+    // ручной запуск
     void launch(int seconds)
     {
         if (seconds == 0)
@@ -99,10 +103,6 @@ public:
             if (!hidden) disappear();
             return;
         }
-        if (seconds > 30)
-        {
-            soundeffect->stop();
-        }
 
         if (hidden) appear();
 
@@ -111,6 +111,7 @@ public:
     }
 
 private:
+    // установка времени и звукового эффекта
     void set_seconds(int seconds)
     {
         this->seconds = seconds;
@@ -118,10 +119,14 @@ private:
         digits[2]->setN((seconds % 60) / 10);
         digits[3]->setN((seconds % 60) % 10);
 
-        if (seconds == 30)
+        if (seconds <= 30 && seconds > 0)
             soundeffect->play();
+        else
+            soundeffect->stop();
     }
+
 private slots:
+    // по прошествии одной секунды
     void second()
     {
         if (seconds > 0)
@@ -132,10 +137,20 @@ private slots:
         else
         {
             timer->stop();
+            soundeffect->stop();
             emit expired();
         }
     }
 
+    // завершил проигрывание аудиофайла целиком
+    void soundeefectStateChanged(QMediaPlayer::State state)
+    {
+        if (state == QMediaPlayer::StoppedState)
+        {
+            if (seconds <= 30 && seconds > 0)
+                soundeffect->play();
+        }
+    }
 signals:
     void expired();
 };

@@ -493,7 +493,7 @@ void GameWindow::sendPlan()
         emit writeToOpponent(message);
 
         // запускаем таймер по готовности оппонента.
-        timer->activate(game);
+        timer->activate_on_opponent_plan_received(game);
 
         game->ready[mainPlayerColor] = true;        
         CheckNextPhase();
@@ -536,7 +536,7 @@ void GameWindow::sendPlan()
         emit writeToOpponent(message);
 
         // запускаем таймер по готовности оппонента.
-        timer->activate(game);
+        timer->activate_on_opponent_plan_received(game);
 
         game->ready[mainPlayerColor] = true;
         CheckNextPhase();
@@ -570,7 +570,7 @@ void GameWindow::readFromOpponent(QByteArray message)
         game->chosenUnitType[sender] = game->rules->unitsInGame[unitTypeIndex];
 
         // запускаем таймер по готовности оппонента.
-        timer->activate(game);
+        timer->activate_on_opponent_plan_received(game);
     }
     else if (Command == PLAN)
     {
@@ -610,7 +610,7 @@ void GameWindow::readFromOpponent(QByteArray message)
         }
 
         // запускаем таймер по готовности оппонента.
-        timer->activate(game);
+        timer->activate_on_opponent_plan_received(game);
     }
 
     game->ready[game->rules->players[sender_index]] = true;
