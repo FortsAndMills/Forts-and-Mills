@@ -4,8 +4,8 @@
 #include "Technical/Headers.h"
 #include "Technical/Constants.h"
 #include "Technical/Client.h"
-#include "BasicElements/GraphicObject.h"
 #include "SpecialButton.h"
+#include "LanguageSelector.h"
 #include "GameLabel.h"
 #include "Dialog.h"
 
@@ -19,7 +19,9 @@ class MenuWindow : public GraphicObject
 
     Dialog * dialog;
 
-    SpecialButton * question;
+    EnlargingButton * question;
+
+    LanguageSelector * language_selector;
 
     QVector < GameLabel * > games;
     GameLabel * game(int i)
@@ -65,8 +67,10 @@ public:
         connect(HowToPlayFrame, SIGNAL(leftClicked()), SLOT(leaveJoined()));
         HowToPlayLabel = new Object(this, "HowToPlayButton");
 
-        question = new SpecialButton(this, "Question");
+        question = new EnlargingButton(this, "Question");
         connect(question, SIGNAL(leftClicked()), SLOT(questionClicked()));
+
+        language_selector = new LanguageSelector(this);
 
         CheckForLessonsPassed();
     }
@@ -108,6 +112,11 @@ public:
                               constants->questionY * H,
                               constants->questionWidth * W,
                               constants->questionHeight * H);
+
+        language_selector->setGeometry((1 - constants->questionX - constants->questionWidth) * W,
+                                       constants->questionY * H,
+                                       constants->questionWidth * W,
+                                       constants->questionHeight * H);
 
         resizeGameLabels();
     }

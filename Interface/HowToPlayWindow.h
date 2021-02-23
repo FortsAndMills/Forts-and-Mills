@@ -54,7 +54,7 @@ class HowToPlayWindow : public GraphicObject
 public:
     QVector < LessonLabel * > lessons;
 
-    SpecialButton * HomeButton;
+    EnlargingButton * HomeButton;
 
     explicit HowToPlayWindow(GraphicObject * parent) : GraphicObject(parent)
     {
@@ -64,7 +64,7 @@ public:
         for (int i = 0; i < LESSONS_AMOUNT; ++i)
             lessons.push_back(new LessonLabel(this, i));
 
-        HomeButton = new SpecialButton(this, "HomeButton");
+        HomeButton = new EnlargingButton(this, "HomeButton");
     }
     void turn(bool on)
     {

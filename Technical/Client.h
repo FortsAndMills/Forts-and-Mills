@@ -296,7 +296,7 @@ public:
     {
         QByteArray block;
         QDataStream out(&block, QIODevice::WriteOnly);
-        out << (quint16)0 << CREATE_GAME << settings->rules->get();
+        out << (quint16)0 << CREATE_GAME << settings->default_rules->get();
         out.device()->seek(0);
         out << (quint16)(block.size() - sizeof(quint16));
         this->write(block);

@@ -4,7 +4,6 @@
 #include "GraphicObject.h"
 
 // Мигающий объект (информация на гексах, например)
-
 class MergingObject : public GraphicObject
 {
     Q_OBJECT
@@ -12,8 +11,8 @@ class MergingObject : public GraphicObject
 public:
     QString name;
 
-    explicit MergingObject(GraphicObject * parent, QString name, Properties flags = 0) :
-        GraphicObject(parent, flags, name)
+    explicit MergingObject(GraphicObject * parent, QString name, Properties flags = 0, bool keepaspectratio = false) :
+        GraphicObject(parent, flags, name, "", "", keepaspectratio)
     {
         this->name = name;
 

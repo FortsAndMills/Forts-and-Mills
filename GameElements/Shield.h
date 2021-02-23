@@ -14,7 +14,7 @@ public:
     PlayerColor color;
 
     explicit Shield(GraphicObject * parent, PlayerColor color) :
-        StateObject(parent, "default", color + "Shield", 0, "", "", constants->shieldTurnTime)
+        StateObject(parent, "default", color + "Shield", 0, "", "", true, constants->shieldTurnTime)
     {
         this->color = color;
 

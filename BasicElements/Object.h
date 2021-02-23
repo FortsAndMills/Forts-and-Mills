@@ -16,7 +16,7 @@ class Object : public QObject, public QGraphicsPixmapItem
 
 // Инициализация и удаление
 public:
-    explicit Object(Object * parent = NULL, QString pictureName = "");
+    explicit Object(Object * parent = NULL, QString pictureName = "", bool keepaspectratio=false);
 public slots:
     virtual void Delete();
 public:
@@ -24,6 +24,8 @@ public:
 
 
 // Контроль размера объекта и его картинки
+private:
+    double shift_x = 0, shift_y = 0;
 protected:
     virtual void resizeChildren(qreal, qreal) {}
 public:
@@ -52,6 +54,11 @@ public:
     void setPos(QPointF pos) { setPos(pos.x(), pos.y()); }
     void setX(qreal x) { setPos(x, y()); }
     void setY(qreal y) { setPos(x(), y); }
+    double x() const { return QGraphicsPixmapItem::x() - shift_x; }
+    double y() const { return QGraphicsPixmapItem::y() - shift_y; }
+
+protected:
+    bool keepaspectratio;
 private:
     qreal Width, Height;  // FAIL: объекты без картинки всегда имеют нулевой размер...
 public:
@@ -62,8 +69,8 @@ public:
 
     void setGeometry(qreal x, qreal y, qreal w, qreal h)
     {
-        setPos(x, y);
         resize(w, h);
+        setPos(x, y);
     }
     void setGeometry(QRectF rect)
     {

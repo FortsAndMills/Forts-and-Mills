@@ -2,7 +2,8 @@
 
 GraphicObject::GraphicObject(GraphicObject *parent, Properties flags,
                              QString pictureName, QString framePictureName,
-                             QString layerName) : Object(parent, pictureName)
+                             QString layerName, bool keepaspectratio) :
+                         Object(parent, pictureName, keepaspectratio)
 {
     // лэйр отображается в момент щелчка мыши
     layer = new Object(this, layerName);

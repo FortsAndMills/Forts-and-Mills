@@ -228,8 +228,8 @@ protected:
 
     StartChoiceProgress * startChoiceProgress;
 
-    SpecialButton * whiteFlag;
-    SpecialButton * homeButton;
+    EnlargingButton * whiteFlag;
+    EnlargingButton * homeButton;
 
     Hex * hexCopy;
 

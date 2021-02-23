@@ -44,7 +44,7 @@ Unit::Unit(GameUnit *prototype, Game *game, GraphicObject *parent, bool isMain) 
 Unit::Unit(GraphicObject *parent, QString color, QString type) :
     GraphicObject(parent, CHILD)
 {
-    GameUnitParameters prototype(settings->rules, type);
+    GameUnitParameters prototype(settings->default_rules, type);
 
     picture = new GraphicObject(this, CHILD, color + type);
 

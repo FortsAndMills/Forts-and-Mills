@@ -5,15 +5,15 @@
 #include "BasicElements/StateObject.h"
 
 // Кнопка, которая увеличивается при наведении.
-class SpecialButton : public StateObject
+class EnlargingButton : public StateObject
 {
     Q_OBJECT
 
 public:
-    explicit SpecialButton(GraphicObject * parent, QString Name, bool simpleLayer = true) :
-        StateObject(parent, "default", Name, CLICKABLE | HOVER, "", simpleLayer ? "SimpleLayer" : "")
+    explicit EnlargingButton(GraphicObject * parent, QString Name, bool simpleLayer = true, bool keepaspectratio=true) :
+        StateObject(parent, "default", Name, CLICKABLE | HOVER, "", simpleLayer ? "SimpleLayer" : "", keepaspectratio)
     {        
-        is_rectangular = true;
+        this->set_rectangular_boundig_box();
         addGeometry("entered", QRectF(constants->specialButtonShiftX,
                                       constants->specialButtonShiftY,
                                       constants->specialButtonWidthShift,

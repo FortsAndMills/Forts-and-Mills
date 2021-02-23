@@ -25,5 +25,7 @@
         <file>Content/InterfaceElements/timer_3_off.png</file>
         <file>Content/InterfaceElements/timer_no_off.png</file>
         <file>Content/InterfaceElements/timer_sp_off.png</file>
+        <file>Content/InterfaceElements/eng.png</file>
+        <file>Content/InterfaceElements/rus.png</file>
     </qresource>
 </RCC>

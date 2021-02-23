@@ -12,7 +12,7 @@ class CureIcon : public Object
 
 public:
     explicit CureIcon(Object * parent) :
-        Object(parent, "CureIcon")
+        Object(parent, "CureIcon", true)
     {
         this->setZValue(constants->cureIconZPos);
         this->setOpacity(0);

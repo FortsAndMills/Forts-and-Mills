@@ -42,8 +42,8 @@ void GameWindow::initInterface()
 
     startChoiceProgress = new StartChoiceProgress(this, mainPlayerColor, game->rules->start_choices);
 
-    whiteFlag = new SpecialButton(this, "WhiteFlag");
-    homeButton = new SpecialButton(this, "HomeButton");
+    whiteFlag = new EnlargingButton(this, "WhiteFlag");
+    homeButton = new EnlargingButton(this, "HomeButton");
 
     hexCopy = NULL;
 

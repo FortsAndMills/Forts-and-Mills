@@ -1,6 +1,6 @@
 #include "Object.h"
 
-Object::Object(Object *parent, QString pictureName) :
+Object::Object(Object *parent, QString pictureName, bool keepaspectratio) :
     QObject(), QGraphicsPixmapItem(images->get(pictureName), parent)
 {
     this->setTransformationMode(Qt::SmoothTransformation);  // просто настроечки
@@ -11,6 +11,7 @@ Object::Object(Object *parent, QString pictureName) :
     original = pixmap();  // сохранение картинки
     Width = original.width();
     Height = original.height();
+    this->keepaspectratio = keepaspectratio;
 
     // инициализация ссылок на функции для передачи в класс анимации
     InitAnimationTypes();
@@ -58,13 +59,27 @@ void Object::setPos(qreal x, qreal y)
 {
     foreach (Object * object, pseudo_children)
         object->moveBy(x - this->x(), y - this->y());
-    QGraphicsPixmapItem::setPos(x, y);
+    QGraphicsPixmapItem::setPos(x + shift_x, y + shift_y);
 }
 
 void Object::updatePicture()
 {
-    prepareGeometryChange();  // документация рекомендует
-    QGraphicsPixmapItem::setPixmap(original.scaled(Width, Height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    prepareGeometryChange();  // документация рекомендует,
+    QGraphicsPixmapItem::setPixmap(original.scaled(Width, Height, keepaspectratio ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+
+    if (keepaspectratio)
+    {
+        qreal width_scale = Width / original.width();
+        qreal height_scale = Height / original.height();
+
+        shift_x = (Width - original.width() * qMin(width_scale, height_scale)) / 2;
+        shift_y = (Height - original.height() * qMin(width_scale, height_scale)) / 2;
+    }
+    else
+    {
+        shift_x = 0;
+        shift_y = 0;
+    }
 }
 void Object::resize(qreal w, qreal h)
 {

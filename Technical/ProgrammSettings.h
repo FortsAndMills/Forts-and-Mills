@@ -17,12 +17,20 @@ public:
     // ОБЪЯВЛЕНИЕ ВСЕХ НАСТРОЕК----------------------------------------------------------
     quint16 PORT = 64124;
     QString HOST_NAME = "fortsandmills.got-game.org";
-    GameRules * rules;
 
+    // положение и размер окна
     QPoint APPLICATION_START_POSITION = QPoint(100, 100);
     QSize APPLICATION_START_SIZE = QSize(1200, 720);
     bool IS_APPLICATION_MAXIMIZED = false;
+
+    // дефолтные настройки в меню создания игры
+    GameRules * default_rules;
+
+    // какие туториалы игрок уже прошёл
     bool lessonsPassed[LESSONS_AMOUNT];
+
+    // язык игры
+    QString language;
 
 
     // ВВОД-ВЫВОД ВСЕХ НАСТРОЕК---------------------------------------------------------
@@ -31,7 +39,8 @@ public:
         stream << settings->APPLICATION_START_POSITION
                     << settings->APPLICATION_START_SIZE
                     << settings->IS_APPLICATION_MAXIMIZED
-                    << settings->rules;
+                    << settings->default_rules
+                    << settings->language;
 
         for (int i = 0; i < LESSONS_AMOUNT; ++i)
                     stream << settings->lessonsPassed[i];
@@ -43,7 +52,8 @@ public:
         stream >> settings->APPLICATION_START_POSITION
                     >> settings->APPLICATION_START_SIZE
                     >> settings->IS_APPLICATION_MAXIMIZED
-                    >> settings->rules;
+                    >> settings->default_rules
+                    >> settings->language;
 
         for (int i = 0; i < LESSONS_AMOUNT; ++i)
                     stream >> settings->lessonsPassed[i];
@@ -52,11 +62,11 @@ public:
     }
 
 
-
     // СЧИТЫВАНИЕ И ЗАПИСЫВАНИЕ-------------------------------------------------------
     explicit Settings(QObject * parent) : QObject(parent)
     {
-        rules = new GameRules();
+        language = "eng";
+        default_rules = new GameRules();
         for (int i = 0; i < LESSONS_AMOUNT; ++i)
                     lessonsPassed[i] = false;
 

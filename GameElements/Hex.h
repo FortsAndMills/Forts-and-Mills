@@ -33,7 +33,7 @@ class Information : public MergingObject
     QString info_name;
 public:
     Information(GraphicObject * parent, QString pic_name, QString name) :
-        MergingObject(parent, pic_name, RIGHT_CLICKABLE)
+        MergingObject(parent, pic_name, RIGHT_CLICKABLE, true)
     {
         this->info_name = name;
     }

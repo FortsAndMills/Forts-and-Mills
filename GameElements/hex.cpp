@@ -55,7 +55,7 @@ Hex::Hex(Hex *another, GraphicObject * newParent) : Hex(newParent, another->game
     }
 
     if (another->information != NULL)
-        this->information = new MergingObject(this, another->information->name);
+        this->information = new MergingObject(this, another->information->name, 0, true);
 
     this->setState(another->cur_picture, true);
     this->resize(another->width(), another->height());
@@ -411,7 +411,7 @@ void Hex::planCapturing(PlayerColor color)
 {
     if (!plannedCapturing.contains(color))
     {
-        plannedCapturing[color] = new MergingObject(this, color + "Hex");
+        plannedCapturing[color] = new MergingObject(this, color + "Hex", 0, false);
         plannedCapturing[color]->setZValue(-0.1);
         plannedCapturing[color]->setGeometry(0, 0, width(), height());
     }

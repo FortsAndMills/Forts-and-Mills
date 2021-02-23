@@ -15,7 +15,7 @@ class UnitPanel : public StateObject
 
 public:
     explicit UnitPanel(GraphicObject *parent, Game * game) :
-        StateObject(parent, "default", "UnitPanel", 0, "", "", constants->unitPanelAppearTime)
+        StateObject(parent, "default", "UnitPanel", 0, "", "", false, constants->unitPanelAppearTime)
     {
         this->game = game;
         this->setOpacity(0);

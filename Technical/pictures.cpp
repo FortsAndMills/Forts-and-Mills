@@ -85,7 +85,9 @@ void Images::InitPictures()
                  "startChoiceBarGreen",
                  "startChoiceBarYellow",
                  "startChoiceProgressBase",
-                 "startChoiceProgressFrame"},
+                 "startChoiceProgressFrame",
+                 "eng",
+                 "rus"},
                  ".png");
 
     names << PictureNameFolder("Numbers",
@@ -252,10 +254,10 @@ void Images::InitPictures()
     picture_rows["GreenLight"] = 4;
     picture_columns["GreenLight"] = 5;
 
-    names << PictureNameFolder("Decorations",
-                {"OceanBlur",
-                 "TextTexture"},
-                 ".jpg");
+//    names << PictureNameFolder("Decorations",
+//                {"OceanBlur",
+//                 "TextTexture"},
+//                 ".jpg");
 
     names << PictureNameFolder("MainGameElements",
                 {"Fort",

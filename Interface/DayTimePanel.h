@@ -18,7 +18,7 @@ public:
     explicit DayTimePanel(GraphicObject * parent, int dt, DayTimePanelState state = GAME_STATE, bool MaximizeDayTimes = false) :
         GraphicObject(parent, 0, "", "", "SimpleLayer")
     {        
-        is_rectangular = true;
+        this->set_rectangular_boundig_box();
         this->MaximizeDayTimes = MaximizeDayTimes;
 
         for (int time = 0; time < dt; ++time)

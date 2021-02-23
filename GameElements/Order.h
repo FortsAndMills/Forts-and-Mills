@@ -18,7 +18,7 @@ public:
 
 public:
     explicit Fortification(GraphicObject * parent, PlayerColor color, int point) :
-        GraphicObject(parent, RIGHT_CLICKABLE, color + "Fortification")
+        GraphicObject(parent, RIGHT_CLICKABLE, color + "Fortification", "", "", true)
     {
         this->point = point;
         this->setZValue(constants->fortificationZPos);
@@ -39,7 +39,7 @@ public:
     int anchor_point;
 
     explicit Order(GraphicObject * parent, GameOrder * prototype) :
-        GraphicObject(parent, RIGHT_CLICKABLE, prototype->type)
+        GraphicObject(parent, RIGHT_CLICKABLE, prototype->type, "", "", true)
     {
         this->prototype = prototype;
         this->setZValue(constants->orderZPos);
@@ -150,7 +150,7 @@ public:
     Resource R;
 
     explicit ResourcePic(GraphicObject * parent, Resource R) :
-        GraphicObject(parent, RIGHT_CLICKABLE, R)
+        GraphicObject(parent, RIGHT_CLICKABLE, R, "", "", true)
     {
         this->R = R;
     }
@@ -176,7 +176,7 @@ public:
     SpriteObject * Lighting;
 
     explicit OrderPic(GraphicObject * parent, PlayerColor owner, OrderType R) :
-        GraphicObject(parent, HOVER | RIGHT_CLICKABLE, R)
+        GraphicObject(parent, HOVER | RIGHT_CLICKABLE, R, "", "", true)
     {
         this->type = R;
         this->owner = owner;
@@ -275,7 +275,7 @@ public:
     QString name;
 
     explicit OrderVariant(GraphicObject * parent, QString name) :
-        StateObject(parent, "default", name == DeleteLastOrder ? "RedCancelButton" : name, HOVER | CLICKABLE | RIGHT_CLICKABLE)
+        StateObject(parent, "default", name == DeleteLastOrder ? "RedCancelButton" : name, HOVER | CLICKABLE | RIGHT_CLICKABLE, "", "", true)
     {
         this->name = name;
 

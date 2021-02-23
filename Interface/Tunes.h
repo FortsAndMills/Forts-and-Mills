@@ -22,7 +22,7 @@ public:
     int i;
 
     PlayersElement(GraphicObject * parent, int i, bool isOn, bool active) :
-        StateObject(parent, "on", "PlayerOnline", (active * CLICKABLE) | RIGHT_CLICKABLE, "", "SimpleLayer")
+        StateObject(parent, "on", "PlayerOnline", (active * CLICKABLE) | RIGHT_CLICKABLE, "", "SimpleLayer", true)
     {
         this->i = i;
         this->active = active;
@@ -52,11 +52,11 @@ public:
 
     PlayersTune(GraphicObject * parent) : GraphicObject(parent, RIGHT_CLICKABLE)
     {
-        is_rectangular = true;
+        this->set_rectangular_boundig_box();
         Label = new GraphicObject(this, 0, "PlayersLabel");
-        for (int i = 0; i < settings->rules->AllPlayers.size(); ++i)
+        for (int i = 0; i < settings->default_rules->AllPlayers.size(); ++i)
         {
-            players.push_back(new PlayersElement(this, i, i < settings->rules->numOfPlayers, true));
+            players.push_back(new PlayersElement(this, i, i < settings->default_rules->numOfPlayers, true));
             connect(players[i], SIGNAL(whenClicked(int)), SLOT(whenClicked(int)));
         }
     }
@@ -89,16 +89,16 @@ public:
 private slots:
     void whenClicked(int i)
     {
-        while (settings->rules->numOfPlayers <= i)
+        while (settings->default_rules->numOfPlayers <= i)
         {
-            players[settings->rules->numOfPlayers]->turnOn(true);
-            ++settings->rules->numOfPlayers;
+            players[settings->default_rules->numOfPlayers]->turnOn(true);
+            ++settings->default_rules->numOfPlayers;
         }
 
-        while (settings->rules->numOfPlayers > qMax(i + 1, 2))
+        while (settings->default_rules->numOfPlayers > qMax(i + 1, 2))
         {
-            --settings->rules->numOfPlayers;
-            players[settings->rules->numOfPlayers]->turnOn(false);
+            --settings->default_rules->numOfPlayers;
+            players[settings->default_rules->numOfPlayers]->turnOn(false);
         }
     }
 };
@@ -114,15 +114,15 @@ public:
     int i;
 
     TimerElement(GraphicObject * parent, int i, TimerType type, bool isOn, bool active) :
-        StateObject(parent, "on", "timer_" + type, (active * CLICKABLE) | RIGHT_CLICKABLE, "", "SimpleLayer")
+        StateObject(parent, "on", "timer_" + type, (active * CLICKABLE) | RIGHT_CLICKABLE, "", "SimpleLayer", true)
     {
         this->type = type;
         this->i = i;
         this->active = active;
         addPicture("off", "timer_" + type + "_off");
 
-        pictures["on"]->is_rectangular = true;
-        pictures["off"]->is_rectangular = true;
+        pictures["on"]->set_rectangular_boundig_box();
+        pictures["off"]->set_rectangular_boundig_box();
 
         turnOn(isOn);
     }
@@ -150,12 +150,12 @@ public:
 
     TimerTune(GraphicObject * parent) : GraphicObject(parent, RIGHT_CLICKABLE)
     {
-        is_rectangular = true;
+        this->set_rectangular_boundig_box();
         Label = new GraphicObject(this, 0, "TimerLabel");
-        for (int i = 0; i < settings->rules->AllTimerTypes.size(); ++i)
+        for (int i = 0; i < settings->default_rules->AllTimerTypes.size(); ++i)
         {
-            bool on = settings->rules->timer == settings->rules->AllTimerTypes[i];
-            options.push_back(new TimerElement(this, i, settings->rules->AllTimerTypes[i], on, true));
+            bool on = settings->default_rules->timer == settings->default_rules->AllTimerTypes[i];
+            options.push_back(new TimerElement(this, i, settings->default_rules->AllTimerTypes[i], on, true));
             connect(options[i], SIGNAL(whenClicked(int)), SLOT(whenClicked(int)));
 
             if (on)
@@ -191,12 +191,12 @@ public:
 private slots:
     void whenClicked(int i)
     {
-        if (settings->rules->timer != options[i]->type)
+        if (settings->default_rules->timer != options[i]->type)
         {
             options[turned_i]->turnOn(false);
             turned_i = i;
             options[turned_i]->turnOn(true);
-            settings->rules->timer = options[i]->type;
+            settings->default_rules->timer = options[i]->type;
         }
     }
 };
@@ -209,10 +209,10 @@ class FieldTune : public GraphicObject
     QVector < DigitObject * > digits;
 
 public:
-    FieldTune(GraphicObject * parent, GameRules * rules = settings->rules, bool active = true) :
+    FieldTune(GraphicObject * parent, GameRules * rules = settings->default_rules, bool active = true) :
         GraphicObject(parent, RIGHT_CLICKABLE)
     {
-        is_rectangular = true;
+        this->set_rectangular_boundig_box();
         this->active = active;
 
         digits.push_back(new DigitObject(this, rules->fieldH / 10, "Fort", active * (WHEEL | CLICKABLE)));
@@ -261,78 +261,78 @@ private slots:
     {
         // TODO ограничения на размер поля перенести в константы!
         if (n > 0 &&
-            settings->rules->fieldH < settings->rules->fieldW &&
-            settings->rules->fieldH < 12)
+            settings->default_rules->fieldH < settings->default_rules->fieldW &&
+            settings->default_rules->fieldH < 12)
         {
-            ++settings->rules->fieldH;
+            ++settings->default_rules->fieldH;
         }
         if (n < 0 &&
-             settings->rules->fieldH > 3)
+             settings->default_rules->fieldH > 3)
         {
-            --settings->rules->fieldH;
+            --settings->default_rules->fieldH;
         }
 
-        digits[0]->setN(settings->rules->fieldH / 10);
+        digits[0]->setN(settings->default_rules->fieldH / 10);
         digits[0]->setVisible(digits[0]->n > 0);
-        digits[1]->setN(settings->rules->fieldH % 10);
+        digits[1]->setN(settings->default_rules->fieldH % 10);
     }
     void WidthWheeled(int n)
     {
         if (n > 0 &&
-            settings->rules->fieldW < 20)
+            settings->default_rules->fieldW < 20)
         {
-            settings->rules->fieldW += 2;
+            settings->default_rules->fieldW += 2;
         }
         if (n < 0 &&
-             settings->rules->fieldW - 2 >= settings->rules->fieldH &&
-             settings->rules->fieldW - 2 >= 4)
+             settings->default_rules->fieldW - 2 >= settings->default_rules->fieldH &&
+             settings->default_rules->fieldW - 2 >= 4)
         {
-            settings->rules->fieldW -= 2;
+            settings->default_rules->fieldW -= 2;
         }
 
-        if (settings->rules->fieldW / 10)
+        if (settings->default_rules->fieldW / 10)
         {
-            digits[3]->setN(settings->rules->fieldW / 10);
+            digits[3]->setN(settings->default_rules->fieldW / 10);
             digits[4]->setVisible(true);
-            digits[4]->setN(settings->rules->fieldW % 10);
+            digits[4]->setN(settings->default_rules->fieldW % 10);
         }
         else
         {
-            digits[3]->setN(settings->rules->fieldW);
+            digits[3]->setN(settings->default_rules->fieldW);
             digits[4]->setVisible(false);
         }
     }
     void HeightClicked()
     {
-        int H = settings->rules->fieldH;
+        int H = settings->default_rules->fieldH;
         HeightWheeled(1);
 
-        if (H == settings->rules->fieldH)
+        if (H == settings->default_rules->fieldH)
         {
-            settings->rules->fieldH = 3;
+            settings->default_rules->fieldH = 3;
             digits[0]->setN(0);
             digits[0]->setVisible(false);
-            digits[1]->setN(settings->rules->fieldH % 10);
+            digits[1]->setN(settings->default_rules->fieldH % 10);
         }
     }
     void WidthClicked()
     {
-        int W = settings->rules->fieldW;
+        int W = settings->default_rules->fieldW;
         WidthWheeled(1);
 
-        if (W == settings->rules->fieldW)
+        if (W == settings->default_rules->fieldW)
         {
-            settings->rules->fieldW = qMax(4, settings->rules->fieldH + settings->rules->fieldH % 2);
+            settings->default_rules->fieldW = qMax(4, settings->default_rules->fieldH + settings->default_rules->fieldH % 2);
 
-            if (settings->rules->fieldW / 10)
+            if (settings->default_rules->fieldW / 10)
             {
-                digits[3]->setN(settings->rules->fieldW / 10);
+                digits[3]->setN(settings->default_rules->fieldW / 10);
                 digits[4]->setVisible(true);
-                digits[4]->setN(settings->rules->fieldW % 10);
+                digits[4]->setN(settings->default_rules->fieldW % 10);
             }
             else
             {
-                digits[3]->setN(settings->rules->fieldW);
+                digits[3]->setN(settings->default_rules->fieldW);
                 digits[4]->setVisible(false);
             }
         }
@@ -354,7 +354,7 @@ public:
     {
         this->active = active;
         this->type = type;
-        on = new Unit(this, color == "" ? settings->rules->AllPlayers[rand() % settings->rules->AllPlayers.size()] : color, type);
+        on = new Unit(this, color == "" ? settings->default_rules->AllPlayers[rand() % settings->default_rules->AllPlayers.size()] : color, type);
         off = new Unit(this, "Neutral", type);
 
         turnOn(isOn);
@@ -403,7 +403,7 @@ class UnitsTune : public GraphicObject
 public:
     QVector <UnitsElement *> units;
 
-    explicit UnitsTune(GraphicObject * parent, GameRules * rules = settings->rules, bool active = true) :
+    explicit UnitsTune(GraphicObject * parent, GameRules * rules = settings->default_rules, bool active = true) :
         GraphicObject(parent)
     {
         this->active = active;
@@ -495,7 +495,7 @@ class OrdersTune : public GraphicObject
 public:
     QList < OrdersElement * > orders;
 
-    OrdersTune(GraphicObject * parent, GameRules * rules = settings->rules, bool active = true) : GraphicObject(parent)
+    OrdersTune(GraphicObject * parent, GameRules * rules = settings->default_rules, bool active = true) : GraphicObject(parent)
     {
         this->active = active;
         for (int i = 0; i < rules->AllOrders.size(); ++i)
@@ -542,10 +542,10 @@ class DayTimesTune : public GraphicObject
     bool active;
 
 public:
-    explicit DayTimesTune(GraphicObject * parent, GameRules * rules = settings->rules, bool active = true) :
+    explicit DayTimesTune(GraphicObject * parent, GameRules * rules = settings->default_rules, bool active = true) :
         GraphicObject(parent, RIGHT_CLICKABLE | (active * HOVER) | (active * CLICKABLE), "", "LessonFrameSelection", "SimpleLayer")
     {
-        is_rectangular = true;
+        this->set_rectangular_boundig_box();
         this->active = active;
         dayTimes = rules->dayTimes;
         createPanel(rules->changingDayTimes);
@@ -577,26 +577,26 @@ public:
     {
         panel->Delete();
 
-        if (settings->rules->changingDayTimes)
+        if (settings->default_rules->changingDayTimes)
         {
-            settings->rules->changingDayTimes = false;
-            settings->rules->dayTimes = 1;
+            settings->default_rules->changingDayTimes = false;
+            settings->default_rules->dayTimes = 1;
             dayTimes = 1;
         }
         else if (dayTimes < 5)
         {
             ++dayTimes;
-            ++settings->rules->dayTimes;
+            ++settings->default_rules->dayTimes;
         }
         else
         {
-            settings->rules->changingDayTimes = true;
-            settings->rules->dayTimes = 1;
+            settings->default_rules->changingDayTimes = true;
+            settings->default_rules->dayTimes = 1;
         }
 
-        createPanel(settings->rules->changingDayTimes);
+        createPanel(settings->default_rules->changingDayTimes);
 
-        if (settings->rules->changingDayTimes)
+        if (settings->default_rules->changingDayTimes)
             timer->start(constants->dayTimesChangeAnimationTime);
         else
             timer->stop();

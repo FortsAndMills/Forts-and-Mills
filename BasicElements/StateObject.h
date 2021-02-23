@@ -20,7 +20,7 @@ protected:
 public:
     void addPicture(QString state, QString pictureName)  // Функция добавления нового состояния
     {
-        pictures[state] = new GraphicObject(this, (this->flags != 0) * CHILD, pictureName);
+        pictures[state] = new GraphicObject(this, (this->flags != 0) * CHILD, pictureName, "", "", this->keepaspectratio);
         pictures[state]->setOpacity(0);
         pictures[state]->setZValue(constants->statesZpos);
     }
@@ -85,8 +85,9 @@ public:
                          Properties properties = 0,
                          QString frameName = "",
                          QString layerName = "",
+                         bool keepaspectratio = false,
                          qreal time = constants->stateObjectChangeTime) :
-        GraphicObject(parent, properties, "", frameName, layerName)
+        GraphicObject(parent, properties, "", frameName, layerName, keepaspectratio)
     {
         addPicture(defaultStateName, defaultPictureName);
         pictures[defaultStateName]->setOpacity(1);

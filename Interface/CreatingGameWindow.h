@@ -24,7 +24,7 @@ class CreatingGameWindow : public GraphicObject
     Dialog * dialog;
 
 public:
-    SpecialButton * cancel;
+    EnlargingButton * cancel;
     GraphicObject * create;
 
     explicit CreatingGameWindow(GraphicObject * parent) : GraphicObject(parent)
@@ -52,7 +52,7 @@ public:
 
         dayTimes = new DayTimesTune(this);
 
-        cancel = new SpecialButton(this, "HomeButton");
+        cancel = new EnlargingButton(this, "HomeButton");
         create = new GraphicObject(this, CLICKABLE | HOVER, "CreateButton", "CreateGameFrameSelection", "SimpleLayer");
 
         dialog = new Dialog(this);
@@ -125,17 +125,17 @@ private slots:
 
         if (units->units[i]->isOn == on)
             return false;
-        if (!on && settings->rules->unitsInGame.size() <= 1)
+        if (!on && settings->default_rules->unitsInGame.size() <= 1)
             return true;
 
         units->units[i]->turnOn(on);
         if (on)
         {
-            settings->rules->unitsInGame.push_back(type);
+            settings->default_rules->unitsInGame.push_back(type);
         }
         else
         {
-            settings->rules->unitsInGame.removeAll(type);
+            settings->default_rules->unitsInGame.removeAll(type);
         }
 
         bool fail = false;
@@ -167,10 +167,10 @@ private slots:
         orders->orders[i]->turnOn(on);
         if (on)
         {
-            settings->rules->ordersInGame.push_back(type);
+            settings->default_rules->ordersInGame.push_back(type);
         }
         else
-            settings->rules->ordersInGame.removeAll(type);
+            settings->default_rules->ordersInGame.removeAll(type);
 
         bool fail = false;
         if (type == "Siege")

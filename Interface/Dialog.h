@@ -18,7 +18,7 @@ protected:
     Object * WaitingPicture = NULL;
     Object * SupportPicture = NULL;
 
-    SpecialButton * ok = NULL, * cancel = NULL, * back = NULL;
+    EnlargingButton * ok = NULL, * cancel = NULL, * back = NULL;
 
     GameRules * rules;
 
@@ -90,7 +90,7 @@ public:
         if (SupportPicture != NULL) SupportPicture->Delete();
         if (supportPic != "")
         {
-            SupportPicture = new Object(this, supportPic);
+            SupportPicture = new Object(this, supportPic, true);
         }
         else
             SupportPicture = NULL;
@@ -102,7 +102,7 @@ public:
         }
         if (okButton)
         {
-            ok = new SpecialButton(this, color + "OkButton", false);
+            ok = new EnlargingButton(this, color + "OkButton", false);
             connect(ok, SIGNAL(leftClicked()), SLOT(okClicked()));
         }
 
@@ -113,12 +113,12 @@ public:
         }
         if (cancelButton)
         {
-            cancel = new SpecialButton(this, color + "CancelButton", false);
+            cancel = new EnlargingButton(this, color + "CancelButton", false);
             connect(cancel, SIGNAL(leftClicked()), SLOT(cancelClicked()));
         }
         else if (backButton)
         {
-            cancel = new SpecialButton(this, color + "BackButton", false);
+            cancel = new EnlargingButton(this, color + "BackButton", false);
             connect(cancel, SIGNAL(leftClicked()), SLOT(backClicked()));
         }
 

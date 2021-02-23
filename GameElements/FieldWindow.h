@@ -13,13 +13,13 @@ public:
 
     explicit FieldWindow(GraphicObject * parent, Field * field) : GraphicObject(parent)
     {
-        up = new GraphicObject(this, CLICKABLE, "up", "", "SimpleLayer");
+        up = new GraphicObject(this, CLICKABLE, "up", "", "SimpleLayer", true);
         connect(up, SIGNAL(leftClicked()), field, SLOT(moveUp()));
-        down = new GraphicObject(this, CLICKABLE, "down", "", "SimpleLayer");
+        down = new GraphicObject(this, CLICKABLE, "down", "", "SimpleLayer", true);
         connect(down, SIGNAL(leftClicked()), field, SLOT(moveDown()));
-        right = new GraphicObject(this, CLICKABLE, "right", "", "SimpleLayer");
+        right = new GraphicObject(this, CLICKABLE, "right", "", "SimpleLayer", true);
         connect(right, SIGNAL(leftClicked()), field, SLOT(moveRight()));
-        left = new GraphicObject(this, CLICKABLE, "left", "", "SimpleLayer");
+        left = new GraphicObject(this, CLICKABLE, "left", "", "SimpleLayer", true);
         connect(left, SIGNAL(leftClicked()), field, SLOT(moveLeft()));
     }
     virtual void Delete()

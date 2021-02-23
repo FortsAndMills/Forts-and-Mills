@@ -35,16 +35,17 @@ public:
 public:
     explicit GraphicObject(GraphicObject *parent = 0, Properties flags = 0,
                            QString pictureName = "", QString framePictureName = "",
-                           QString layerName = "");
+                           QString layerName = "", bool keepaspectratio = false);
     virtual void Delete();
 
     void resize(qreal w, qreal h);
 
-public:
-    // фикс с прямоугольной областью
-    // по умолчанию "мышка наведена" на объект только если он
-    // попадает на непрозрачный пиксель картинки. Иногда это неудобно.
+private:
     bool is_rectangular = false;
+public:
+//    // фикс с прямоугольной областью
+//    // по умолчанию "мышка наведена" на объект только если он
+//    // попадает на непрозрачный пиксель картинки. Иногда это неудобно.
     QRectF boundingRect() const
     {
         if (is_rectangular)
@@ -66,6 +67,13 @@ public:
         if (is_rectangular)
             return boundingRect().contains(point);
         return QGraphicsPixmapItem::contains(point);
+    }
+    void set_rectangular_boundig_box()
+    {
+        is_rectangular = true;
+
+        // нормальный способ это делать, но начинает перехватывать мышку где не надо
+        // this->setShapeMode(QGraphicsPixmapItem::BoundingRectShape);
     }
 
     // взаимодействие с пользователем

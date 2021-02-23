@@ -19,7 +19,7 @@ class Timer : public GraphicObject
 public:
     Timer(GraphicObject * parent) : GraphicObject(parent, RIGHT_CLICKABLE)
     {
-        is_rectangular = true;
+        this->set_rectangular_boundig_box();
         this->setVisible(false);
 
         // цифры
@@ -119,9 +119,9 @@ private:
         digits[2]->setN((seconds % 60) / 10);
         digits[3]->setN((seconds % 60) % 10);
 
-        if (seconds <= 30 && seconds > 0)
+        if (seconds == 30)
             soundeffect->play();
-        else
+        else if (seconds > 30)
             soundeffect->stop();
     }
 

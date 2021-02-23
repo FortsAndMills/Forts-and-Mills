@@ -10,7 +10,7 @@ class GoButton : public StateObject
 
 public:
     explicit GoButton(GraphicObject * parent, PlayerColor color) :
-        StateObject(parent, "disabled", "DisabledGoButton", 0, "SimpleLayer")
+        StateObject(parent, "disabled", "DisabledGoButton", 0, "SimpleLayer", "", true)
     {
         addPicture("enabled", color + "GoButton");
         addPicture("pushed", "PressedGoButton");
@@ -35,7 +35,7 @@ public:
     }
     void leftClick()
     {
-        setPictureState("pushed");
+        setPictureState("pushed");  // TODO: disabled go picture is only for blue :(
         setProperties(0);
     }
 
@@ -49,7 +49,7 @@ class NextButton : public GraphicObject
 
 public:
     explicit NextButton(GraphicObject * parent, PlayerColor mainPlayerColor) :
-        GraphicObject(parent, CLICKABLE, mainPlayerColor + "Next", "", "SimpleLayer")
+        GraphicObject(parent, CLICKABLE, mainPlayerColor + "Next", "", "SimpleLayer", true)
     {
     }
 
