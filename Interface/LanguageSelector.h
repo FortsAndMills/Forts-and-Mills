@@ -123,7 +123,11 @@ public slots:
         panel_opened = false;
         settings->language = new_language;
         this->setPictureState(new_language);
+        emit languageChanged();
     }
+
+signals:
+    void languageChanged();
 };
 
 #endif // LANGUAGESELECTOR_H

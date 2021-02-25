@@ -139,6 +139,7 @@ RESOURCES += \
     Resources/Fonts.qrc \
     Resources/Icons.qrc \
     Resources/InterfaceElements.qrc \
+    Resources/LanguageInterface.qrc \
     Resources/MainGameElements.qrc \
     Resources/Numbers.qrc \
     Resources/Orders.qrc \

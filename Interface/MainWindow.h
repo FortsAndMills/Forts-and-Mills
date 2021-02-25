@@ -61,6 +61,7 @@ public:
         creating_game_window = new CreatingGameWindow(background);
         connect(creating_game_window->cancel, SIGNAL(leftClicked()), SLOT(returnToMainMenu()));
         connect(creating_game_window->create, SIGNAL(leftClicked()), SLOT(createGame()));
+        connect(menu_window->language_selector, SIGNAL(languageChanged()), creating_game_window, SLOT(languageChanged()));
 
         how_to_play_window = new HowToPlayWindow(background);
         connect(how_to_play_window->HomeButton, SIGNAL(leftClicked()), SLOT(returnToMainMenu()));
@@ -68,6 +69,7 @@ public:
         {
             connect(LL, SIGNAL(clicked(int)), SLOT(CreateLearningGame(int)));
         }
+        connect(menu_window->language_selector, SIGNAL(languageChanged()), how_to_play_window, SLOT(languageChanged()));
 
         control_panel = new SystemControlPanel();
         scene->addItem(control_panel);

@@ -21,8 +21,6 @@ class MenuWindow : public GraphicObject
 
     EnlargingButton * question;
 
-    LanguageSelector * language_selector;
-
     QVector < GameLabel * > games;
     GameLabel * game(int i)
     {
@@ -38,6 +36,7 @@ public:
     GraphicObject * CreateNewGame;
     GraphicObject * HowToPlayFrame;
     Object * HowToPlayLabel;
+    LanguageSelector * language_selector;
 
     explicit MenuWindow(GraphicObject * parent) : GraphicObject(parent)
     {
@@ -59,18 +58,19 @@ public:
         connect(client, SIGNAL(game_left(qint32)), SLOT(game_left(qint32)));
         connect(client, SIGNAL(game_removed(qint32)), SLOT(game_removed(qint32)));
 
-        CreateNewGame = new GraphicObject(this, CLICKABLE | HOVER, "CreateNewGame", "NewGameFrameSelection", "SimpleLayer");
+        CreateNewGame = new GraphicObject(this, CLICKABLE | HOVER, "CreateNewGame_" + settings->language, "NewGameFrameSelection", "SimpleLayer");
         CreateNewGame->setVisible(false);
         connect(CreateNewGame, SIGNAL(leftClicked()), SLOT(leaveJoined()));
 
         HowToPlayFrame = new GraphicObject(this, CLICKABLE | HOVER, "LessonFrame", "LessonFrameSelection", "SimpleLayer");
         connect(HowToPlayFrame, SIGNAL(leftClicked()), SLOT(leaveJoined()));
-        HowToPlayLabel = new Object(this, "HowToPlayButton");
+        HowToPlayLabel = new Object(this, "HowToPlayButton_" + settings->language, true);
 
         question = new EnlargingButton(this, "Question");
         connect(question, SIGNAL(leftClicked()), SLOT(questionClicked()));
 
         language_selector = new LanguageSelector(this);
+        connect(language_selector, SIGNAL(languageChanged()), SLOT(languageChanged()));
 
         CheckForLessonsPassed();
     }
@@ -217,6 +217,11 @@ public slots:
     void questionClicked()
     {
         help->HelpAsked("HowToAskHelp");
+    }
+    void languageChanged()
+    {
+        HowToPlayLabel->setPicture("HowToPlayButton_" + settings->language);
+        CreateNewGame->setPicture("CreateNewGame_" + settings->language);
     }
 
     // РАБОТА СО СПИСКОМ КОМНАТ

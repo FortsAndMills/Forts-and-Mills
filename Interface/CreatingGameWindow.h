@@ -53,7 +53,7 @@ public:
         dayTimes = new DayTimesTune(this);
 
         cancel = new EnlargingButton(this, "HomeButton");
-        create = new GraphicObject(this, CLICKABLE | HOVER, "CreateButton", "CreateGameFrameSelection", "SimpleLayer");
+        create = new GraphicObject(this, CLICKABLE | HOVER, "CreateButton_" + settings->language, "CreateGameFrameSelection", "SimpleLayer");
 
         dialog = new Dialog(this);
         dialog->showHelp = false;
@@ -183,6 +183,11 @@ private slots:
         if (fail)
             orderClicked(!on, type);
         return fail;
+    }
+
+    void languageChanged()
+    {
+        create->setPicture("CreateButton_" + settings->language);
     }
 };
 

@@ -19,7 +19,7 @@ public:
     {
         this->n = n;
 
-        text = new Object(this, "Lesson" + QString::number(n + 1));
+        text = new Object(this, "Lesson" + QString::number(n + 1) + "_" + settings->language, true);
 
         CheckForLessonsPassed();
     }
@@ -41,6 +41,11 @@ public:
     }
 
     void leftClick() { emit clicked(n); }
+
+    void languageChanged()
+    {
+        text->setPicture("Lesson" + QString::number(n + 1) + "_" + settings->language);
+    }
 
 signals:
     void clicked(int);
@@ -114,6 +119,13 @@ public:
         {
             lessons[i]->setGeometry(lessonLabelGeometry(i));
         }
+    }
+
+public slots:
+    void languageChanged()
+    {
+        for (int i = 0; i < LESSONS_AMOUNT; ++i)
+            lessons[i]->languageChanged();
     }
 };
 

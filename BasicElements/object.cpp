@@ -99,7 +99,7 @@ void Object::setPixmap(const QPixmap &pixmap)
 
     qreal OldWidth = width(), OldHeight = height();
     original = pixmap;
-    resize(OldWidth, OldHeight);  // нужно вернуться к старым размерам
+    setGeometry(x(), y(), OldWidth, OldHeight);  // нужно вернуться к старым размерам
 }
 void Object::setPicture(QString name)
 {

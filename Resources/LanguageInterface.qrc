@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Content/LanguageInterface/CreateButton_eng.png</file>
+        <file>Content/LanguageInterface/CreateButton_rus.png</file>
+        <file>Content/LanguageInterface/CreateNewGame_eng.png</file>
+        <file>Content/LanguageInterface/CreateNewGame_rus.png</file>
+        <file>Content/LanguageInterface/HowToPlayButton_eng.png</file>
+        <file>Content/LanguageInterface/HowToPlayButton_rus.png</file>
+        <file>Content/LanguageInterface/Lesson1_eng.png</file>
+        <file>Content/LanguageInterface/Lesson1_rus.png</file>
+        <file>Content/LanguageInterface/Lesson2_eng.png</file>
+        <file>Content/LanguageInterface/Lesson2_rus.png</file>
+        <file>Content/LanguageInterface/Lesson3_eng.png</file>
+        <file>Content/LanguageInterface/Lesson3_rus.png</file>
+        <file>Content/LanguageInterface/Lesson4_eng.png</file>
+        <file>Content/LanguageInterface/Lesson4_rus.png</file>
+    </qresource>
+</RCC>
