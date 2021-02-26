@@ -45,6 +45,10 @@ void GameWindow::getReadyToPlanning()
 }
 void GameWindow::getReadyToRealization()
 {
+    // такая ситуация может быть, если мы выбирали параметр, а враг сдался.
+    if (state == CHOOSE_ORDER_PARAMETER)
+        breakChoosingOrderParameter();
+
     state = REALIZATION_PHASE;
 
     setTime(-1);
