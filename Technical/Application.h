@@ -6,6 +6,7 @@
 #include "Pictures.h"
 #include "AnimationManager.h"
 #include "HelpManager.h"
+#include "DialogText.h"
 #include "Client.h"
 #include "Headers.h"
 
@@ -19,6 +20,7 @@ public:
         constants = new Constants();  // инициализируем ключевые классы
         settings = new Settings(this);
         images = new Images();
+        dialogtext = new DialogText();
         animations = new AnimationManager();
         help = new HelpManager();
         client = new Client();

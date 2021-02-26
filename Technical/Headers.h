@@ -56,6 +56,7 @@ class Images;
 class AnimationManager;
 class HelpManager;
 class Client;
+class DialogText;
 
 #define HexType QString
 #define UnitType QString
@@ -94,6 +95,7 @@ extern Settings * settings;
 extern Constants * constants;
 extern Images * images;
 extern AnimationManager * animations;
+extern DialogText * dialogtext;
 extern HelpManager * help;
 extern Client * client;
 extern QFile * logFile;

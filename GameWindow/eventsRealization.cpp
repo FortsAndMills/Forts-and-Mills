@@ -1,4 +1,5 @@
 #include "GameWindow.h"
+#include "Technical/dialogtext.h"
 
 GameWindow::WaitingType GameWindow::RealizeEvent()
 {
@@ -407,11 +408,11 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
     {
         if (e->color == mainPlayerColor)
         {
-            dialog->set(mainPlayerColor, "ПОБЕДА!!!", false, false, true);
+            dialog->set(mainPlayerColor, dialogtext->get("victory"), false, false, true);
         }
         else
         {
-            dialog->set(mainPlayerColor, "ПОРАЖЕНИЕ!!!", false, false, true);
+            dialog->set(mainPlayerColor, dialogtext->get("defeat"), false, false, true);
         }
         resizeDialog(width(), height());
 

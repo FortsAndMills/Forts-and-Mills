@@ -4,6 +4,7 @@
 #include "Technical/Headers.h"
 #include "Technical/Constants.h"
 #include "Technical/Client.h"
+#include "Technical/DialogText.h"
 #include "SpecialButton.h"
 #include "LanguageSelector.h"
 #include "GameLabel.h"
@@ -45,7 +46,7 @@ public:
 
         dialog = new Dialog(this);
         dialog->ClipWithItem(parent);
-        dialog->set("Neutral", "ИДЁТ ПОДКЛЮЧЕНИЕ К СЕРВЕРУ...", true);
+        dialog->set("Neutral", dialogtext->get("connecting..."), true);
 
         connect(client, SIGNAL(connected()), SLOT(connected()));
         connect(client, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(NetworkError(QAbstractSocket::SocketError)));
@@ -182,7 +183,7 @@ public slots:
         if (isBlocked)
             return;
 
-        dialog->set("Neutral", "ОШИБКА!<br>НЕВОЗМОЖНО ПОДКЛЮЧИТЬСЯ К СЕРВЕРУ :(");
+        dialog->set("Neutral", dialogtext->get("cantconnect"));
 
         debug << "Connection error: " << client->errorString() << "\n";
     }
@@ -191,14 +192,14 @@ public slots:
         if (isBlocked)
             return;
 
-        dialog->set("Neutral", "ОШИБКА!<br>СОЕДИНЕНИЕ С СЕРВЕРОМ РАЗОРВАНО!");
+        dialog->set("Neutral", dialogtext->get("menuconnectionbreak"));
 
         debug << "Server disconnected\n";
     }
 
     void blocked()
     {
-        dialog->set("Neutral", "СЕРВЕР ОБНОВЛЯЕТСЯ.");
+        dialog->set("Neutral", dialogtext->get("serverupdates"));
 
         isBlocked = true;
         CreateNewGame->setVisible(false);
@@ -207,7 +208,7 @@ public slots:
     void badVersion()
     {
         dialog->setVisible(true);
-        dialog->set("Neutral", "Эта версия игры устарела!<br>Найдите новую версию.");
+        dialog->set("Neutral", dialogtext->get("versiontooold"));
 
         isBlocked = true;
         CreateNewGame->setVisible(false);

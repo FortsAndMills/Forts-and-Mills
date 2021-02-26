@@ -4,6 +4,7 @@ Settings * settings;
 Constants * constants;
 Images * images;
 AnimationManager * animations;
+DialogText * dialogtext;
 HelpManager * help;
 Client * client;
 QFile * logFile;

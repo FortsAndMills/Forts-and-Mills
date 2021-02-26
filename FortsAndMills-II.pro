@@ -24,6 +24,7 @@ SOURCES += main.cpp \
     GameExecution/gameLog.cpp \
     GameExecution/gameUtils.cpp \
     Learning/LessonGame.cpp \
+    Technical/dialogtext.cpp \
     Technical/headers.cpp \
     GameElements/field.cpp \
     GameElements/hex.cpp \
@@ -69,6 +70,7 @@ HEADERS  += mainwindow.h \
     Basic/Headers.h \
     Basic/Button.h \
     Basic/Application.h \
+    Technical/DialogText.h \
     Technical/Headers.h \
     Technical/ProgrammSettings.h \
     Interface/MainWindow.h \

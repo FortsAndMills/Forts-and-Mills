@@ -1,4 +1,5 @@
 #include "GameWindow.h"
+#include "Technical/dialogtext.h"
 
 void GameWindow::initialConnections()
 {
@@ -380,7 +381,7 @@ void GameWindow::timerExpired()
 
         if (!game->players[mainPlayerColor]->GiveUp)
         {
-            dialog->set(mainPlayerColor, "Время вышло!", false, true, false, false, "", "timerexpired");
+            dialog->set(mainPlayerColor, dialogtext->get("timeisup"), false, true, false, false, "", "timerexpired");
             resizeDialog(width(), height());
         }
     }
@@ -443,7 +444,7 @@ void GameWindow::GoButtonPushed()
         }
 
         state = ARE_YOU_SURE_DIALOG;
-        dialog->set(mainPlayerColor, "УВЕРЕНЫ?", false, true, true, false, "", "plan");
+        dialog->set(mainPlayerColor, dialogtext->get("areyousure"), false, true, true, false, "", "plan");
         resizeDialog(width(), height());
     }
 }
@@ -553,7 +554,7 @@ void GameWindow::readFromOpponent(QByteArray message)
 
     if (Command == GIVE_UP)
     {
-        dialog->set(mainPlayerColor, "Игрок " + game->rules->players[sender_index] + " сдался!", false, false, true);
+        dialog->set(mainPlayerColor, dialogtext->playerGaveUp(game->rules->players[sender_index]), false, false, true);
         resizeDialog(width(), height());
 
         game->playerGiveUp(sender_index);
@@ -624,14 +625,14 @@ void GameWindow::NextButtonClicked()
 // оповещения о событиях
 void GameWindow::serverDisconnected()
 {
-    dialog->set(mainPlayerColor, "ОШИБКА!<br>Соединение с сервером разорвано! Пытаемся переподключиться...", false, false, true);
+    dialog->set(mainPlayerColor, dialogtext->get("connectionerror"), false, false, true);
     resizeDialog(width(), height());
 
     qApp->alert(dynamic_cast<QWidget *>(this->parent()));
 }
 void GameWindow::succesfullyReconnected()
 {
-    dialog->set(mainPlayerColor, "Соединение с сервером было восстановлено после сбоя.", false, false, true);
+    dialog->set(mainPlayerColor, dialogtext->get("Ireconnected"), false, false, true);
     resizeDialog(width(), height());
 
     qApp->alert(dynamic_cast<QWidget *>(this->parent()));
@@ -640,7 +641,7 @@ void GameWindow::opponentDisconnected(qint8 index)
 {
     if (!game->players[game->rules->players[index]]->GiveUp)
     {
-        dialog->set(mainPlayerColor, "Потеряно соединение с игроком " + game->rules->players[index] + "! Пытаемся переподключиться.", false, false, true);
+        dialog->set(mainPlayerColor, dialogtext->lostConnection(game->rules->players[index]), false, false, true);
         resizeDialog(width(), height());
 
         qApp->alert(dynamic_cast<QWidget *>(this->parent()));
@@ -650,7 +651,7 @@ void GameWindow::opponentReconnected(qint8 index)
 {
     if (!game->players[game->rules->players[index]]->GiveUp)
     {
-        dialog->set(mainPlayerColor, "Игрок " + game->rules->players[index] + " успешно переподключился!", false, false, true);
+        dialog->set(mainPlayerColor, dialogtext->otherPlayerReconnected(game->rules->players[index]), false, false, true);
         resizeDialog(width(), height());
 
         qApp->alert(dynamic_cast<QWidget *>(this->parent()));
@@ -700,7 +701,7 @@ void GameWindow::whiteFlagClicked()
     prev_state = state;
     planned_to_go_home = false;
 
-    dialog->set(mainPlayerColor, "Сдаётесь?", false, true, true, false, "", "GiveUp");
+    dialog->set(mainPlayerColor, dialogtext->get("askgiveup"), false, true, true, false, "", "GiveUp");
     resizeDialog(width(), height());
 }
 void GameWindow::homeButtonClicked()
@@ -715,6 +716,6 @@ void GameWindow::homeButtonClicked()
     go->enable(false);  // TODO возможно, тут сокрыта бага им. Козловцева
     planned_to_go_home = true;
 
-    dialog->set(mainPlayerColor, "Сдаётесь?", false, true, true, false, "", "GiveUp");
+    dialog->set(mainPlayerColor, dialogtext->get("askgiveup"), false, true, true, false, "", "GiveUp");
     resizeDialog(width(), height());
 }
