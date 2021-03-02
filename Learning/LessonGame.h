@@ -35,11 +35,12 @@ public:
 
     void GenerateField() override;
 
+private:
     // вспомогательные переменные
     int round = 0;  // номер раунда
     bool antirepeat = false;  // если игрок ошибается, нужно показывать ему разные
                               // сообщения об ошибке
-    QString final_message;    // переменная для туториала 4
+    QMap<QString, QString> final_message;    // переменная для туториала 4
 
 private:
     GameUnit * unit1;
@@ -57,6 +58,8 @@ public:
     int NextStage() override;
 
 private:
+    QMap<QString, QString> text;
+
     // пара утилит
     // переносит дом юнита из клетки, где он появился, в другую
     // удобно делать так, чем переносить самого юнита

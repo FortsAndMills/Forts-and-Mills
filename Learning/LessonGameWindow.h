@@ -40,12 +40,12 @@ public:
     class Lesson
     {
     public:
-        QString text;
+        QMap<QString, QString> text;
         bool with_ok_button;
         QString pictureName;
 
         Lesson() {}
-        Lesson(QString text, bool with_ok_button, QString pictureName)
+        Lesson(const QMap<QString, QString>& text, bool with_ok_button, QString pictureName)
         {
             this->text = text;
             this->with_ok_button = with_ok_button;
@@ -57,11 +57,10 @@ public:
 
     void ShowLesson(Lesson L)
     {
-        // здесь раньше был mainPlayerColor
-        dialog->set("Neutral", L.text, false, false, L.with_ok_button || lesson_shown < lessons.size() - 1, lesson_shown != 0, L.pictureName);
+        dialog->set("Neutral", L.text[settings->language], false, false, L.with_ok_button || lesson_shown < lessons.size() - 1, lesson_shown != 0, L.pictureName);
         resizeDialog(width(), height());
     }
-    void ShowLesson(QString text, bool with_ok_button = false, QString pictureName = "", bool addToHistory = false)
+    void ShowLesson(const QMap<QString, QString>& text, bool with_ok_button = false, QString pictureName = "", bool addToHistory = false)
     {        
         if (addToHistory)
         {
@@ -73,7 +72,7 @@ public:
 
         ShowLesson(Lesson(text, with_ok_button, pictureName));
     }
-    void ShowLesson(QString text, QString picName)
+    void ShowLesson(const QMap<QString, QString>& text, QString picName)
     {
         ShowLesson(text, false, picName);
     }
@@ -278,7 +277,7 @@ public:
     Reaction RiverCrossReaction;
     void riverCrossedInPlan()
     {
-        if (RiverCrossReaction.text != "")
+        if (!RiverCrossReaction.text.empty())
             ShowLesson(RiverCrossReaction.text, RiverCrossReaction.picture);
     }
 
@@ -288,7 +287,7 @@ public:
     {
         Reaction R = UnitClickReactions.contains(unit) ? UnitClickReactions[unit] : DefaultUnitClickReaction;
 
-        if (R.text != "")
+        if (!R.text.empty())
             ShowLesson(R.text, R.picture);
 
         if (R.type == DEFAULT || R.type == NEXT_PHASE)
@@ -304,7 +303,7 @@ public:
     {
         Reaction R = OrderChoiceReactions.contains(type) ? OrderChoiceReactions[type] : DefaultOrderChoiceReaction;
 
-        if (R.text != "")
+        if (!R.text.empty())
             ShowLesson(R.text, R.picture);
 
         if (R.type == DEFAULT || R.type == NEXT_PHASE)
@@ -320,7 +319,7 @@ public:
     {
         Reaction R = HexChoiceReactions.contains(game->hex(c)) ? HexChoiceReactions[game->hex(c)] : DefaultHexChoiceReaction;
 
-        if (R.text != "")
+        if (!R.text.empty())
             ShowLesson(R.text, R.picture);
 
         if (R.type == DEFAULT || R.type == NEXT_PHASE)

@@ -8,10 +8,10 @@ class Reaction
 {
 public:
     ReactionType type;
-    QString text;
+    QMap<QString, QString> text;
     QString picture;
 
-    Reaction(ReactionType type = DEFAULT, QString text = "", QString picture = "")
+    Reaction(ReactionType type = DEFAULT, const QMap<QString, QString> text = QMap<QString, QString>(), QString picture = "")
     {
         this->type = type;
         this->text = text;
@@ -53,7 +53,7 @@ class LessonMessage : public GameMessage
 public:
     LessonMessageType ltype;
 
-    QString text;
+    QMap<QString, QString> text;
     QString pictureName;
     bool with_ok_button, isComment;
     GameUnit * unit;
@@ -67,7 +67,7 @@ public:
 
     explicit LessonMessage() : GameMessage() {}
 
-    void ShowMessage(QString text, bool with_ok_button = true, bool isComment = false, bool clearHistory = false, QSet <GameUnit *> involved = QSet <GameUnit *>(), QString pictureName = "")
+    void ShowMessage(const QMap<QString, QString>& text, bool with_ok_button = true, bool isComment = false, bool clearHistory = false, QSet <GameUnit *> involved = QSet <GameUnit *>(), QString pictureName = "")
     {
         type = LESSON;
         ltype = SHOW_MESSAGE;
@@ -79,11 +79,11 @@ public:
         this->clearHistory = clearHistory;
         this->addToHistory = true;
     }
-    void ShowMessageAndPicture(QString text, QString pictureName, bool with_ok_button = true, bool clearHistory = false)
+    void ShowMessageAndPicture(const QMap<QString, QString>& text, QString pictureName, bool with_ok_button = true, bool clearHistory = false)
     {
         ShowMessage(text, with_ok_button, false, clearHistory, QSet <GameUnit *>(), pictureName);
     }
-    void ShowErrorMessage(QString text, QString pictureName = "")
+    void ShowErrorMessage(const QMap<QString, QString>& text, QString pictureName = "")
     {
         ShowMessageAndPicture(text, pictureName, false);
         addToHistory = false;
