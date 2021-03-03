@@ -44,8 +44,11 @@ void Game::KillRecruited(GameHex * hex, GameUnit * who)
         if (recruitedUnits[i].where == hex->coord)
         {
             recruitedUnits.removeAt(i);
-            hex->status = GameHex::NOT_CONNECTED;
             AddEvent()->RecruitedKilled(who, hex);
+
+            // сообщаем, какую иконку надо вернуть в отображение на гексе
+            hex->status = GameHex::NOT_A_HOME;
+            AddEvent()->HexStatusChanged(hex, hex->status, hex->color, who);
         }
     }
 }

@@ -274,7 +274,11 @@ void Game::Realize(QList<Action> act)
     {
         foreach (Action a, act)
         {
-            hex(a.action.target)->agitated.insert(a.unit->color);
+            GameHex * Hex = hex(a.action.target);
+
+            KillRecruited(Hex, a.unit);
+
+            Hex->agitated.insert(a.unit->color);
             AddEvent()->Agitated(a.unit, hex(a.action.target));
         }
     }
