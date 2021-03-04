@@ -65,8 +65,10 @@ private:
     // удобно делать так, чем переносить самого юнита
     void SwitchHome(GameUnit * unit, Coord new_home, GameHex::HexStatus status = GameHex::TO_BE_CONQUERED)
     {
+        hex(unit->home)->generated_units -= 1;
         hex(unit->home)->status = status;
         hex(new_home)->status = GameHex::HOME;
+        hex(new_home)->generated_units += 1;
         unit->home = new_home;
     }
     bool checkIfEmpty()  // проверка пустоты плана
