@@ -301,15 +301,15 @@ qreal Constants::unitSelectionPointY = -0.6;
 qreal Constants::unitSelectionWidth = 2.4;  // размер
 qreal Constants::unitSelectionHeight = 2.2;
 
-qreal Constants::unitBigSelectionPointX = -1.2;  // верхний левый угол
-qreal Constants::unitBigSelectionPointY = -1;
-qreal Constants::unitBigSelectionWidth = 3.4;  // размер
-qreal Constants::unitBigSelectionHeight = 3;
+qreal Constants::unitBigSelectionPointX = -1.5;  // верхний левый угол
+qreal Constants::unitBigSelectionPointY = -1.3;
+qreal Constants::unitBigSelectionWidth = 4;  // размер
+qreal Constants::unitBigSelectionHeight = 3.6;
 
-qreal Constants::unitLightingPointX = -0.5;  // верхний левый угол
-qreal Constants::unitLightingPointY = -0.5;
-qreal Constants::unitLightingWidth = 2;  // размер
-qreal Constants::unitLightingHeight = 2;
+qreal Constants::unitLightingPointX = -0.65;  // верхний левый угол
+qreal Constants::unitLightingPointY = -0.65;
+qreal Constants::unitLightingWidth = 2.3;  // размер
+qreal Constants::unitLightingHeight = 2.3;
 
 // Приказы юниту
 

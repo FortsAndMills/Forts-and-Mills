@@ -247,9 +247,9 @@ void Unit::resizeChildren(qreal W, qreal H)
     if (lighting != NULL)
     {
         lighting->setGeometry(W * constants->unitLightingPointX,
-                                                  H * constants->unitLightingPointY,
-                                                  W * constants->unitLightingWidth,
-                                                  H * constants->unitLightingHeight);
+                              H * constants->unitLightingPointY,
+                              W * constants->unitLightingWidth,
+                              H * constants->unitLightingHeight);
     }
     //if (brokenGlass != NULL)
     //{
