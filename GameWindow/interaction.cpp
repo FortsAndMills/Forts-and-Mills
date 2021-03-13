@@ -464,10 +464,22 @@ void GameWindow::DialogReturned(bool isOk, QString sig_mes)
         }
     }
 
-    if (sig_mes == "GiveUp")
+    if (isOk)
     {
-        if (isOk)
+        if (sig_mes == "GiveUp")
+        {
             giveup();
+        }
+        else if (sig_mes == "GoHome")
+        {
+            giveup();
+            emit GoHome();
+        }
+        else if (sig_mes == "Quit")
+        {
+            giveup();
+            emit DecidedToQuit();
+        }
     }
 }
 
@@ -659,7 +671,11 @@ void GameWindow::opponentReconnected(qint8 index)
 }
 
 void GameWindow::giveup()
-{    
+{
+    // если уже сдался
+    if (game->players[mainPlayerColor]->GiveUp || game->winner != "Neutral")
+        return;
+
     if (state == CHOOSING_HEX || state == WAIT_FOR_ENEMY_START_POINT)
     {
         // отключаем выбранный гекс
@@ -688,18 +704,23 @@ void GameWindow::giveup()
         game->playerGiveUp(PlayerIndex);
         CheckNextPhase();
     }
-
-    if (planned_to_go_home)  // что это?
-        emit GoHome();
 }
 
+void GameWindow::ask_for_close()
+{
+    if (game->players[mainPlayerColor]->GiveUp || game->winner != "Neutral")
+    {
+        emit DecidedToQuit();
+        return;
+    }
+
+    dialog->set(mainPlayerColor, dialogtext->get("askgiveup"), false, true, true, false, "", "Quit");
+    resizeDialog(width(), height());
+}
 void GameWindow::whiteFlagClicked()
 {
     if (game->players[mainPlayerColor]->GiveUp)
         return;
-
-    prev_state = state;
-    planned_to_go_home = false;
 
     dialog->set(mainPlayerColor, dialogtext->get("askgiveup"), false, true, true, false, "", "GiveUp");
     resizeDialog(width(), height());
@@ -712,10 +733,6 @@ void GameWindow::homeButtonClicked()
         return;
     }
 
-    prev_state = state;
-    go->enable(false);  // TODO возможно, тут сокрыта бага им. Козловцева
-    planned_to_go_home = true;
-
-    dialog->set(mainPlayerColor, dialogtext->get("askgiveup"), false, true, true, false, "", "GiveUp");
+    dialog->set(mainPlayerColor, dialogtext->get("askgiveup"), false, true, true, false, "", "GoHome");
     resizeDialog(width(), height());
 }

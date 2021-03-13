@@ -89,7 +89,6 @@ protected:
     void unitConnections(Unit * unit);  // проведение всех connect-ов
     void orderPicsConnections(OrderPic * pic);
 
-    bool planned_to_go_home = false;
     GameLog * log;
 
     void CheckNextPhase();  // проверяет, нужно ли просчитать следующий раунд игры
@@ -130,10 +129,12 @@ protected slots:
 
 public:
     virtual void giveup();
+    void ask_for_close();
 
 signals:
     void writeToOpponent(QByteArray);
     void GoHome();
+    void DecidedToQuit();
 
 protected:
     // --------------------------------------------------------------------------------
@@ -148,7 +149,6 @@ protected:
                 WAIT_FOR_ENEMY_PLAN,         // ожидание планов оппонентов
                 REALIZATION_PHASE}           // реализация планов
                    state = CHOOSING_HEX;
-    State prev_state;
 
 protected:
     bool isSelectingEnemyUnit = false;

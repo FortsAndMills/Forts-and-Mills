@@ -75,7 +75,7 @@ public:
         scene->addItem(control_panel);
         connect(control_panel, SIGNAL(minimize_clicked()), this, SLOT(showMinimized()));
         connect(control_panel, SIGNAL(maximize_clicked()), this, SLOT(MaximizeClicked()));
-        connect(control_panel, SIGNAL(close_clicked()), this, SLOT(close()));
+        connect(control_panel, SIGNAL(close_clicked()), this, SLOT(check_for_close()));
 
         move(settings->APPLICATION_START_POSITION);  // устанавливаем сохранённые
         resize(settings->APPLICATION_START_SIZE);           // размер и положение
@@ -189,6 +189,7 @@ public slots:
         game_window = new GameWindow(game, PlayerIndex, background);
         resizeWindows(width(), height());
         connect(game_window, SIGNAL(GoHome()), SLOT(returnToMainMenu()));
+        connect(game_window, SIGNAL(DecidedToQuit()), SLOT(close()));
 
         menu_window->turn(false);
 
@@ -242,6 +243,15 @@ private slots:
         this->move(pos() + shift);
     }
 
+    void check_for_close()
+    {
+        if (state == GAME)
+        {
+            game_window->ask_for_close();
+        }
+        else
+            close();
+    }
 
     // СОХРАНЕНИЕ НАСТРОЕК ПО ЗАВЕРШЕНИЮ РАБОТЫ---------------------
     void closeEvent(QCloseEvent *)
