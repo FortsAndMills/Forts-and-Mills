@@ -130,7 +130,6 @@ void GameRules::recountGenerationParameters()
     doesEnteringEnemyHexLiberates = !ordersInGame.contains("Liberate");
     if (changingDayTimes)
         dayTimes = 1;
-    start_choices_left = start_choices;
 
     qreal K = (fieldW * fieldH) / 60.0;  // во сколько раз увеличить кол. всех ресурсов
 

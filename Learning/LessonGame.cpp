@@ -209,7 +209,7 @@ void LessonGame::StartGame()
 
         // Вступление
         text["rus"] = "Добро пожаловать в «Форты и мельницы», стратегию с одновременными ходами!";
-        text["eng"] = "Welcome to «Forts and Mills», simultaneous turns strategy!";
+        text["eng"] = "Welcome to «Forts and Mills», simultaneous turn-based strategy!";
         AddEvent()->ShowMessage(text);
 
         text["rus"] = "Каждый раунд вам предстоит придумать план: раздать всем своим юнитам приказы, кому что делать.";
@@ -412,10 +412,6 @@ void LessonGame::StartGame()
         text["eng"] = "Inaction is default order; you do not need to give it manually unless you want unit to skip one time slot and do something different afterwards.";
         AddEvent()->ReactionOnOrderChoice(DefaultOrder, Reaction(DEFAULT, text));
 
-        text["rus"] = "Эта кнопка отменяет последний приказ. Выберите атаку!";
-        text["eng"] = "This button cancels the last order. Select attack!";
-        AddEvent()->ReactionOnOrderChoice(DeleteLastOrder, Reaction(BLOCK, text, "Attack"));
-
         text["rus"] = "Итак, наша задача - захватить форт и мельницу. Когда ваш план будет готов, нажимайте кнопку Go!";
         text["eng"] = "So, our goal is to capture a fort and a mill. When your plan is ready, press Go button!";
         AddEvent()->ShowMessage(text, false, false, true, QSet<GameUnit*>(), "BlueGoButton");
@@ -550,7 +546,7 @@ void LessonGame::StartGame()
         AddEvent()->ShowMessageAndPicture(text, "Recruit");
 
         text["rus"] = "Клетка при этом должна быть захвачена и соединена вашими территориями с вашей мельницей.";
-        text["eng"] = "To be able to recruit, the hex must be captured and connected with your territories to one of your mills.";
+        text["eng"] = "To be able to recruit, the hex must be captured and connected to one of your mills through your territories.";
         AddEvent()->ShowMessageAndPicture(text, "Mill");
 
         AddEvent()->ShowGo();
@@ -926,7 +922,7 @@ int LessonGame::NextStage()
         AddEvent(i)->ShowMessage(text, false, true, true, QSet <GameUnit *>() << hero);
 
         text["rus"] = "Мы успешно захватили форт и мельницу! Поздравляем, вы сделали свой первый шаг в большой мир!";
-        text["eng"] = "We succesfully captured fort and mill! Congratulations, you've made your first steps into a bug world!";
+        text["eng"] = "We succesfully captured fort and mill! Congratulations, you've made your first steps into a big world!";
         AddEvent()->ShowMessage(text, false, false, true);
         AddEvent()->Exit();
     }
@@ -950,7 +946,7 @@ int LessonGame::NextStage()
 
             RealizePlan();
             gatherResources();
-            defenceFill();
+            defenseFill();
 
             int i = 0;
             // TODO: подумать над выделением при помощи <span style=\"color:blue\">
@@ -982,7 +978,7 @@ int LessonGame::NextStage()
             AddEvent()->ShowMessage(text);
 
             text["rus"] = "Каждый форт увеличивает лимит ресурсов одного типа на один.";
-            text["eng"] = "Every fort increases the limit on storing resources of one type by one.";
+            text["eng"] = "Every fort increases the limit on storing resources of the same type by one.";
             AddEvent()->ShowMessageAndPicture(text, "Fort");
 
             AddEvent()->EnableGo();
@@ -1008,13 +1004,13 @@ int LessonGame::NextStage()
 
             RealizePlan();
             gatherResources();
-            defenceFill();
+            defenseFill();
             burnExtraResources();
 
             StartPlanning();
             AddEvent()->DisableGo();
             text["rus"] = "Как и захват, освобождение в случае сражения дало бы штраф -1.";
-            text["eng"] = "Like capture, if unit fights while liberating, he has penalty -1.";
+            text["eng"] = "Like capture, liberation order has combat penalty -1.";
             AddEvent()->ReactionOnOrderChoice("Liberate", Reaction(DEFAULT, text, "Liberate"));
 
             text["rus"] = "Пока в клетке находится враг, она перестаёт давать ресурсы. А форт ещё и перестаёт увеличивать лимит ресурсов!";
@@ -1041,7 +1037,7 @@ int LessonGame::NextStage()
 
             RealizePlan();
             gatherResources();
-            defenceFill();
+            defenseFill();
             burnExtraResources();
 
             text["rus"] = "Противник потерял все ресурсы и полностью обездвижен! Ура!";
@@ -1080,7 +1076,7 @@ int LessonGame::NextStage()
             destroyHomelessUnits();
             gatherResources();
             burnExtraResources();
-            defenceFill();            
+            defenseFill();            
 
             int i = 0;
             while (events[i]->type != UNIT_CAPTURES_HEX) {++i;}
@@ -1229,7 +1225,7 @@ int LessonGame::NextStage()
 
                 AddEvent()->EnableGo();
                 text["rus"] = "Теперь вы знаете все правила \"Фортов и мельниц\"! Попробуйте победить глупенького бота!";
-                text["eng"] = "Now you now all rules of \"Forts and mills\"! Try to beat a silly bot!";
+                text["eng"] = "Now you know all the rules of \"Forts and mills\"! Try to beat a silly bot!";
                 AddEvent()->ShowMessage(text, false, false, false);
                 round += 1;
             }

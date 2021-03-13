@@ -7,7 +7,7 @@ GameUnitParameters::GameUnitParameters(GameRules *, UnitType type)
 
     max_health = 5;
     init_health = 5;
-    max_defenceBonus = 0;
+    max_defenseBonus = 0;
     doubles = false;
 
     if (type == "Pig")
@@ -24,7 +24,7 @@ GameUnitParameters::GameUnitParameters(GameRules *, UnitType type)
     {
         max_health = 4;
         init_health = 4;
-        max_defenceBonus = 2;
+        max_defenseBonus = 2;
     }
     if (type == "Mumusha")
     {

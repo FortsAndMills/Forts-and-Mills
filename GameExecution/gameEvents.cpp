@@ -2,10 +2,10 @@
 
 void Game::CaptureHex(GameHex *hex, PlayerColor color)
 {
-    if (hex->defenceBonusWhenCaptured != 0)
+    if (hex->defenseBonusWhenCaptured != 0)
     {
-        hex->defence = hex->defenceBonusWhenCaptured;
-        AddEvent()->DefenceBonusAppears(NULL, hex, color, hex->defence);
+        hex->defense = hex->defenseBonusWhenCaptured;
+        AddEvent()->DefenseBonusAppears(NULL, hex, color, hex->defense);
     }
 
     hex->color = color;
@@ -13,10 +13,10 @@ void Game::CaptureHex(GameHex *hex, PlayerColor color)
 }
 void Game::DecaptureHex(GameHex *hex, GameUnit *who)
 {
-    if (hex->defenceBonusWhenCaptured != 0)
+    if (hex->defenseBonusWhenCaptured != 0)
     {
-        hex->defence = 0;
-        AddEvent()->DefenceBonusDisappears(who, hex);
+        hex->defense = 0;
+        AddEvent()->DefenseBonusDisappears(who, hex);
     }
 
     KillRecruited(hex, who);

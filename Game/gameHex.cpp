@@ -11,7 +11,7 @@ GameHexParameters::GameHexParameters(HexType type)
     canGoHere = true;
     isTall = true;
     increasesResourceLimitWhenCaptured = 0;
-    defenceBonusWhenCaptured = 0;
+    defenseBonusWhenCaptured = 0;
 
     if (type == "Simple")
     {
@@ -20,7 +20,7 @@ GameHexParameters::GameHexParameters(HexType type)
     }
     if (type == "Fort")
     {
-        defenceBonusWhenCaptured = 2;
+        defenseBonusWhenCaptured = 2;
         increasesResourceLimitWhenCaptured = 1;
     }
     if (type == "Mountain")

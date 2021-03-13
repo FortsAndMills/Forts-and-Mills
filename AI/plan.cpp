@@ -83,7 +83,7 @@ void AI::forces_precompute()
     {
         foreach (GameHex * hex, hex_row)
         {
-            if (hex->color != "Neutral" && hex->defence > 0)
+            if (hex->color != "Neutral" && hex->defense > 0)
             {
                 int dt = -1;
                 while (dt < game->rules->dayTimes && forces[hex->color][hex->coord][dt] == 0)
@@ -92,7 +92,7 @@ void AI::forces_precompute()
                 ++dt;
                 while (dt < game->rules->dayTimes)
                 {
-                    forces[hex->color][hex->coord][dt] += hex->defence;
+                    forces[hex->color][hex->coord][dt] += hex->defense;
                     ++dt;
                 }
             }

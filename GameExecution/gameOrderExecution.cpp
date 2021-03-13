@@ -310,10 +310,10 @@ void Game::Realize(QList<Action> act)
             if (Hex->canBeCaptured && Hex->color == "Neutral")
             {
                 // появление бонуса в обороне при захвате
-                if (Hex->defenceBonusWhenCaptured != 0)
+                if (Hex->defenseBonusWhenCaptured != 0)
                 {
-                    Hex->defence = Hex->defenceBonusWhenCaptured;
-                    AddEvent()->DefenceBonusAppears(a.unit, Hex, a.unit->color, Hex->defence);
+                    Hex->defense = Hex->defenseBonusWhenCaptured;
+                    AddEvent()->DefenseBonusAppears(a.unit, Hex, a.unit->color, Hex->defense);
                 }
 
                 // перекрашиваем

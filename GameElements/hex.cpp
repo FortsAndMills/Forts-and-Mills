@@ -519,7 +519,7 @@ void Hex::highlight(OrderType type, bool light)
 }
 
 // появление оборонительного бонуса
-void Hex::defenceAppear(int amount, QString color)
+void Hex::defenseAppear(int amount, QString color)
 {
     for (int i = 0; i < amount; ++i)
         shields << new Shield(this, color);
@@ -538,7 +538,7 @@ void Hex::defenceAppear(int amount, QString color)
 
     reconfigureShields();
 }
-void Hex::defenceDisappear()
+void Hex::defenseDisappear()
 {
     for (int i = 0; i < shields.size(); ++i)
         shields[i]->disappear(constants->shieldReconfigureTime);
@@ -546,7 +546,7 @@ void Hex::defenceDisappear()
 }
 // turn означает анимацию использования оборонительного бонуса
 // turn on=true, соответственно, означает его восполнение
-void Hex::defenceTurn(int amount, bool on)
+void Hex::defenseTurn(int amount, bool on)
 {
     int i = shields.size() - 1;
     while (i >= 0 && !shields[i]->isOn)

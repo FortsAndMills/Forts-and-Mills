@@ -15,10 +15,10 @@ enum FightStatus {FS_ATTACK, FS_DEFEND, FS_DISTANT};
 // варианты того, чем может сражаться команда
 enum FightBrid {NOTHING = 0,
                 FORTIFICATION,
-                HEX_DEFENCE,
+                HEX_DEFENSE,
                 ORDER_BONUS,
                 DISTANT,
-                UNIT_DEFENCE,
+                UNIT_DEFENSE,
                 UNIT_HEALTH};
 
 class Strike

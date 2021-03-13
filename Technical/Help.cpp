@@ -215,7 +215,7 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
             << "<u>Pursue</u> - If selected enemy unit moves or stays in adjacent hex, attacks this hex and returns back.";
         if (name == "Fortify") return QVector <QString>()
                     << "<u>Fortify</u> - builds a shield. Penalty in combat -1."
-                    << "Already created shield gives a disposable defence bonus +1. It is used before other defence bonuses of forts and Hippos.";
+                    << "Already created shield gives a disposable defense bonus +1. It is used before other defense bonuses of forts and Hippos.";
         if (name == "Cure") return QVector<QString>()
                     << "<u>Cure</u> - restores 1 health. Health can't become greater than initial."
                     << "Penalty in combat -1.";
@@ -232,9 +232,9 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
         if (name == "Pig")  return QVector<QString>()
                 << "<u>Pig</u> - can use shooting order. Full health is 4.";
         if (name == "Hippo") return QVector<QString>()
-                << "<u>Hippo</u> - has defence bonus +2. Full health is 4."
+                << "<u>Hippo</u> - has defense bonus +2. Full health is 4."
                 << "Unit is considered defending if he is not moving."
-                << "Defence bonus is restored at the end of each round.";
+                << "Defense bonus is restored at the end of each round.";
         if (name == "Karkun") return QVector<QString>()
                 << "<u>Karkun</u> - can use siege order. Full health is 4.";
         if (name == "Rabbit") return QVector<QString>()
@@ -244,7 +244,7 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
 
         if (name == "Fort") return QVector<QString>()
                 << "<u>Fort</u>. The number of captured forts determines the limit of resources of one type. Excess are lost at the end of each round."
-                << "Gives defence bonus +2 when captured. This defence bonus restores at the end of each round.";
+                << "Gives defense bonus +2 when captured. This defense bonus restores at the end of each round.";
         if (name == "Mill") return QVector<QString>()
                 << "<u>Mills</u>. Allows recruiting on connected terrotories.";
         if (name == "Mountain") return QVector<QString>()
@@ -258,7 +258,7 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
 
 
         if (name == "Fortification") return QVector<QString>()
-                << "<u>Shield</u>. Gives a disposable defence bonus +1. It is used before other defence bonuses of forts and Hippos."
+                << "<u>Shield</u>. Gives a disposable defense bonus +1. It is used before other defense bonuses of forts and Hippos."
                 << "If enemy enters this hex while no unit protect it, all shields are destroyed.";
         if (name == "UnitIsGoingToRecruit") return QVector<QString>()
                 << "Unit has been recruited in this hex. It will appear at the end of the round if enemy does not enter the hex or the connection to mills is broken.";

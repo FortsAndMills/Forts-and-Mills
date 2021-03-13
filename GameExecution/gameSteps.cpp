@@ -4,7 +4,6 @@
 // обработка выбора стартовых клеток в начале игры
 void Game::ProcessChosenHexes()
 {
-    --rules->start_choices_left;
     AddEvent()->StartChoiceMade();
 
     QSet <GameHex *> ch;
@@ -185,17 +184,17 @@ void Game::gatherResources()
         }
     }
 }
-void Game::defenceFill()
+void Game::defenseFill()
 {
     // восполнение оборонительного бонуса для юнитов
     foreach (GamePlayer * player, players)
     {
         foreach (GameUnit * unit, player->units)
         {
-            if (unit->defenceBonus != unit->max_defenceBonus)
+            if (unit->defenseBonus != unit->max_defenseBonus)
             {
-                AddEvent()->UnitDefenceFilled(unit, unit->max_defenceBonus - unit->defenceBonus);
-                unit->defenceBonus = unit->max_defenceBonus;
+                AddEvent()->UnitDefenseFilled(unit, unit->max_defenseBonus - unit->defenseBonus);
+                unit->defenseBonus = unit->max_defenseBonus;
             }
         }
     }
@@ -206,10 +205,10 @@ void Game::defenceFill()
         for (int j = 0; j < rules->fieldW; ++j)
         {
             if (hexes[i][j]->color != "Neutral" &&
-                 hexes[i][j]->defence < hexes[i][j]->defenceBonusWhenCaptured)
+                 hexes[i][j]->defense < hexes[i][j]->defenseBonusWhenCaptured)
             {
-                AddEvent()->HexDefenceFilled(hexes[i][j], hexes[i][j]->defenceBonusWhenCaptured - hexes[i][j]->defence);
-                hexes[i][j]->defence = hexes[i][j]->defenceBonusWhenCaptured;
+                AddEvent()->HexDefenseFilled(hexes[i][j], hexes[i][j]->defenseBonusWhenCaptured - hexes[i][j]->defense);
+                hexes[i][j]->defense = hexes[i][j]->defenseBonusWhenCaptured;
             }
         }
     }
@@ -248,7 +247,7 @@ void Game::win(PlayerColor winner)
 // возвращает false если выбор закончился
 bool Game::ChooseOneOfTheStartHexes()
 {
-    if (rules->start_choices_left <= 0) return false;
+    if (round >= rules->start_choices) return false;
 
     // составляем список вариантов
     QList <Coord> variants;

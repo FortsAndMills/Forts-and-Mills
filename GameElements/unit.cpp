@@ -25,7 +25,7 @@ Unit::Unit(GameUnit *prototype, Game *game, GraphicObject *parent, bool isMain) 
         health.append(new SpriteObject(this, 0, prototype->color + "UnitHealth"));
     }
 
-    for (int i = 0; i < prototype->defenceBonus; ++i)
+    for (int i = 0; i < prototype->defenseBonus; ++i)
     {
         shields << new Shield(this, prototype->color);
     }
@@ -58,7 +58,7 @@ Unit::Unit(GraphicObject *parent, QString color, QString type) :
         health.append(new SpriteObject(this, 0, color + "UnitHealth"));
     }
 
-    for (int i = 0; i < prototype.max_defenceBonus; ++i)
+    for (int i = 0; i < prototype.max_defenseBonus; ++i)
     {
         shields << new Shield(this, color);
     }
@@ -471,7 +471,7 @@ void Unit::locateOrderLikeOnPanel(Order * order)
 }
 
 // появление или исчезновение щитов
-void Unit::defenceTurn(int amount, bool on)
+void Unit::defenseTurn(int amount, bool on)
 {
     int i = shields.size() - 1;
     while (i >= 0 && !shields[i]->isOn)

@@ -16,13 +16,13 @@ enum GameEventType
     RESOURCE_APPEAR,
     GATHER_RESOURCES,
     PLAN,
-    HEX_DEFENCE_FILLED,
-    UNIT_DEFENCE_FILLED,
+    HEX_DEFENSE_FILLED,
+    UNIT_DEFENSE_FILLED,
     TIME_STARTED,
     ORDER_REALIZATION_STARTED,
     AGITATED,
     UNIT_CAPTURES_HEX,
-    DEFENCE_BONUS_APPEARS,
+    DEFENSE_BONUS_APPEARS,
     UNIT_IS_GOING_TO_RECRUIT,
     RECRUIT_FAILS_BECAUSE_OF_AGITE,
     UNIT_LEAVES,
@@ -37,7 +37,7 @@ enum GameEventType
     RECRUITED_KILLED,
     UNIT_LOOSES_HOME,
     UNIT_DECAPTURES_HEX,
-    DEFENCE_BONUS_DISAPPEARS,
+    DEFENSE_BONUS_DISAPPEARS,
     FORTIFICATION_DISAPPEARS,
     SHOOT_LEFT,
     UNIT_CURES,
@@ -120,15 +120,15 @@ public:
     {
         type = PLAN;
     }
-    void HexDefenceFilled(GameHex * hex, int amount)
+    void HexDefenseFilled(GameHex * hex, int amount)
     {
-        type = HEX_DEFENCE_FILLED;
+        type = HEX_DEFENSE_FILLED;
         this->hex = hex;
         this->amount = amount;
     }
-    void UnitDefenceFilled(GameUnit * unit, int amount)
+    void UnitDefenseFilled(GameUnit * unit, int amount)
     {
-        type = UNIT_DEFENCE_FILLED;
+        type = UNIT_DEFENSE_FILLED;
         this->unit = unit;
         this->amount = amount;
     }
@@ -158,9 +158,9 @@ public:
         this->unit = unit;
         this->color = color;
     }
-    void DefenceBonusAppears(GameUnit * unit, GameHex * hex, PlayerColor color, int amount)
+    void DefenseBonusAppears(GameUnit * unit, GameHex * hex, PlayerColor color, int amount)
     {
-        type = DEFENCE_BONUS_APPEARS;
+        type = DEFENSE_BONUS_APPEARS;
         this->unit = unit;
         this->hex = hex;
         this->color = color;
@@ -259,9 +259,9 @@ public:
         this->unit = unit;
         this->hex = hex;
     }
-    void DefenceBonusDisappears(GameUnit * unit, GameHex * hex)
+    void DefenseBonusDisappears(GameUnit * unit, GameHex * hex)
     {
-        type = DEFENCE_BONUS_DISAPPEARS;
+        type = DEFENSE_BONUS_DISAPPEARS;
         this->unit = unit;
         this->hex = hex;
     }

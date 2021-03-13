@@ -12,7 +12,7 @@ public:
 
     int max_health = 5;
     int init_health = 5;
-    int max_defenceBonus = 0;
+    int max_defenseBonus = 0;
     bool doubles = false;
 
     GameUnitParameters(GameRules *, UnitType type);
@@ -28,7 +28,7 @@ public:
     Coord position;
     UnitType type;
     Coord home;
-    int defenceBonus;
+    int defenseBonus;
 
     // план
     QMap <DayTime, GameOrder *> plan;
@@ -47,7 +47,7 @@ public:
         this->position = where;
         this->type = type;
         this->home = where;
-        this->defenceBonus = max_defenceBonus;
+        this->defenseBonus = max_defenseBonus;
         this->distantAttack = 0;
 
         this->id = id;

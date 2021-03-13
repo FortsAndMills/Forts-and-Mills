@@ -82,7 +82,7 @@ public:
     void activate_on_opponent_plan_received(Game * game)
     {
         int seconds = 0;
-        if (hidden && game->rules->start_choices_left < game->rules->start_choices)
+        if (hidden && game->round > 0)
         {
             if (game->state == Game::GS_CHOOSE_HEX)
                 seconds = game->rules->timer_per_choice_after_opponent[game->rules->timer];

@@ -53,6 +53,8 @@ void Game::StartGame()
 
 int Game::NextStage()
 {
+    ++round;
+
     if (lastPlayerInGame() == "Neutral")
     {
         if (state == GS_CHOOSE_HEX)
@@ -81,7 +83,7 @@ int Game::NextStage()
             recruitNewUnits();
             burnExtraResources();
             gatherResources();
-            defenceFill();
+            defenseFill();
             agitationEnds();
 
             PlayerColor winner = isGameFinished();

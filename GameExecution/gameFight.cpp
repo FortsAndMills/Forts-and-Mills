@@ -2,7 +2,7 @@
 
 int fb_priority(FightBrid fb)
 {
-    if (fb == FORTIFICATION || fb == HEX_DEFENCE)
+    if (fb == FORTIFICATION || fb == HEX_DEFENSE)
         return 100;
     if (fb == DISTANT)
         return 10;
@@ -19,7 +19,7 @@ Strike Game::getStrike(QSet <GameUnit*> fighters, const QMap<GameUnit *, FightSt
     {
         if (fs[u] == FS_DEFEND &&
             ((hex(u->position)->fortification > 0 && hex(u->position)->fortificationColor == u->color) ||
-            (hex(u->position)->defence > 0 && hex(u->position)->color == u->color)))
+            (hex(u->position)->defense > 0 && hex(u->position)->color == u->color)))
         {
             defender = u->color;
             break;
@@ -55,10 +55,10 @@ Strike Game::getStrike(QSet <GameUnit*> fighters, const QMap<GameUnit *, FightSt
                     }
                 }
 
-                if (fs[u] == FS_DEFEND && u->defenceBonus > 0)
+                if (fs[u] == FS_DEFEND && u->defenseBonus > 0)
                 {
-                    strike.fb[u] = UNIT_DEFENCE;
-                    strike.amount[u] = qMin(u->defenceBonus, -u->plan[time]->fightInfluence);
+                    strike.fb[u] = UNIT_DEFENSE;
+                    strike.amount[u] = qMin(u->defenseBonus, -u->plan[time]->fightInfluence);
                 }
                 else
                 {
@@ -89,11 +89,11 @@ Strike Game::getStrike(QSet <GameUnit*> fighters, const QMap<GameUnit *, FightSt
             strike.granularity[u->color] = 1;
         }
         else if (u->color == defender && fs[u] == FS_DEFEND &&
-                 hex(u->position)->defence > 0 && hex(u->position)->color == u->color)
+                 hex(u->position)->defense > 0 && hex(u->position)->color == u->color)
         {
             // сражающиеся защитой на гексе
-            strike.fb[u] = HEX_DEFENCE;
-            strike.team_amount[u->color] = hex(u->position)->defence;
+            strike.fb[u] = HEX_DEFENSE;
+            strike.team_amount[u->color] = hex(u->position)->defense;
             strike.granularity[u->color] = 1;
         }
         else if (fs[u] == FS_DISTANT && u->distantAttack > 0)
@@ -108,11 +108,11 @@ Strike Game::getStrike(QSet <GameUnit*> fighters, const QMap<GameUnit *, FightSt
             strike.fb[u] = ORDER_BONUS;
             strike.amount[u] = u->plan[time]->fightInfluence;
         }
-        else if (fs[u] == FS_DEFEND && u->defenceBonus > 0)
+        else if (fs[u] == FS_DEFEND && u->defenseBonus > 0)
         {
             // защита юнита (бегемота)
-            strike.fb[u] = UNIT_DEFENCE;
-            strike.amount[u] = u->defenceBonus;
+            strike.fb[u] = UNIT_DEFENSE;
+            strike.amount[u] = u->defenseBonus;
         }
         else if (fs[u] != FS_DISTANT)
         {
@@ -201,13 +201,13 @@ void Game::CountStrike(QSet<GameUnit *> fighters, Strike strike)
             hex(u->position)->fortification -= strike.team_amount[u->color];
             strike.team_amount[u->color] = 0;
         }
-        else if (strike.fb[u] == HEX_DEFENCE)
+        else if (strike.fb[u] == HEX_DEFENSE)
         {
-           hex(u->position)->defence -= strike.team_amount[u->color];
+           hex(u->position)->defense -= strike.team_amount[u->color];
            strike.team_amount[u->color] = 0;
         }
-        else if (strike.fb[u] == UNIT_DEFENCE)
-            u->defenceBonus -= strike.amount[u];
+        else if (strike.fb[u] == UNIT_DEFENSE)
+            u->defenseBonus -= strike.amount[u];
         else if (strike.fb[u] == ORDER_BONUS)
             u->plan[time]->fightInfluence -= strike.amount[u];
         else if (strike.fb[u] == UNIT_HEALTH)

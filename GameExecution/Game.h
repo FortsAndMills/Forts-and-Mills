@@ -16,6 +16,8 @@ public:
     // возвращают время таймера
     // реализации в Game.cpp
     enum GameState {GS_CHOOSE_HEX, GS_PLAN} state = GS_CHOOSE_HEX;
+    int round = 0;
+
     virtual void StartGame();
     virtual int NextStage();
 
@@ -31,7 +33,7 @@ protected:
     void recruitNewUnits();
     void gatherResources();
     void burnExtraResources();
-    void defenceFill();
+    void defenseFill();
     void agitationEnds();
     void addDayTime();
 

@@ -15,7 +15,7 @@ public:
     bool canGoHere;
     bool isTall;
     int increasesResourceLimitWhenCaptured;
-    int defenceBonusWhenCaptured;
+    int defenseBonusWhenCaptured;
 
     GameHexParameters(HexType type);
 };
@@ -25,7 +25,7 @@ public:
 class GameHex : public GameHexParameters
 {
 public:
-    int defence = 0;  // бонус в обороне
+    int defense = 0;  // бонус в обороне
     int fortification = 0;  // щиты и их цвет
     PlayerColor fortificationColor = "Neutral";
 

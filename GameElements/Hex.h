@@ -164,9 +164,9 @@ public:
     void addOrder(Order * order);
     void removeOrder(Order * order);
 
-    void defenceAppear(int amount, PlayerColor color);
-    void defenceDisappear();
-    void defenceTurn(int amount, bool on = true);
+    void defenseAppear(int amount, PlayerColor color);
+    void defenseDisappear();
+    void defenseTurn(int amount, bool on = true);
 
     // интерактивность
     void leftClick() { emit clicked(prototype->coord); }

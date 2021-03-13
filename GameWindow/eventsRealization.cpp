@@ -70,15 +70,15 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
 
         return WaitingType();
     }
-    else if (e->type == HEX_DEFENCE_FILLED)
+    else if (e->type == HEX_DEFENSE_FILLED)
     {
-        hexes[e->hex]->defenceTurn(e->amount);
+        hexes[e->hex]->defenseTurn(e->amount);
 
         return WaitingType();
     }
-    else if (e->type == UNIT_DEFENCE_FILLED)
+    else if (e->type == UNIT_DEFENSE_FILLED)
     {
-        units[e->unit]->defenceTurn(e->amount);
+        units[e->unit]->defenseTurn(e->amount);
 
         return WaitingType();
     }
@@ -96,9 +96,9 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
 
         return WaitingType(BUTTON, constants->mainOrderAppearTime);
     }
-    else if (e->type == DEFENCE_BONUS_APPEARS)
+    else if (e->type == DEFENSE_BONUS_APPEARS)
     {
-        hexes[e->hex]->defenceAppear(e->amount, e->color);
+        hexes[e->hex]->defenseAppear(e->amount, e->color);
 
         return WaitingType();
     }
@@ -290,9 +290,9 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
 
         return WaitingType(BUTTON, constants->stateObjectChangeTime);
     }
-    else if (e->type == DEFENCE_BONUS_DISAPPEARS)
+    else if (e->type == DEFENSE_BONUS_DISAPPEARS)
     {
-        hexes[e->hex]->defenceDisappear();
+        hexes[e->hex]->defenseDisappear();
 
         return WaitingType();
     }
@@ -439,7 +439,7 @@ void GameWindow::UnitsFightObject(QSet <GameUnit *> fighters, const Strike & str
             Hex * hex = hexes[strike.positions[u]];
             ans[u] = hex->point(fortifications[hex][0]->point, this);
         }
-        else if (strike.fb[u] == HEX_DEFENCE)
+        else if (strike.fb[u] == HEX_DEFENSE)
         {
             ans[u] = hexes[strike.positions[u]]->shieldPoint(this);
         }
@@ -447,7 +447,7 @@ void GameWindow::UnitsFightObject(QSet <GameUnit *> fighters, const Strike & str
         {
             ans[u] = units[u]->mainOrderCenter(this);
         }
-        else if (strike.fb[u] == UNIT_DEFENCE)
+        else if (strike.fb[u] == UNIT_DEFENSE)
         {
             ans[u] = units[u]->shieldPoint(this);
         }
@@ -485,9 +485,9 @@ void GameWindow::UnitsFight(QSet <GameUnit *> fighters, const Strike & strike,
             fortify(hexes[strike.positions[u]], -strike.team_amount[u->color]);
             global_dones << u->color;
         }
-        else if (strike.fb[u] == HEX_DEFENCE && !global_dones.contains(u->color))  // деактивируем бонус гекса
+        else if (strike.fb[u] == HEX_DEFENSE && !global_dones.contains(u->color))  // деактивируем бонус гекса
         {
-            hexes[strike.positions[u]]->defenceTurn(strike.team_amount[u->color], false);
+            hexes[strike.positions[u]]->defenseTurn(strike.team_amount[u->color], false);
             global_dones << u->color;
         }
         else if (strike.fb[u] == ORDER_BONUS)  // стреляем бластом из приказа, дающего бонус, в точку, представляющую противника
@@ -503,9 +503,9 @@ void GameWindow::UnitsFight(QSet <GameUnit *> fighters, const Strike & strike,
                 }
             }
         }
-        else if (strike.fb[u] == UNIT_DEFENCE)
+        else if (strike.fb[u] == UNIT_DEFENSE)
         {
-            units[u]->defenceTurn(strike.amount[u], false);
+            units[u]->defenseTurn(strike.amount[u], false);
         }
         else if (strike.fb[u] == DISTANT)  // смешно смотрится, если несколько участников боя
         {

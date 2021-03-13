@@ -69,9 +69,6 @@ public:
     int dayTimes;
     bool changingDayTimes;
 
-    // количество оставшихся стартовых выборов
-    int start_choices_left;
-
     // диапазон для генерации каждого из типов клеток и приказов
     QMap <HexType, Range> numOfHexTypes;
     QMap <OrderType, Range> numOfResourcesOnField;

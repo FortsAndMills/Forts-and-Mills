@@ -125,7 +125,7 @@ public:
     void showUnitTypePanel(QList <UnitType> types);  // панель выбора типа юнитов
     void hideUnitTypePanel();
 
-    void defenceTurn(int amount, bool on = true);
+    void defenseTurn(int amount, bool on = true);
 
 public:
     void wheel(int delta) { emit wheeled(this->prototype, delta); }
