@@ -14,7 +14,8 @@ class CreatingGameWindow : public GraphicObject
 {
     Q_OBJECT
 
-    PlayersTune * players;
+    PlayersTune * players;    
+    EnlargingButton * question;
     FieldTune * field;
     TimerTune * timers;
     UnitsTune * units;
@@ -32,6 +33,9 @@ public:
         setOpacity(0);
 
         players = new PlayersTune(this);
+
+        question = new EnlargingButton(this, "Question");
+        connect(question, SIGNAL(leftClicked()), SLOT(questionClicked()));
 
         field = new FieldTune(this);
 
@@ -78,6 +82,10 @@ public:
                                              constants->playersTuneY * H,
                                              constants->playersTuneWidth * W,
                                              constants->playersTuneHeight * H);
+        question->setGeometry(W * (1 - constants->questionWidth) / 2,
+                              H * (constants->fieldTuneY + (constants->fieldTuneHeight - constants->questionHeight) / 2),
+                              constants->questionWidth * W,
+                              constants->questionHeight * H);
         field->setGeometry(constants->fieldTuneX * W,
                                              constants->fieldTuneY * H,
                                              constants->fieldTuneWidth * W,
@@ -188,6 +196,10 @@ private slots:
     void languageChanged()
     {
         create->setPicture("CreateButton_" + settings->language);
+    }
+    void questionClicked()
+    {
+        help->HelpAsked("HowToAskHelp");
     }
 };
 

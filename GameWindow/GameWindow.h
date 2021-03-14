@@ -126,6 +126,7 @@ protected slots:
 
     void whiteFlagClicked();
     virtual void homeButtonClicked();
+    void questionClicked();
 
 public:
     virtual void giveup();
@@ -230,6 +231,7 @@ protected:
 
     EnlargingButton * whiteFlag;
     EnlargingButton * homeButton;
+    EnlargingButton * question;
 
     Hex * hexCopy;
 

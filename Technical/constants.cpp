@@ -176,12 +176,15 @@ qreal Constants::gameLabelsMarginY = 0.02;
 
 // ИГРОВОЕ ОКНО
 
-qreal Constants::homeButtonX = 0.015;  // позиция "домой"
+qreal Constants::homeButtonX = 0.012;  // позиция "домой"
 qreal Constants::homeButtonHeight = 0.07;  // высота "домой"
-qreal Constants::homeButtonWidth = 0.04;  // ширина "домой"
-qreal Constants::whiteFlagX = 0.06;  // позиция белого флага
+qreal Constants::homeButtonWidth = 0.035;  // ширина "домой"
+qreal Constants::whiteFlagX = 0.045;  // позиция белого флага
 qreal Constants::whiteFlagHeight = 0.07;  // высота белого флага
-qreal Constants::whiteFlagWidth = 0.04;  // ширина белого флага
+qreal Constants::whiteFlagWidth = 0.035;  // ширина белого флага
+qreal Constants::gameQuestionButtonX = 0.075;  // позиция "домой"
+qreal Constants::gameQuestionButtonHeight = 0.07;  // высота "домой"
+qreal Constants::gameQuestionButtonWidth = 0.035;  // ширина "домой"
 
 qreal Constants::playerPanelWidth = 0.115;  // Ширина панели игрока
 qreal Constants::upperPanelSize = 0.1;  // Высота панели сверху

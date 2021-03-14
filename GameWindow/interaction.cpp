@@ -33,7 +33,8 @@ void GameWindow::initialConnections()
     connect(go, SIGNAL(leftClicked()), SLOT(GoButtonPushed()));
     connect(next, SIGNAL(leftClickStarted()), SLOT(NextButtonClicked()));
     connect(whiteFlag, SIGNAL(leftClicked()), SLOT(whiteFlagClicked()));
-    connect(homeButton, SIGNAL(leftClicked()), SLOT(homeButtonClicked()));
+    connect(homeButton, SIGNAL(leftClicked()), SLOT(homeButtonClicked()));    
+    connect(question, SIGNAL(leftClicked()), SLOT(questionClicked()));
     connect(timer, SIGNAL(expired()), SLOT(timerExpired()));
 
     connect(fieldControl->up, SIGNAL(leftClicked()), SLOT(hexPointsChanged()));
@@ -762,4 +763,8 @@ void GameWindow::homeButtonClicked()
 
     dialog->set(mainPlayerColor, dialogtext->get("askgiveup"), false, true, true, false, "", "GoHome");
     resizeDialog(width(), height());
+}
+void GameWindow::questionClicked()
+{
+    help->HelpAsked("HowToAskHelp");
 }

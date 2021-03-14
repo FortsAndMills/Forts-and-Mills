@@ -44,6 +44,7 @@ void GameWindow::initInterface()
 
     whiteFlag = new EnlargingButton(this, "WhiteFlag");
     homeButton = new EnlargingButton(this, "HomeButton");
+    question = new EnlargingButton(this, "Question");
 
     hexCopy = NULL;
 
@@ -63,6 +64,7 @@ void GameWindow::deleteInterface()
     fieldControl->Delete();
     whiteFlag->Delete();
     homeButton->Delete();
+    question->Delete();
     startChoiceProgress->Delete();
 
     if (hexCopy != NULL)
@@ -163,13 +165,17 @@ void GameWindow::resize(qreal W, qreal H)
                                      H * constants->startChoiceProgressBarHeight);
 
     whiteFlag->setGeometry(constants->whiteFlagX * W,
-                                             (constants->upperPanelSize - constants->whiteFlagHeight) * H,
-                                             constants->whiteFlagWidth * W,
-                                             constants->whiteFlagHeight * H);
+                          (constants->upperPanelSize - constants->whiteFlagHeight) * H,
+                          constants->whiteFlagWidth * W,
+                          constants->whiteFlagHeight * H);
     homeButton->setGeometry(constants->homeButtonX * W,
-                                             (constants->upperPanelSize - constants->homeButtonHeight) * H,
-                                             constants->homeButtonWidth * W,
-                                             constants->homeButtonHeight * H);
+                          (constants->upperPanelSize - constants->homeButtonHeight) * H,
+                          constants->homeButtonWidth * W,
+                          constants->homeButtonHeight * H);
+    question->setGeometry(constants->gameQuestionButtonX * W,
+                          (constants->upperPanelSize - constants->gameQuestionButtonHeight) * H,
+                          constants->gameQuestionButtonWidth * W,
+                          constants->gameQuestionButtonHeight * H);
 
     if (hexCopy != NULL)
     {

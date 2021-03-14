@@ -15,6 +15,7 @@ public:
         GameWindow(game, 0, parent)
     {
         whiteFlag->setVisible(false);
+        question->setVisible(false);
         startChoiceProgress->setVisible(false);
 
         connect(dialog, SIGNAL(returned(bool,QString)), SLOT(lessonDialogReturned(bool,QString)));

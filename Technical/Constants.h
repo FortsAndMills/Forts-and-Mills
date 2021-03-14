@@ -190,6 +190,9 @@ public:
     static qreal homeButtonX;
     static qreal homeButtonHeight;  // высота кнопки "домой"
     static qreal homeButtonWidth;  // ширина кнопки "домой"
+    static qreal gameQuestionButtonX;
+    static qreal gameQuestionButtonHeight;  // высота кнопки "help"
+    static qreal gameQuestionButtonWidth;  // ширина кнопки "help"
 
     static qreal playerPanelWidth;  // Ширина панели игрока
     static qreal upperPanelSize;  // Высота панели сверху
