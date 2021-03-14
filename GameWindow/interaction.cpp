@@ -309,6 +309,10 @@ void GameWindow::unitLeftClicked(GameUnit * unit)
 
             finishedChoosingOrderParameter();
         }
+        else if (hex(unit->position)->is_clickable())
+        {
+            hexClicked(unit->position);
+        }
     }
 }
 
