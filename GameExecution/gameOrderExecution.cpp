@@ -251,7 +251,8 @@ void Game::Realize(QList<Action> act)
                 GameHex * Hex = hex(a.unit->position);
 
                 // в этот момент убиваем "рекрутируемых" юнитов
-                KillRecruited(Hex, a.unit);
+                if (Hex->color != a.unit->color)
+                    KillRecruited(Hex, a.unit);
 
                 // если есть укрепление, они исчезают
                 if (Hex->fortificationColor != "Neutral" &&
@@ -276,7 +277,8 @@ void Game::Realize(QList<Action> act)
         {
             GameHex * Hex = hex(a.action.target);
 
-            KillRecruited(Hex, a.unit);
+            if (Hex->color != a.unit->color)
+                KillRecruited(Hex, a.unit);
 
             Hex->agitated.insert(a.unit->color);
             AddEvent()->Agitated(a.unit, hex(a.action.target));
