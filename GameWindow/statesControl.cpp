@@ -19,7 +19,7 @@ void GameWindow::getReadyToChooseHex(QList <Coord> variants)
 }
 void GameWindow::getReadyToPlanning()
 {
-    if (game->players[mainPlayerColor]->GiveUp)
+    if (game->players[mainPlayerColor]->status != GamePlayer::ALIVE)
         state = WAIT_FOR_ENEMY_PLAN; // мы сдались, но планы врагов ещё не пришли
     else
     {

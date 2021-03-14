@@ -14,7 +14,7 @@ public:
     QMap <Resource, int> resources;
     QList <GameUnit *> units;
 
-    bool GiveUp = false;
+    enum PlayerStatus {ALIVE, GAVE_UP, NO_UNITS, NO_FORTS} status = ALIVE;
     enum PlayerType {HUMAN, AI} playerType = HUMAN;
 
     explicit GamePlayer(PlayerColor color)
@@ -25,7 +25,7 @@ public:
     {
         this->color = other->color;
         this->resources = other->resources;
-        this->GiveUp = other->GiveUp;
+        this->status = other->status;
 
         foreach (GameUnit * unit, other->units)
             this->units << new GameUnit(*unit);

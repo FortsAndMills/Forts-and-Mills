@@ -2,7 +2,7 @@
 
 void Game::playerGiveUp(int index)
 {
-    players[rules->players[index]]->GiveUp = true;
+    players[rules->players[index]]->status = GamePlayer::GAVE_UP;
 }
 
 Game::IS_POSSIBLE Game::CanUse(GameUnit *unit, OrderType order)

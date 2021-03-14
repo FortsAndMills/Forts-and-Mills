@@ -37,6 +37,8 @@ protected:
     void agitationEnds();
     void addDayTime();
 
+    enum LOSE_REASON {ALL_UNITS_DEAD, NO_FORTS};
+    bool checkForLosers();
     void win(PlayerColor winner);
 
     bool ChooseOneOfTheStartHexes();
@@ -140,7 +142,7 @@ public:
             return true;
 
         foreach (PlayerColor pc, rules->players)
-            if (!ready[pc] && !players[pc]->GiveUp)
+            if (!ready[pc] && players[pc]->status == GamePlayer::ALIVE)
                 return false;
         return true;
     }
@@ -200,15 +202,12 @@ protected:
 
     bool isAgitatedByEnemy(Coord which, PlayerColor me);
 
-    PlayerColor isGameFinished();
-
 public:
     GameUnit * getUnitById(qint16 id);
     int resourcesLimit(PlayerColor color, bool consider_occupied = true);
     QSet <GameHex *> Connected(PlayerColor color, bool consider_occupied = false, const QSet<Coord> &additional_captures = QSet<Coord>());
 
-
-    // проверка на сдавшихся игроков
+    // возвращает последнего игрока, "Neutral" - если игра продолжается, "Draw" - если ничья
     QString lastPlayerInGame();
 
     // -------------------------------------------------------------------------------

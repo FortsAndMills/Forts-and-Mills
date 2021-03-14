@@ -63,11 +63,18 @@ int Game::NextStage()
 
             if (!ChooseOneOfTheStartHexes())
             {
-                state = GS_PLAN;
-                StartPlanning();
+                if (checkForLosers())
+                {
+                    state = GS_PLAN;
+                    StartPlanning();
 
-                // запускаем таймер
-                return rules->timer_per_plan[rules->timer];
+                    // запускаем таймер
+                    return rules->timer_per_plan[rules->timer];
+                }
+                else
+                {
+                    win(lastPlayerInGame());
+                }
             }
             else
             {
@@ -86,8 +93,7 @@ int Game::NextStage()
             defenseFill();
             agitationEnds();
 
-            PlayerColor winner = isGameFinished();
-            if (winner == "Neutral")
+            if (checkForLosers())
             {
                 addDayTime();
                 StartPlanning();
@@ -97,7 +103,7 @@ int Game::NextStage()
             }
             else
             {
-                win(winner);
+                win(lastPlayerInGame());
             }
         }
 

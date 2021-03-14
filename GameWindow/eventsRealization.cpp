@@ -9,7 +9,7 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
         // делаем доступными к нажатию определённые гексы
         if (game->events.size() == 1)
         {
-            if (game->players[mainPlayerColor]->GiveUp)
+            if (game->players[mainPlayerColor]->status != GamePlayer::ALIVE)
                 state = WAIT_FOR_ENEMY_START_POINT; // мы сдались, но планы врагов ещё не пришли
             else
                 getReadyToChooseHex(e->variants); // мы не сдались, и у нас ещё есть время
@@ -410,11 +410,34 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
 
         return WaitingType();
     }
+    else if (e->type == PLAYER_LOSES)
+    {
+        if (e->color == mainPlayerColor)
+        {
+            dialog->set(mainPlayerColor, dialogtext->get("defeat"), false, false, true);
+
+            // все кнопки исчезают
+            next->AnimationStart(OPACITY, 0);
+            whiteFlag->AnimationStart(OPACITY, 0);
+            go->AnimationStart(OPACITY, 0);
+        }
+        else
+        {
+            dialog->set(mainPlayerColor, dialogtext->playerLost(e->color), false, false, true);
+        }
+        resizeDialog(width(), height());
+
+        return WaitingType();
+    }
     else if (e->type == WIN)
     {
         if (e->color == mainPlayerColor)
         {
             dialog->set(mainPlayerColor, dialogtext->get("victory"), false, false, true);
+        }
+        else if (e->color == "Draw")
+        {
+            dialog->set(mainPlayerColor, dialogtext->get("draw"), false, false, true);
         }
         else
         {

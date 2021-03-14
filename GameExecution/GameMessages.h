@@ -49,6 +49,7 @@ enum GameEventType
     AGITATION_ENDS,
     BURN_RESOURCE,
     DAY_TIMES_CHANGED,
+    PLAYER_LOSES,
     WIN,
     LESSON
 };
@@ -328,6 +329,11 @@ public:
     void DayTimesChanged()
     {
         type = DAY_TIMES_CHANGED;
+    }
+    void PlayerLoses(PlayerColor color)
+    {
+        type = PLAYER_LOSES;
+        this->color = color;
     }
     void Win(PlayerColor color)
     {

@@ -9,6 +9,9 @@ DialogText::DialogText()
     text["rus"]["defeat"] = "ПОРАЖЕНИЕ!!!";
     text["eng"]["defeat"] = "DEFEAT!!!";
 
+    text["rus"]["draw"] = "НИЧЬЯ!!!";
+    text["eng"]["draw"] = "DRAW!!!";
+
     text["rus"]["timeisup"] = "Время вышло!";
     text["eng"]["timeisup"] = "Time is up!";
 
@@ -50,6 +53,12 @@ QString DialogText::playerGaveUp(QString player)
     if (settings->language == "rus")
         return "Игрок " + player + " сдался!";
     return "Player " + player + " has surrendered!";
+}
+QString DialogText::playerLost(QString player)
+{
+    if (settings->language == "rus")
+        return "Игрок " + player + " проиграл!";
+    return "Player " + player + " has lost!";
 }
 QString DialogText::lostConnection(QString player)
 {

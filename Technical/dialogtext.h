@@ -13,6 +13,7 @@ public:
     QString get(QString key);
 
     QString playerGaveUp(QString player);
+    QString playerLost(QString player);
     QString lostConnection(QString player);
     QString otherPlayerReconnected(QString player);
 };

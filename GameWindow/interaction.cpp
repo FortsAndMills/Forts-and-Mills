@@ -348,7 +348,7 @@ void GameWindow::startUnitTypeClicked(bool on, UnitType type)
 
 void GameWindow::timerExpired()
 {
-    if (game->players[mainPlayerColor]->GiveUp)
+    if (game->players[mainPlayerColor]->status != GamePlayer::ALIVE)
         return;
 
     bool forced_plan = false;
@@ -407,7 +407,7 @@ void GameWindow::timerExpired()
     {
         sendPlan();
 
-        if (!game->players[mainPlayerColor]->GiveUp)
+        if (game->players[mainPlayerColor]->status == GamePlayer::ALIVE)
         {
             dialog->set(mainPlayerColor, dialogtext->get("timeisup"), false, true, false, false, "", "timerexpired");
             resizeDialog(width(), height());
@@ -679,7 +679,7 @@ void GameWindow::succesfullyReconnected()
 }
 void GameWindow::opponentDisconnected(qint8 index)
 {
-    if (!game->players[game->rules->players[index]]->GiveUp)
+    if (game->players[game->rules->players[index]]->status == GamePlayer::ALIVE)
     {
         dialog->set(mainPlayerColor, dialogtext->lostConnection(game->rules->players[index]), false, false, true);
         resizeDialog(width(), height());
@@ -689,7 +689,7 @@ void GameWindow::opponentDisconnected(qint8 index)
 }
 void GameWindow::opponentReconnected(qint8 index)
 {
-    if (!game->players[game->rules->players[index]]->GiveUp)
+    if (game->players[game->rules->players[index]]->status == GamePlayer::ALIVE)
     {
         dialog->set(mainPlayerColor, dialogtext->otherPlayerReconnected(game->rules->players[index]), false, false, true);
         resizeDialog(width(), height());
@@ -700,8 +700,9 @@ void GameWindow::opponentReconnected(qint8 index)
 
 void GameWindow::giveup()
 {
-    // если уже сдался
-    if (game->players[mainPlayerColor]->GiveUp || game->winner != "Neutral")
+    // если уже сдался или игра закончилась
+    if (game->players[mainPlayerColor]->status != GamePlayer::ALIVE ||
+        game->winner != "Neutral")
         return;
 
     if (state == CHOOSING_HEX || state == WAIT_FOR_ENEMY_START_POINT)
@@ -722,7 +723,7 @@ void GameWindow::giveup()
     }
 
     // отправка сообщения
-    if (!game->players[mainPlayerColor]->GiveUp)
+    if (game->players[mainPlayerColor]->status == GamePlayer::ALIVE)
     {
         QByteArray message;
         QDataStream write(&message, QIODevice::WriteOnly);
@@ -736,7 +737,8 @@ void GameWindow::giveup()
 
 void GameWindow::ask_for_close()
 {
-    if (game->players[mainPlayerColor]->GiveUp || game->winner != "Neutral")
+    if (game->players[mainPlayerColor]->status != GamePlayer::ALIVE ||
+        game->winner != "Neutral")
     {
         emit DecidedToQuit();
         return;
@@ -747,7 +749,7 @@ void GameWindow::ask_for_close()
 }
 void GameWindow::whiteFlagClicked()
 {
-    if (game->players[mainPlayerColor]->GiveUp)
+    if (game->players[mainPlayerColor]->status != GamePlayer::ALIVE)
         return;
 
     dialog->set(mainPlayerColor, dialogtext->get("askgiveup"), false, true, true, false, "", "GiveUp");
@@ -755,7 +757,8 @@ void GameWindow::whiteFlagClicked()
 }
 void GameWindow::homeButtonClicked()
 {
-    if (game->players[mainPlayerColor]->GiveUp || game->winner != "Neutral")
+    if (game->players[mainPlayerColor]->status != GamePlayer::ALIVE ||
+        game->winner != "Neutral")
     {
         emit GoHome();
         return;

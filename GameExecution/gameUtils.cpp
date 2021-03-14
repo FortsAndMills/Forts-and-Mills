@@ -128,14 +128,14 @@ GameUnit *Game::getUnitById(qint16 id)
     return NULL;
 }
 
-// проверка на то, что сдались все игроки кроме одного
+// проверка на то, что сдались или проиграли все игроки кроме одного
 QString Game::lastPlayerInGame()
 {
     QString ans = "Neutral";
     bool flag = true;
     foreach (GamePlayer * player, players)
     {
-        if (!player->GiveUp)
+        if (player->status == GamePlayer::ALIVE)
         {
             if (flag)
             {
@@ -146,32 +146,11 @@ QString Game::lastPlayerInGame()
                 ans = "Neutral";
         }
     }
+
+    // TODO все мертвы: это ничья.
+    if (flag)
+        return "Draw";
     return ans;
 }
 
-// проверка на окончание игры!
-PlayerColor Game::isGameFinished()
-{
-    PlayerColor winner = "Neutral";
-    foreach (GamePlayer * player, players)
-    {
-        // у игрока есть юниты и лимит ресурсов > 0
-        if (!player->GiveUp && player->units.size() > 0 &&
-             resourcesLimit(player->color, false))
-        {
-            // первый найденный победитель
-            if (winner == "Neutral")
-            {
-                winner = player->color;
-            }
-            else
-            {
-                // уже второй победитель нашёлся; игра продолжается!
-                return "Neutral";
-            }
-        }
-    }
 
-    // TODO все мертвы: это ничья.
-    return winner;
-}

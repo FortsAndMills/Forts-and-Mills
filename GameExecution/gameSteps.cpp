@@ -10,7 +10,7 @@ void Game::ProcessChosenHexes()
     int giveupers = 0;
     foreach (GamePlayer * player, players)
     {
-        if (player->GiveUp)
+        if (player->status != GamePlayer::ALIVE)
             ++giveupers;
         else if (ch.contains(hex(chosenHex[player->color])))
         {
@@ -28,7 +28,7 @@ void Game::ProcessChosenHexes()
     {
         foreach (GamePlayer * player, players)
         {
-            if (!player->GiveUp)
+            if (player->status == GamePlayer::ALIVE)
             {
                 // удаляем гекс из вариантов
                 hex(chosenHex[player->color])->canBeChosenAsStartPoint = false;
@@ -70,7 +70,7 @@ void Game::RealizePlan()
         QMap <int, act> acts;
         for (int i = 0; i < rules->players.size(); ++i)
         {
-            if (!players[rules->players[i]]->GiveUp)
+            if (players[rules->players[i]]->status == GamePlayer::ALIVE)
             {
                 foreach (GameUnit * unit, players[rules->players[i]]->units)
                 {
@@ -237,6 +237,42 @@ void Game::addDayTime()
     }
 }
 
+// проверка на окончание игры!
+bool Game::checkForLosers()
+{
+    QSet<PlayerColor> lost;
+    int alive_players = 0;
+
+    foreach (GamePlayer * player, players)
+    {
+        // у игрока есть юниты и лимит ресурсов > 0
+        if (player->status == GamePlayer::ALIVE)
+        {
+            if (player->units.size() == 0)
+            {
+                player->status = GamePlayer::NO_UNITS;
+                lost << player->color;
+            }
+            else if (resourcesLimit(player->color, false) == 0)
+            {
+                player->status = GamePlayer::NO_FORTS;
+                lost << player->color;
+            }
+            else
+                alive_players += 1;
+        }
+    }
+
+    if (alive_players > 1)
+    {
+        foreach (PlayerColor color, lost)
+            AddEvent()->PlayerLoses(color);
+        return true;
+    }
+
+    // игра окончена
+    return false;
+}
 void Game::win(PlayerColor winner)
 {
     this->winner = winner;

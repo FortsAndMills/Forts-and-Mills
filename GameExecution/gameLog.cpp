@@ -49,7 +49,7 @@ void GameLog::logMillChoice()
     for (int i = 0; i < game->rules->players.size(); ++i)
     {
         QString name = game->rules->players[i];
-        if (game->players[name]->GiveUp)
+        if (game->players[name]->status == GamePlayer::GAVE_UP)
             log << name << ") gives up!\n";
         else
             log << name << ") " << game->chosenHex[game->rules->players[i]] << "\n";
@@ -62,7 +62,10 @@ void GameLog::logPlan()
 {
     if (game->lastPlayerInGame() != "Neutral")
     {
-        log << game->lastPlayerInGame() << " is the last player.";
+        if (game->lastPlayerInGame() == "Draw")
+            log << "Everyone lost. Draw.";
+        else
+            log << game->lastPlayerInGame() << " is the last player.";
         return;
     }
 
@@ -70,7 +73,7 @@ void GameLog::logPlan()
     for (int i = 0; i < game->rules->players.size(); ++i)
     {
         QString name = game->rules->players[i];
-        if (game->players[name]->GiveUp)
+        if (game->players[name]->status != GamePlayer::ALIVE)
             log << name << " gives up!";
         else
         {
