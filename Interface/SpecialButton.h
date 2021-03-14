@@ -13,7 +13,7 @@ public:
     explicit EnlargingButton(GraphicObject * parent, QString Name, bool simpleLayer = true, bool keepaspectratio=true) :
         StateObject(parent, "default", Name, CLICKABLE | HOVER, "", simpleLayer ? "SimpleLayer" : "", keepaspectratio)
     {        
-        this->set_rectangular_boundig_box();
+        this->set_rectangular_bounding_box();
         addGeometry("entered", QRectF(constants->specialButtonShiftX,
                                       constants->specialButtonShiftY,
                                       constants->specialButtonWidthShift,

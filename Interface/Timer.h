@@ -19,7 +19,7 @@ class Timer : public GraphicObject
 public:
     Timer(GraphicObject * parent) : GraphicObject(parent, RIGHT_CLICKABLE)
     {
-        this->set_rectangular_boundig_box();
+        this->set_rectangular_bounding_box();
         this->setVisible(false);
 
         // цифры

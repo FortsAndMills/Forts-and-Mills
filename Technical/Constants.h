@@ -24,6 +24,7 @@ public:
     static qreal gameMainPhaseStartPanelsAppearTime;  // время появления таблицы дня
 
     static qreal panelsChangeTime;  // время смены правой панели
+    static qreal digitsChangeTime;  // время смены одной циферки в сумме сил игрока
 
     static qreal ordersTurnTime;  // время затухания приказа
 
@@ -202,6 +203,9 @@ public:
     static qreal resourcesTableMarginX;  // Отступы в таблице имеющихся ресурсов
     static qreal resourcesTableMarginY;
     static qreal resourcesTableInsideMargin;
+
+    static qreal playerForcesHeight;  // высота подсчёта сил игрока
+    static qreal digitWtoH;           // w / h для циферки
 
     static qreal fieldSideMargin;  // Отступы справа и слева от интерфейса поля
 

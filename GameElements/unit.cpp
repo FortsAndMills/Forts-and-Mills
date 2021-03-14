@@ -448,11 +448,16 @@ void Unit::hidePanel()
 }
 void Unit::showUnitTypePanel(const QList<UnitType>& types)
 {
-    unitTypePanel->setVariants(types);
-    unitTypePanel->appear();
+    if (types.size() > 1)
+    {
+        unitTypePanel->setVariants(types);
+        unitTypePanel->appear();
 
-    foreach (OrderVariant * var, unitTypePanel->variants)
-        connect(var, SIGNAL(orderSelected(Game::PossibleChoice)), this, SIGNAL(unitTypeChosen(Game::PossibleChoice)));
+        foreach (OrderVariant * var, unitTypePanel->variants)
+            connect(var, SIGNAL(orderSelected(Game::PossibleChoice)), this, SIGNAL(unitTypeChosen(Game::PossibleChoice)));
+    }
+    else
+        emit unitTypeChosen(Game::PossibleChoice(types[0], Game::POSSIBLE));
 }
 void Unit::hideUnitTypePanel()
 {

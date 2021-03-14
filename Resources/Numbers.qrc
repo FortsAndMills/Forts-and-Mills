@@ -22,5 +22,49 @@
         <file>Content/Numbers/MillDigit9.png</file>
         <file>Content/Numbers/x.png</file>
         <file>Content/Numbers/colon.png</file>
+        <file>Content/Numbers/BlueDigit0.png</file>
+        <file>Content/Numbers/BlueDigit1.png</file>
+        <file>Content/Numbers/BlueDigit2.png</file>
+        <file>Content/Numbers/BlueDigit3.png</file>
+        <file>Content/Numbers/BlueDigit4.png</file>
+        <file>Content/Numbers/BlueDigit5.png</file>
+        <file>Content/Numbers/BlueDigit6.png</file>
+        <file>Content/Numbers/BlueDigit7.png</file>
+        <file>Content/Numbers/BlueDigit8.png</file>
+        <file>Content/Numbers/BlueDigit9.png</file>
+        <file>Content/Numbers/BluePawn.png</file>
+        <file>Content/Numbers/GreenDigit0.png</file>
+        <file>Content/Numbers/GreenDigit1.png</file>
+        <file>Content/Numbers/GreenDigit2.png</file>
+        <file>Content/Numbers/GreenDigit3.png</file>
+        <file>Content/Numbers/GreenDigit4.png</file>
+        <file>Content/Numbers/GreenDigit5.png</file>
+        <file>Content/Numbers/GreenDigit6.png</file>
+        <file>Content/Numbers/GreenDigit7.png</file>
+        <file>Content/Numbers/GreenDigit8.png</file>
+        <file>Content/Numbers/GreenDigit9.png</file>
+        <file>Content/Numbers/GreenPawn.png</file>
+        <file>Content/Numbers/RedDigit0.png</file>
+        <file>Content/Numbers/RedDigit1.png</file>
+        <file>Content/Numbers/RedDigit2.png</file>
+        <file>Content/Numbers/RedDigit3.png</file>
+        <file>Content/Numbers/RedDigit4.png</file>
+        <file>Content/Numbers/RedDigit5.png</file>
+        <file>Content/Numbers/RedDigit6.png</file>
+        <file>Content/Numbers/RedDigit7.png</file>
+        <file>Content/Numbers/RedDigit8.png</file>
+        <file>Content/Numbers/RedDigit9.png</file>
+        <file>Content/Numbers/RedPawn.png</file>
+        <file>Content/Numbers/YellowDigit0.png</file>
+        <file>Content/Numbers/YellowDigit1.png</file>
+        <file>Content/Numbers/YellowDigit2.png</file>
+        <file>Content/Numbers/YellowDigit3.png</file>
+        <file>Content/Numbers/YellowDigit4.png</file>
+        <file>Content/Numbers/YellowDigit5.png</file>
+        <file>Content/Numbers/YellowDigit6.png</file>
+        <file>Content/Numbers/YellowDigit7.png</file>
+        <file>Content/Numbers/YellowDigit8.png</file>
+        <file>Content/Numbers/YellowDigit9.png</file>
+        <file>Content/Numbers/YellowPawn.png</file>
     </qresource>
 </RCC>

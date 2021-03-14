@@ -27,6 +27,7 @@ enum LessonMessageType
     HIDE_DAY_TIMES,
     HIDE_FIELD_CONTROL,
     HIDE_HOMES,
+    HIDE_PLAYER_FORCES,
     SHOW_FIELD_CONTROL,
     SHOW_DAY_TIMES,
     SHOW_GO,
@@ -112,6 +113,11 @@ public:
     {
         type = LESSON;
         ltype = HIDE_HOMES;
+    }
+    void HidePlayerForces()
+    {
+        type = LESSON;
+        ltype = HIDE_PLAYER_FORCES;
     }
     void ShowDayTimes()
     {

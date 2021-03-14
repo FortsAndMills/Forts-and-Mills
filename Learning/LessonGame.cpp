@@ -202,6 +202,7 @@ void LessonGame::StartGame()
         AddEvent()->DefaultUnitClickReaction(Reaction(BLOCK));
 
         AddEvent()->HidePlayerPanels();
+        AddEvent()->HidePlayerForces();
         AddEvent()->HideGo();
         AddEvent()->HideDayTimes();
         AddEvent()->HideFieldControl();
@@ -443,6 +444,7 @@ void LessonGame::StartGame()
 
         AddEvent()->HideGo();
         AddEvent()->HideHomes();
+        AddEvent()->HidePlayerForces();
 
         // Вступление
         text["rus"] = "Все приказы, которые вы отдаёте своим юнитам, являются расходуемыми ресурсами.";
@@ -505,6 +507,8 @@ void LessonGame::StartGame()
         NewUnit(players[rules->players[1]], "Pig", Coord(5, 6));
         gatherResources();
 
+        AddEvent()->HidePlayerForces();
+
         AddEvent()->Plan();
         AddEvent()->DefaultUnitClickReaction(Reaction(BLOCK));
         AddEvent()->DefaultOrderChoiceReaction(Reaction(DEFAULT));
@@ -526,9 +530,9 @@ void LessonGame::StartGame()
         text["eng"] = "We have already recruited from this hex.";
         AddEvent()->ReactionOnHexChoice(hexes[4][2], Reaction(DEFAULT, text));
 
-        text["rus"] = "При рекрутировании нужно выбрать тип создаваемого юнита. Пока выберите любой.";
-        text["eng"] = "When you recruit, you have to choose a type of unit to create. For now, choose any!";
-        AddEvent()->ReactionOnOrderChoice("Recruit", Reaction(DEFAULT, text));
+        //text["rus"] = "При рекрутировании нужно выбрать тип создаваемого юнита. Пока выберите любой.";
+        //text["eng"] = "When you recruit, you have to choose a type of unit to create. For now, choose any!";
+        //AddEvent()->ReactionOnOrderChoice("Recruit", Reaction(DEFAULT, text));
 
         AddEvent()->HideGo();
 

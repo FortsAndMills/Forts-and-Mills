@@ -52,7 +52,7 @@ public:
 
     PlayersTune(GraphicObject * parent) : GraphicObject(parent, RIGHT_CLICKABLE)
     {
-        this->set_rectangular_boundig_box();
+        this->set_rectangular_bounding_box();
         Label = new GraphicObject(this, 0, "PlayersLabel");
         for (int i = 0; i < settings->default_rules->AllPlayers.size(); ++i)
         {
@@ -121,8 +121,8 @@ public:
         this->active = active;
         addPicture("off", "timer_" + type + "_off");
 
-        pictures["on"]->set_rectangular_boundig_box();
-        pictures["off"]->set_rectangular_boundig_box();
+        pictures["on"]->set_rectangular_bounding_box();
+        pictures["off"]->set_rectangular_bounding_box();
 
         turnOn(isOn);
     }
@@ -150,7 +150,7 @@ public:
 
     TimerTune(GraphicObject * parent) : GraphicObject(parent, RIGHT_CLICKABLE)
     {
-        this->set_rectangular_boundig_box();
+        this->set_rectangular_bounding_box();
         Label = new GraphicObject(this, 0, "TimerLabel");
         for (int i = 0; i < settings->default_rules->AllTimerTypes.size(); ++i)
         {
@@ -212,7 +212,7 @@ public:
     FieldTune(GraphicObject * parent, GameRules * rules = settings->default_rules, bool active = true) :
         GraphicObject(parent, RIGHT_CLICKABLE)
     {
-        this->set_rectangular_boundig_box();
+        this->set_rectangular_bounding_box();
         this->active = active;
 
         digits.push_back(new DigitObject(this, rules->fieldH / 10, "Fort", active * (WHEEL | CLICKABLE)));
@@ -545,7 +545,7 @@ public:
     explicit DayTimesTune(GraphicObject * parent, GameRules * rules = settings->default_rules, bool active = true) :
         GraphicObject(parent, RIGHT_CLICKABLE | (active * HOVER) | (active * CLICKABLE), "", "LessonFrameSelection", "SimpleLayer")
     {
-        this->set_rectangular_boundig_box();
+        this->set_rectangular_bounding_box();
         this->active = active;
         dayTimes = rules->dayTimes;
         createPanel(rules->changingDayTimes);

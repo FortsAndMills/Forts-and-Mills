@@ -2,11 +2,12 @@
 #define PLAYER_RESOURCES
 
 #include <Game/GamePlayer.h>
+#include <Game/GameRules.h>
+#include <Game/GameUnit.h>
 #include <GameElements/Unit.h>
 #include <GameElements/Order.h>
-#include <Game/GameRules.h>
+#include <Interface/PlayerForces.h>
 #include <Technical/Pictures.h>
-#include <Game/GameUnit.h>
 #include <Technical/Constants.h>
 
 class PlayerResources : public GraphicObject
@@ -15,6 +16,8 @@ class PlayerResources : public GraphicObject
 
     QMap <Resource, QList <OrderPic *> > table;
 public:
+    PlayerForces * forces;
+
     Game * game;
     GamePlayer * prototype;
 
@@ -26,6 +29,7 @@ public:
         this->game = game;
         this->prototype = prototype;
         this->isRight = isMain ? -1 : 1;
+        this->forces = new PlayerForces(this, prototype->color);
     }
     void Delete()
     {
@@ -34,6 +38,7 @@ public:
             foreach (OrderPic * op, list)
                 op->Delete();
         }
+        this->forces->Delete();
 
         GraphicObject::Delete();
     }
@@ -89,6 +94,9 @@ private:
                 table[R][i]->resize(tableSize[R][i], tableSize[R][i]);
             }
         }
+
+        forces->setGeometry(0, H * (1 - constants->playerForcesHeight),
+                            W, H * constants->playerForcesHeight);
     }
 
 private:

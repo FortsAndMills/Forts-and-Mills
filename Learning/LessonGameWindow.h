@@ -119,6 +119,14 @@ public:
                 allowHomes = false;
                 return WaitingType();
             }
+            else if (Le->ltype == HIDE_PLAYER_FORCES)
+            {
+                foreach (PlayerResources * PR, player_windows)
+                {
+                    PR->forces->setVisible(false);
+                }
+                return WaitingType();
+            }
             else if (Le->ltype == SHOW_FIELD_CONTROL)
             {
                 fieldControl->setVisible(true);

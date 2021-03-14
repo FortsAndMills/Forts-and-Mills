@@ -151,6 +151,8 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
                 << "Здесь отображается, сколько времён дня в игре.";
         if (name == "Timer") return QVector<QString>()
                 << "Здесь отображается оставшееся время.";
+        if (name == "Forces") return QVector<QString>()
+                << "Здесь отображается суммарная сила юнитов игрока.";
 
         if (name == "timer_1") return QVector<QString>()
                 << "<u>Блиц</u><br />Время выбора старта: 30 секунд<br />Время планирования: 2 минуты";
@@ -312,6 +314,8 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
                 << "Number of time slots per round is displayed here.";
         if (name == "Timer") return QVector<QString>()
                 << "Remaining time is displayed here.";
+        if (name == "Forces") return QVector<QString>()
+                << "Total power of player's units is displayed here.";
 
         if (name == "timer_1") return QVector<QString>()
                 << "<u>Blitz timer</u><br />Time to choose starting position: 30 seconds<br />Time to plan: 2 minutes";
@@ -389,6 +393,8 @@ QString HelpManager::HelpPicture(QString name)
     if (name == "timer_no") return "timer_no";
     if (name == "TimerTune") return "timer_1";
     if (name == "Timer") return "timer_1";
+
+    if (name == "Forces") return "YellowPawn";
 
     if (name == "HowToAskHelp") return "Unknown";
 

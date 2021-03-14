@@ -17,6 +17,7 @@ qreal Constants::dayTimesChangeAnimationTime = 200;
 qreal Constants::gameMainPhaseStartPanelsAppearTime = 1000;  // время появления таблицы дня
 
 qreal Constants::panelsChangeTime = 100;  // время смены правой панели
+qreal Constants::digitsChangeTime = 100;  // время смены циферки сил игрока на 1
 
 qreal Constants::ordersTurnTime = 100;  // время затухания приказа
 
@@ -194,6 +195,9 @@ qreal Constants::leftPanelSwitchersHeight = 0.04;
 qreal Constants::resourcesTableMarginX = 0.07;  // Отступы в таблице имеющихся ресурсов
 qreal Constants::resourcesTableMarginY = 0.02;
 qreal Constants::resourcesTableInsideMargin = 0.05;
+
+qreal Constants::playerForcesHeight = 0.15;  // высота подсчёта сил игрока
+qreal Constants::digitWtoH = 0.75;  // высота подсчёта сил игрока
 
 qreal Constants::fieldSideMargin = 0.015;  // Отступы справа и слева от интерфейса поля
 

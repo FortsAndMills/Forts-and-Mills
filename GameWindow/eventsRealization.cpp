@@ -51,6 +51,8 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
         newUnit(e->unit, e->hex->coord);
         hex(e->unit->home)->hideInformation();  // предполагается, что там была картинка этого юнита как рекрутирующегося
 
+        player_windows[e->unit->color]->forces->increase(e->unit->health);
+
         if (game->events[1]->type == NEW_UNIT_APPEAR ||
                 state != REALIZATION_PHASE)
             return WaitingType();
@@ -265,6 +267,7 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
         }
         else
         {
+            player_windows[e->unit->color]->forces->decrease(e->unit->health);
             blowUnit(e->unit);
 
             return WaitingType(BUTTON, constants->unitReconfigureTime);
@@ -318,6 +321,8 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
     {
         Unit * u = units[e->unit];
         u->healthChanged(e->amount);
+
+        player_windows[e->unit->color]->forces->increase(e->amount);
 
         // TODO надо бы это в event-функцию оформить...
         // это просто создание крестика, инициализация и старт анимации
@@ -379,6 +384,7 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
     else if (e->type == HOMELESS_UNIT_DAMAGED)
     {
         units[e->unit]->healthChanged(-e->amount);
+        player_windows[e->unit->color]->forces->decrease(e->amount);
         return WaitingType();
     }
     else if (e->type == AGITATION_ENDS)
@@ -523,6 +529,7 @@ void GameWindow::UnitsFight(QSet <GameUnit *> fighters, const Strike & strike,
         else if (strike.fb[u] == UNIT_HEALTH)
         {
             units[u]->healthChanged(-strike.amount[u]);
+            player_windows[u->color]->forces->decrease(strike.amount[u]);
         }
     }
 }

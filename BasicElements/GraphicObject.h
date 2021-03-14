@@ -68,7 +68,7 @@ public:
             return boundingRect().contains(point);
         return QGraphicsPixmapItem::contains(point);
     }
-    void set_rectangular_boundig_box()
+    void set_rectangular_bounding_box()
     {
         is_rectangular = true;
 

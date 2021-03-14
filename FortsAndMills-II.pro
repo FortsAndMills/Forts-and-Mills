@@ -62,6 +62,7 @@ HEADERS  += mainwindow.h \
     GameExecution/GameLog.h \
     GameExecution/GameStructures.h \
     Interface/LanguageSelector.h \
+    Interface/PlayerForces.h \
     Interface/StartChoiceProgress.h \
     Interface/Timer.h \
     Programm/Basic/headers.h \
