@@ -5,11 +5,11 @@ void Game::playerGiveUp(int index)
     players[rules->players[index]]->GiveUp = true;
 }
 
-bool Game::CanUse(GameUnit *unit, OrderType order)
+Game::IS_POSSIBLE Game::CanUse(GameUnit *unit, OrderType order)
 {
     // если этот приказ технически не может использоваться юнитом, сразу нет
     if (!GameOrderParameters(rules, unit->type, order).canUse)
-        return false;
+        return Game::CANT_USE;
 
     // находим текущую позицию юнита
     Coord where = unit->position;
@@ -56,22 +56,22 @@ bool Game::CanUse(GameUnit *unit, OrderType order)
 
     // нехватка ресурсов
     if (players[unit->color]->resources[order] <= spend)
-        return false;
+        return Game::CANT_USE;
 
     // если это рекрутирование, то нужно проверить, даёт ли вообще эта клетка юнита
     if (order == "Recruit")
     {
         // клетка уже дала юнита
         if (!hex(where)->provides_unit())
-            return false;
-
-        // не подсоединено
-        if (!Connected(unit->color, false, captured_today).contains(hex(where)))
-            return false;
+            return Game::CANT_RECRUIT_ALREADY_PROVIDED;
 
         // клетка не была захвачена
         if (hex(where)->color != unit->color && !captured_today.contains(where))
-            return false;
+            return Game::CANT_RECRUIT_NOT_CAPTURED;
+
+        // не подсоединено
+        if (!Connected(unit->color, false, captured_today).contains(hex(where)))
+            return Game::CANT_RECRUIT_NOT_CONNECTED;
     }
 
     // если это захват, то нужно проверить, была ли клетка освобождена
@@ -79,24 +79,25 @@ bool Game::CanUse(GameUnit *unit, OrderType order)
     {
         // клетка не была освобождена
         if (hex(where)->color != unit->color && hex(where)->color != "Neutral" && !liberated_today.contains(where))
-            return false;
+            return Game::CANT_CAPTURE_NOT_LIBERATED;
     }
 
-    return true;
+    return Game::POSSIBLE;
 }
-QList<OrderType> Game::whatCanUse(GameUnit * unit)
+QList<Game::PossibleChoice> Game::whatCanUse(GameUnit * unit)
 {
     // перебираем все варианты и запускаем CanUse
-    QList <OrderType> ans;
+    QList<Game::PossibleChoice> ans;
     foreach (OrderType order, rules->ordersInGame)
     {
-        if (CanUse(unit, order))
-            ans << order;
+        Game::IS_POSSIBLE possible = CanUse(unit, order);
+        if (possible != CANT_USE)
+            ans << Game::PossibleChoice(order, possible);
     }
-    ans << DefaultOrder;
+    ans << Game::PossibleChoice(DefaultOrder, Game::POSSIBLE);
 
     if (unit->plan[0] != NULL)
-        ans << DeleteLastOrder;
+        ans << Game::PossibleChoice(DeleteLastOrder, Game::POSSIBLE);
     return ans;
 }
 bool Game::must_be_last(GameUnit * unit, DayTime time)

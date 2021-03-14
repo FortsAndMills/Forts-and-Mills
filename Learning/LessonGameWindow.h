@@ -299,15 +299,18 @@ public:
 
     QMap<OrderType, Reaction> OrderChoiceReactions;
     Reaction DefaultOrderChoiceReaction;
-    void orderVariantClicked(OrderType type)
+    void orderVariantClicked(Game::PossibleChoice pos_order)
     {
-        Reaction R = OrderChoiceReactions.contains(type) ? OrderChoiceReactions[type] : DefaultOrderChoiceReaction;
+        if (pos_order.status != Game::POSSIBLE)
+            return;
+
+        Reaction R = OrderChoiceReactions.contains(pos_order.variant) ? OrderChoiceReactions[pos_order.variant] : DefaultOrderChoiceReaction;
 
         if (!R.text.empty())
             ShowLesson(R.text, R.picture);
 
         if (R.type == DEFAULT || R.type == NEXT_PHASE)
-            GameWindow::orderVariantClicked(type);
+            GameWindow::orderVariantClicked(pos_order);
 
         if (R.type == NEXT_PHASE)
             NextPhase();

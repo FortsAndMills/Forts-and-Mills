@@ -101,8 +101,8 @@ protected slots:
     void orderPicEntered(OrderType type, PlayerColor color);
     void orderPicLeft(OrderType type, PlayerColor color);
 
-    virtual void orderVariantClicked(OrderType type);  // выбран приказ с панели
-    virtual void unitTypeChosen(UnitType type);
+    virtual void orderVariantClicked(Game::PossibleChoice pos_order);  // выбран приказ с панели
+    virtual void unitTypeChosen(Game::PossibleChoice pos_unit);
 
     virtual void unitHoverEntered(GameUnit * unit);
     virtual void unitHoverLeft(GameUnit * unit);

@@ -153,9 +153,28 @@ protected:
     }
 
 public:
+    enum IS_POSSIBLE {CANT_USE,  // не отображаем в панели
+                      POSSIBLE,  // отображаем
+                      CANT_RECRUIT_ALREADY_PROVIDED,  // отображаем, но не даём кликнуть
+                      CANT_RECRUIT_NOT_CONNECTED,
+                      CANT_RECRUIT_NOT_CAPTURED,
+                      CANT_CAPTURE_NOT_LIBERATED
+                       };
+    struct PossibleChoice
+    {
+        OrderType variant;
+        IS_POSSIBLE status;
+
+        PossibleChoice(OrderType variant, IS_POSSIBLE status)
+        {
+            this->variant = variant;
+            this->status = status;
+        }
+    };
+
     // может ли юнит использовать приказ и какие у него есть варианты
-    bool CanUse(GameUnit * unit, OrderType order);
-    QList<OrderType> whatCanUse(GameUnit *);
+    IS_POSSIBLE CanUse(GameUnit * unit, OrderType order);
+    QList<PossibleChoice> whatCanUse(GameUnit *);
 
     // обязан ли приказ быть последним (проверка пересечения речки)
     bool must_be_last(GameUnit * unit, DayTime time);

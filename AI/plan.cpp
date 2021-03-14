@@ -390,52 +390,56 @@ QList<Plan> AI::PossiblePlans(GameUnit * unit)
 
             if (!game->must_be_last(unit, dayTime - 1))
             {
-                QList<OrderType> options = game->whatCanUse(unit);
-                foreach (OrderType order, options)
+                QList< Game::PossibleChoice > options = game->whatCanUse(unit);
+                foreach (Game::PossibleChoice pos_order, options)
                 {
-                    if (order == "Capture" && game->hex(unit_c)->color != unit->color &&
-                        check_repeat(unit, dayTime, "Capture") &&
-                        !already_captured.contains(unit_c))
+                    OrderType order = pos_order.variant;
+                    if (pos_order.status == Game::POSSIBLE)
                     {
-                        Plan new_plan = plan;
-                        new_plan[dayTime] = GameOrder(game->rules, unit->type, order);
-                        new_plans << new_plan;
-                    }
-                    if (order == "Recruit" &&
-                        check_repeat(unit, dayTime, "Recruit") &&
-                        !already_recruited.contains(unit_c))
-                    {
-                        Plan new_plan = plan;
-                        new_plan[dayTime] = GameOrder(game->rules, unit->type, order);
-                        new_plan[dayTime].setParameter("Scrat");
-                        new_plans << new_plan;
-                    }
-                    if (order == "Liberate" &&
-                        check_repeat(unit, dayTime, "Liberate") &&
-                        !already_liberated.contains(unit_c) &&
-                        game->hex(unit_c)->color != "Neutral" &&
-                        game->hex(unit_c)->color != unit->color)
-                    {
-                        Plan new_plan = plan;
-                        new_plan[dayTime] = GameOrder(game->rules, unit->type, order);
-                        new_plans << new_plan;
-                    }
-                    if (order == DefaultOrder)
-                    {
-                        Plan new_plan = plan;
-                        new_plan[dayTime] = GameOrder(game->rules, unit->type, order);
-                        new_plans << new_plan;
-                    }
-                    if (order == "Attack" || order == "Go")
-                    {
-                        foreach (Coord target, game->adjacentHexes(unit_c))
+                        if (order == "Capture" && game->hex(unit_c)->color != unit->color &&
+                            check_repeat(unit, dayTime, "Capture") &&
+                            !already_captured.contains(unit_c))
                         {
-                            if (game->hex(target)->canGoHere)
+                            Plan new_plan = plan;
+                            new_plan[dayTime] = GameOrder(game->rules, unit->type, order);
+                            new_plans << new_plan;
+                        }
+                        if (order == "Recruit" &&
+                            check_repeat(unit, dayTime, "Recruit") &&
+                            !already_recruited.contains(unit_c))
+                        {
+                            Plan new_plan = plan;
+                            new_plan[dayTime] = GameOrder(game->rules, unit->type, order);
+                            new_plan[dayTime].setParameter("Scrat");
+                            new_plans << new_plan;
+                        }
+                        if (order == "Liberate" &&
+                            check_repeat(unit, dayTime, "Liberate") &&
+                            !already_liberated.contains(unit_c) &&
+                            game->hex(unit_c)->color != "Neutral" &&
+                            game->hex(unit_c)->color != unit->color)
+                        {
+                            Plan new_plan = plan;
+                            new_plan[dayTime] = GameOrder(game->rules, unit->type, order);
+                            new_plans << new_plan;
+                        }
+                        if (order == DefaultOrder)
+                        {
+                            Plan new_plan = plan;
+                            new_plan[dayTime] = GameOrder(game->rules, unit->type, order);
+                            new_plans << new_plan;
+                        }
+                        if (order == "Attack" || order == "Go")
+                        {
+                            foreach (Coord target, game->adjacentHexes(unit_c))
                             {
-                                Plan new_plan = plan;
-                                new_plan[dayTime] = GameOrder(game->rules, unit->type, order);
-                                new_plan[dayTime].setParameter(target);
-                                new_plans << new_plan;
+                                if (game->hex(target)->canGoHere)
+                                {
+                                    Plan new_plan = plan;
+                                    new_plan[dayTime] = GameOrder(game->rules, unit->type, order);
+                                    new_plan[dayTime].setParameter(target);
+                                    new_plans << new_plan;
+                                }
                             }
                         }
                     }

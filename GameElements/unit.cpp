@@ -432,7 +432,7 @@ void Unit::light(bool on)
         recheckZPos();
     }
 }
-void Unit::showOrdersPanel(QList<OrderType> orders)
+void Unit::showOrdersPanel(const QList<Game::PossibleChoice>& orders)
 {
     ordersPanel->setVariants(orders);
     ordersPanel->appear();
@@ -440,19 +440,19 @@ void Unit::showOrdersPanel(QList<OrderType> orders)
     // подключаем сигналы от панели
     // кнопки панели меняются при её включении, поэтому это нужно делать здесь
     foreach (OrderVariant * var, ordersPanel->variants)
-        connect(var, SIGNAL(leftClicked(QString)), this, SIGNAL(orderVariantChosen(QString)));
+        connect(var, SIGNAL(orderSelected(Game::PossibleChoice)), this, SIGNAL(orderVariantChosen(Game::PossibleChoice)));
 }
 void Unit::hidePanel()
 {
     ordersPanel->disappear();
 }
-void Unit::showUnitTypePanel(QList<UnitType> types)
+void Unit::showUnitTypePanel(const QList<UnitType>& types)
 {
     unitTypePanel->setVariants(types);
     unitTypePanel->appear();
 
     foreach (OrderVariant * var, unitTypePanel->variants)
-        connect(var, SIGNAL(leftClicked(QString)), this, SIGNAL(unitTypeChosen(QString)));
+        connect(var, SIGNAL(orderSelected(Game::PossibleChoice)), this, SIGNAL(unitTypeChosen(Game::PossibleChoice)));
 }
 void Unit::hideUnitTypePanel()
 {

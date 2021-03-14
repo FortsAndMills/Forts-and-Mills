@@ -120,9 +120,9 @@ public:
     void select();  // подсветить юнит
     void deselect();
     void light(bool on = true);
-    void showOrdersPanel(QList <OrderType> orders);  // панель приказов
+    void showOrdersPanel(const QList<Game::PossibleChoice> &orders);  // панель приказов
     void hidePanel();
-    void showUnitTypePanel(QList <UnitType> types);  // панель выбора типа юнитов
+    void showUnitTypePanel(const QList<QString> &types);  // панель выбора типа юнитов
     void hideUnitTypePanel();
 
     void defenseTurn(int amount, bool on = true);
@@ -154,8 +154,8 @@ signals:
     void dragStarted(GameUnit *);
     void dragFinished(GameUnit *);
 
-    void orderVariantChosen(OrderType type);
-    void unitTypeChosen(UnitType type);
+    void orderVariantChosen(Game::PossibleChoice);
+    void unitTypeChosen(Game::PossibleChoice);
 };
 
 #endif

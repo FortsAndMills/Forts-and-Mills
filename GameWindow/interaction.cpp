@@ -48,8 +48,8 @@ void GameWindow::unitConnections(Unit * unit)
     connect(unit, SIGNAL(entered(GameUnit*)), SLOT(unitHoverEntered(GameUnit*)));
     connect(unit, SIGNAL(left(GameUnit*)), SLOT(unitHoverLeft(GameUnit*)));
     connect(unit, SIGNAL(leftClicked(GameUnit*)), SLOT(unitLeftClicked(GameUnit*)));
-    connect(unit, SIGNAL(orderVariantChosen(QString)), SLOT(orderVariantClicked(QString)));
-    connect(unit, SIGNAL(unitTypeChosen(QString)), SLOT(unitTypeChosen(QString)));
+    connect(unit, SIGNAL(orderVariantChosen(Game::PossibleChoice)), SLOT(orderVariantClicked(Game::PossibleChoice)));
+    connect(unit, SIGNAL(unitTypeChosen(Game::PossibleChoice)), SLOT(unitTypeChosen(Game::PossibleChoice)));
 }
 void GameWindow::orderPicsConnections(OrderPic *pic)
 {
@@ -142,10 +142,34 @@ void GameWindow::orderPicLeft(OrderType type, PlayerColor)
     }
 }
 
-void GameWindow::orderVariantClicked(OrderType type)
+void GameWindow::orderVariantClicked(Game::PossibleChoice pos_order)
 {
     if (selectedUnit == NULL)
         debug << "FatalError: no selected unit, but there is order variant!!!\n";
+
+    // если выбран невозможный приказ, для которого нужно вывести пояснение
+    if (pos_order.status != Game::POSSIBLE)
+    {
+        if (pos_order.status == Game::CANT_RECRUIT_ALREADY_PROVIDED)
+        {
+           emit help->HelpAsked("cantrecruit_already_provided");
+        }
+        else if (pos_order.status == Game::CANT_RECRUIT_NOT_CAPTURED)
+        {
+           emit help->HelpAsked("cantrecruit_not_captured");
+        }
+        else if (pos_order.status == Game::CANT_RECRUIT_NOT_CONNECTED)
+        {
+           emit help->HelpAsked("cantrecruit_not_connected");
+        }
+        else if (pos_order.status == Game::CANT_CAPTURE_NOT_LIBERATED)
+        {
+           emit help->HelpAsked("cantcapture_not_liberated");
+        }
+        return;
+    }
+
+    OrderType type = pos_order.variant;
 
     // если выбран "удалить последний приказ"
     if (type == DeleteLastOrder)
@@ -199,10 +223,9 @@ void GameWindow::orderVariantClicked(OrderType type)
     // переходим в состояние выбора параметра приказа
     getReadyToChooseOrderParameter();
 }
-
-void GameWindow::unitTypeChosen(QString type)
+void GameWindow::unitTypeChosen(Game::PossibleChoice pos_unit)
 {
-    selectedUnit->prototype->plan[dayTime]->setParameter(type);
+    selectedUnit->prototype->plan[dayTime]->setParameter(pos_unit.variant);
     finishedChoosingOrderParameter();
 }
 

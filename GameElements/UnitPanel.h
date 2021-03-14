@@ -62,19 +62,26 @@ public:
     QPointF variantPos(QString name)
     {
         int i = 0;
-        while (variants[i]->name != name) { ++i; }
+        while (variants[i]->pos_order.variant != name) { ++i; }
         return variants[i]->pos();
     }
 
-    void setVariants(QList <QString> variants_names)
+    void setVariants(const QList<UnitType>& all_variants)
+    {
+        QList<Game::PossibleChoice> new_variants;
+        foreach (UnitType var, all_variants)
+            new_variants << Game::PossibleChoice(var, Game::POSSIBLE);
+        setVariants(new_variants);
+    }
+    void setVariants(const QList<Game::PossibleChoice>& new_variants)
     {
         foreach (OrderVariant * var, variants)
             var->Delete();
         variants.clear();
 
-        foreach (QString var, variants_names)
+        foreach (Game::PossibleChoice pos_order, new_variants)
         {
-            variants << new OrderVariant(this->cur_object(), var);
+            variants << new OrderVariant(this->cur_object(), pos_order);
         }
 
         reconfigure();

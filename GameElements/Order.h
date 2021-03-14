@@ -272,12 +272,13 @@ class OrderVariant : public StateObject
     Q_OBJECT
 
 public:
-    QString name;
+    Game::PossibleChoice pos_order;
 
-    explicit OrderVariant(GraphicObject * parent, QString name) :
-        StateObject(parent, "default", name == DeleteLastOrder ? "RedCancelButton" : name, HOVER | CLICKABLE | RIGHT_CLICKABLE, "", "", true)
+    explicit OrderVariant(GraphicObject * parent, Game::PossibleChoice pos_order) : pos_order(pos_order),
+        StateObject(parent, "default", pos_order.variant == DeleteLastOrder ? "RedCancelButton" : pos_order.variant, HOVER | CLICKABLE | RIGHT_CLICKABLE, "", "", true)
     {
-        this->name = name;
+        if (pos_order.status != Game::POSSIBLE)
+            this->setOpacity(constants->order_opacity_when_impossible);
 
         addGeometry("entered", QRectF(constants->specialButtonShiftX,
                                       constants->specialButtonShiftY,
@@ -296,14 +297,14 @@ public:
 
     void rightClick()
     {
-        emit help->HelpAsked(name);
+        emit help->HelpAsked(pos_order.variant);
     }
     void leftClick()
     {
-        emit leftClicked(name);
+        emit orderSelected(pos_order);
     }
 signals:
-    void leftClicked(QString);
+    void orderSelected(Game::PossibleChoice);
 };
 
 #endif

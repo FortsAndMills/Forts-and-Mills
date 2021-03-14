@@ -121,6 +121,15 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
         if (name == "NotConnected") return QVector<QString>()
                 << "Клетка не подсоединена к мельнице. Рекрутировать здесь пока нельзя.";
 
+        if (name == "cantrecruit_already_provided") return QVector<QString>()
+                << "Юнит в этой клетке уже был создан. Больше рекрутировать здесь нельзя.";
+        if (name == "cantrecruit_not_captured") return QVector<QString>()
+                << "Перед использованием рекрутирования клетку нужно захватить. Это может сделать одновременно другой юнит.";
+        if (name == "cantrecruit_not_connected") return QVector<QString>()
+                << "Перед использованием рекрутирования клетку нужно подсоединить к одной из ваших мельниц.";
+        if (name == "cantcapture_not_liberated") return QVector<QString>()
+                << "Перед захватом клетку нужно освободить. Это может сделать одновременно другой юнит.";
+
         if (name == "PlayersTune") return QVector<QString>()
                 << "На этой панели можно изменить количество игроков - от 2 до 4.";
         if (name == "NumberOfPlayers") return QVector<QString>()
@@ -273,6 +282,15 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
         if (name == "NotConnected") return QVector<QString>()
                 << "This hex hasn't provided unit yet, but the owner has not connected it to his mill yet, so recruiting is yet unavailable.";
 
+        if (name == "cantrecruit_already_provided") return QVector<QString>()
+                << "This hex has already provided a unit. Can't recruit again here.";
+        if (name == "cantrecruit_not_captured") return QVector<QString>()
+                << "You have to capture the hex before recruiting. It can be done by another unit at the same time.";
+        if (name == "cantrecruit_not_connected") return QVector<QString>()
+                << "You have to connect this hex to one of your mills through your territories before recruiting here.";
+        if (name == "cantcapture_not_liberated") return QVector<QString>()
+                << "You have to liberate the hex before capturing it. It can be done by another unit at the same time.";
+
         if (name == "PlayersTune") return QVector<QString>()
                 << "Choose number of players here.";
         if (name == "NumberOfPlayers") return QVector<QString>()
@@ -349,6 +367,11 @@ QString HelpManager::HelpPicture(QString name)
     if (name == "NotUnitHome") return "NotBlueUnitHome";
     if (name == "Tombstone") return "Tombstone";
     if (name == "NotConnected") return "NotConnected";
+
+    //if (name == "cantrecruit_already_provided") return ;
+    if (name == "cantrecruit_not_captured") return "Capture";
+    if (name == "cantrecruit_not_connected") return "NotConnected";
+    if (name == "cantcapture_not_liberated") return "Liberate";
 
     if (name == "PlayersTune") return "PlayerOnline";
     if (name == "NumberOfPlayers") return "PlayerOnline";
