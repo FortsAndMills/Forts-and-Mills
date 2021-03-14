@@ -273,6 +273,10 @@ public:
             GameWindow::hexEntered(c);
     }
     void giveup() override {}
+    void ask_for_close() override
+    {
+        emit DecidedToQuit();
+    }
 
     Reaction RiverCrossReaction;
     void riverCrossedInPlan()

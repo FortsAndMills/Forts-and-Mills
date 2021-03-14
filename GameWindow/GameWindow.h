@@ -129,7 +129,7 @@ protected slots:
 
 public:
     virtual void giveup();
-    void ask_for_close();
+    virtual void ask_for_close();
 
 signals:
     void writeToOpponent(QByteArray);

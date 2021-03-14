@@ -214,6 +214,7 @@ public slots:
         resizeWindows(width(), height());
         connect(game_window, SIGNAL(GoHome()), SLOT(returnToLessons()));
         connect(lgame_window, SIGNAL(LessonPassed(int)), SLOT(LessonPassed(int)));
+        connect(lgame_window, SIGNAL(DecidedToQuit()), SLOT(close()));
 
         menu_window->turn(false);
         how_to_play_window->turn(false);
