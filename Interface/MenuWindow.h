@@ -162,13 +162,14 @@ private:
 public slots:
     void connected()
     {
-        if (state == MW_START)
-        {
+        //if (state == MW_START)
+        //{
             state = MW_CONNECTED;
             dialog->setVisible(false);
-            client->sendWantNewsMessage();
+            //client->sendWantNewsMessage();
+            recreateList();
             CreateNewGame->setVisible(true);
-        }
+        //}
     }
     void recreateList()
     {
