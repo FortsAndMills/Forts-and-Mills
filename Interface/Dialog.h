@@ -138,24 +138,30 @@ public:
         resizeChildren(width(), height());
     }
 
-
+    // вспомогательные элементы для отображения справки
+    // там может быть несколько текстов подряд
     QVector <QString> texts;
     int current_dialog = 0;
     QString picture;
-    bool resetWhenExit = true;
-    bool showHelp = true;
-    void set(PlayerColor color, QVector<QString> messages, QString supportPic = "")
-    {
-        this->color = color;
-        texts = messages;
-        picture = supportPic;
 
-        current_dialog = 0;
-        set(color, texts[0], false, false, true, false, picture);
+    // эти настройки модифицируются в туториале:
+    bool resetWhenExit = true;   // сворачиваем окно при нажатии на галочку
+    bool showHelp = true;        // реагируем на запросы справки
+    bool last_text_ok_button = true;  // показываем галочку в последнем тексте справки
+public slots:
+    void helpAsked(QString what)
+    {
+        if (showHelp)
+        {
+            this->color = "Neutral";
+            texts = HelpManager::HelpInfo(what, rules);
+            picture = HelpManager::HelpPicture(what);
+
+            current_dialog = 0;
+            set(color, texts[0], false, false, texts.size() > 1 || last_text_ok_button, false, picture);
+        }
     }
 
-
-public slots:
     void rotateWaitingPicture()
     {
         WaitingPicture->setRotation(0);
@@ -168,7 +174,7 @@ public slots:
         if (current_dialog + 1 < texts.size())
         {
             ++current_dialog;
-            set("Neutral", texts[current_dialog], false, false, true, true, picture);
+            set("Neutral", texts[current_dialog], false, false, current_dialog + 1 < texts.size() || last_text_ok_button, true, picture);
         }
         else
         {
@@ -193,13 +199,10 @@ public slots:
             --current_dialog;
             set("Neutral", texts[current_dialog], false, false, true, current_dialog != 0, picture);
         }
-        emit wantBack();
-    }
-
-    void helpAsked(QString what)
-    {
-        if (showHelp)
-            set("Neutral", HelpManager::HelpInfo(what, rules), HelpManager::HelpPicture(what));
+        else
+        {
+            emit wantBack();
+        }
     }
 
 signals:

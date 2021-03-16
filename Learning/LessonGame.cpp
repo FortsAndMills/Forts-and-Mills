@@ -1227,9 +1227,14 @@ int LessonGame::NextStage()
                 text["eng"] = "The starting phase is over, and the game is on! The goal is to destroy all enemy forces!";
                 AddEvent()->ShowMessage(text, true, false, true);
 
-                AddEvent()->EnableGo();
                 text["rus"] = "Теперь вы знаете все правила \"Фортов и мельниц\"! Попробуйте победить глупенького бота!";
                 text["eng"] = "Now you know all the rules of \"Forts and mills\"! Try to beat a silly bot!";
+                AddEvent()->ShowMessage(text, true, false, true);
+
+                AddEvent()->EnableGo();
+                AddEvent()->AllowHelp();
+                text["rus"] = "Чтобы получить справку о любом игровом элементе, кликните по нему правой кнопкой мыши.";
+                text["eng"] = "You can get help about any game object by clicking on it with right mouse button.";
                 AddEvent()->ShowMessage(text, false, false, false);
                 round += 1;
             }

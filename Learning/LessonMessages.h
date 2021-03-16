@@ -32,6 +32,7 @@ enum LessonMessageType
     SHOW_DAY_TIMES,
     SHOW_GO,
     SHOW_START_PROGRESSBAR,
+    ALLOW_HELP,
     ENABLE_GO,
     DISABLE_GO,
     ENABLE_NEXT,
@@ -118,6 +119,11 @@ public:
     {
         type = LESSON;
         ltype = HIDE_PLAYER_FORCES;
+    }
+    void AllowHelp()
+    {
+        type = LESSON;
+        ltype = ALLOW_HELP;
     }
     void ShowDayTimes()
     {

@@ -58,7 +58,7 @@ public:
 
     void ShowLesson(Lesson L)
     {
-        dialog->set("Neutral", L.text[settings->language], false, false, L.with_ok_button || lesson_shown < lessons.size() - 1, lesson_shown != 0, L.pictureName);
+        dialog->set("Neutral", L.text[settings->language], false, false, L.with_ok_button || lesson_shown < lessons.size() - 1, lesson_shown != 0, L.pictureName, "lesson");
         resizeDialog(width(), height());
     }
     void ShowLesson(const QMap<QString, QString>& text, bool with_ok_button = false, QString pictureName = "", bool addToHistory = false)
@@ -154,6 +154,12 @@ public:
                 startChoiceProgress->setVisible(true);
                 startChoiceProgress->setOpacity(0);
                 startChoiceProgress->AnimationStart(OPACITY, 1);
+                return WaitingType();
+            }
+            else if (Le->ltype == ALLOW_HELP)
+            {
+                dialog->showHelp = true;
+                dialog->last_text_ok_button = false;
                 return WaitingType();
             }
             else if (Le->ltype == DISABLE_GO)
@@ -369,15 +375,18 @@ public:
     }
 
 private slots:
-    void lessonDialogReturned(bool, QString)
+    void lessonDialogReturned(bool, QString mes)
     {
-        if (lesson_shown < lessons.size() - 1)
+        if (mes == "lesson")
         {
-            ++lesson_shown;
-            ShowLesson(lessons[lesson_shown]);
+            if (lesson_shown < lessons.size() - 1)
+            {
+                ++lesson_shown;
+                ShowLesson(lessons[lesson_shown]);
+            }
+            else
+                NextPhase();
         }
-        else
-            NextPhase();
     }
 
 signals:
