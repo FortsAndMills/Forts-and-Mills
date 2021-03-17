@@ -50,35 +50,44 @@ private:
     qreal BiggestOrderSize;
     void recountTableCoordinates(qreal W, qreal H)
     {
-        qreal X, Xmargin = constants->resourcesTableMarginX * W;
-        qreal Y = constants->resourcesTableMarginY * H;
-
-        foreach (Resource R, game->rules->ordersInGame)
+        qreal minOrdersInRow = constants->minOrdersInRow;
+        do
         {
-            tableCoord[R].clear();
-            tableSize[R].clear();
+            qreal X, Xmargin = constants->resourcesTableMarginX * W;
+            qreal Y = constants->resourcesTableMarginY * H;
 
-            if (table[R].size() != 0)
+            foreach (Resource R, game->rules->ordersInGame)
             {
-                int in_row = qMax(table[R].size(), constants->minOrdersInRow);
-                qreal size = (W - 2 * Xmargin) / (in_row + (in_row + 1) * constants->resourcesTableInsideMargin);
+                tableCoord[R].clear();
+                tableSize[R].clear();
 
-                qreal margin = (W - 2 * Xmargin - size * table[R].size()) / (table[R].size() + 1);
-
-                X = Xmargin + margin;
-                for (int i = 0; i < table[R].size(); ++i)
+                if (table[R].size() != 0)
                 {
-                    tableCoord[R] << mapToItem(table[R][i]->parentItem(), X, Y);
-                    tableSize[R] << size;
+                    qreal in_row = qMax(qreal(table[R].size()), minOrdersInRow);
+                    qreal size = (W - 2 * Xmargin) / (in_row + (in_row + 1) * constants->resourcesTableInsideMargin);
 
-                    X += margin + size;
+                    qreal margin = (W - 2 * Xmargin - size * table[R].size()) / (table[R].size() + 1);
+
+                    X = Xmargin + margin;
+                    for (int i = 0; i < table[R].size(); ++i)
+                    {
+                        tableCoord[R] << mapToItem(table[R][i]->parentItem(), X, Y);
+                        tableSize[R] << size;
+
+                        X += margin + size;
+                    }
+                    Y += constants->resourcesTableInsideMargin * size + size;
                 }
-                Y += constants->resourcesTableInsideMargin * size + size;
             }
-        }
 
-        ResourceTableHeight = Y;
-        BiggestOrderSize = W * (1 - 3 * constants->resourcesTableInsideMargin) / 2;
+            ResourceTableHeight = Y;
+            BiggestOrderSize = W * (1 - 3 * constants->resourcesTableInsideMargin) / 2;
+
+            // если эта табличка не поместится по высоте в отведённые размеры,
+            // скажем, что строчки должны быть поуже.
+            minOrdersInRow += 0.5;
+        }
+        while (ResourceTableHeight > H * (1 - constants->playerForcesHeight - constants->resourcesTableMarginY));
     }
     void resize(qreal W, qreal H)
     {
