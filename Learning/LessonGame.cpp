@@ -1222,6 +1222,13 @@ int LessonGame::NextStage()
             }
             else if (round == rules->start_choices - 1)
             {
+                PlayerColor winner = "Neutral";
+                if (events.last()->type == WIN)
+                {
+                    winner = events.last()->color;
+                    events.removeLast();
+                }
+
                 AddEvent()->DisableGo();
                 text["rus"] = "Старт закончился, и началась игра! Цель игры - уничтожить всех юнитов противника!";
                 text["eng"] = "The starting phase is over, and the game is on! The goal is to destroy all enemy forces!";
@@ -1231,12 +1238,36 @@ int LessonGame::NextStage()
                 text["eng"] = "Now you know all the rules of \"Forts and mills\"! Try to beat a silly bot!";
                 AddEvent()->ShowMessage(text, true, false, true);
 
-                AddEvent()->EnableGo();
-                AddEvent()->AllowHelp();
-                text["rus"] = "Чтобы получить справку о любом игровом элементе, кликните по нему правой кнопкой мыши.";
-                text["eng"] = "You can get help about any game object by clicking on it with right mouse button.";
-                AddEvent()->ShowMessage(text, false, false, false);
-                round += 1;
+                if (winner == "Blue")
+                {
+                    text["rus"] = "Победа! Попробуйте теперь сыграть с людьми.";
+                    text["eng"] = "Victory! Now, try to play with real people.";
+                    AddEvent()->ShowMessage(text);
+                    AddEvent()->Exit();
+                }
+                else if (winner == "Draw")
+                {
+                    text["rus"] = "Ничья! Попробуйте ещё раз.";
+                    text["eng"] = "Draw! Try again!";
+                    AddEvent()->ShowMessage(text);
+                    AddEvent()->Exit(false);
+                }
+                else if (winner == "Red")
+                {
+                    text["rus"] = "К сожалению, без фортов у вас не может быть никаких ресурсов, поэтому это поражение! Попробуйте ещё раз.";
+                    text["eng"] = "Unfortunately, without forts you can't have any resources, so you've lost! Try again!";
+                    AddEvent()->ShowMessage(text);
+                    AddEvent()->Exit(false);
+                }
+                else
+                {
+                    AddEvent()->EnableGo();
+                    AddEvent()->AllowHelp();
+                    text["rus"] = "Чтобы получить справку о любом игровом элементе, кликните по нему правой кнопкой мыши.";
+                    text["eng"] = "You can get help about any game object by clicking on it with right mouse button.";
+                    AddEvent()->ShowMessage(text, false, false, false);
+                    round += 1;
+                }
             }
             else
             {
@@ -1252,6 +1283,13 @@ int LessonGame::NextStage()
                         text["eng"] = "Victory! Now, try to play with real people.";
                         AddEvent()->ShowMessage(text);
                         AddEvent()->Exit();
+                    }
+                    else if (events.last()->color == "Draw")
+                    {
+                        text["rus"] = "Ничья! Попробуйте ещё раз.";
+                        text["eng"] = "Draw! Try again!";
+                        AddEvent()->ShowMessage(text);
+                        AddEvent()->Exit(false);
                     }
                     else
                     {
