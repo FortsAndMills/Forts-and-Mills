@@ -394,7 +394,7 @@ QString HelpManager::HelpPicture(QString name)
     if (name == "TimerTune") return "timer_1";
     if (name == "Timer") return "timer_1";
 
-    if (name == "Forces") return "YellowPawn";
+    if (name == "Forces") return "RedPawn";
 
     if (name == "HowToAskHelp") return "Unknown";
 

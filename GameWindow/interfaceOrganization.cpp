@@ -224,7 +224,9 @@ void GameWindow::leftPanelSwitcherClicked(QString name)
     if (name == mainPlayerColor)
         return;
 
-    player_windows[leftPanel]->AnimationStart(closedLeftPanelGeometry(), constants->panelsChangeTime);
+    // анимировать ширину и высоту здесь нельзя
+    // от этого происходит ресайз ресурсов в таблице
+    player_windows[leftPanel]->AnimationStart(X_POS, closedLeftPanelGeometry().x(), constants->panelsChangeTime);
     leftPanel = name;
-    player_windows[leftPanel]->AnimationStart(leftPanelGeometry(), constants->panelsChangeTime);
+    player_windows[leftPanel]->AnimationStart(X_POS, leftPanelGeometry().x(), constants->panelsChangeTime);
 }
