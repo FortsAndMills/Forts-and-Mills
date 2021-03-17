@@ -125,7 +125,20 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
             return WaitingType(NO_WAIT, constants->mainOrderOpenTime, false);
         }
 
-        return WaitingType();
+        if (Substate == 0)
+        {
+            ++Substate;
+            WAY direction = game->whereIs(e->hex->coord, units[e->unit]->where());
+            units[e->unit]->agitate(true, direction);
+
+            // TODO: new constant?
+            return WaitingType(BUTTON, constants->rocketFlyTime, false);
+        }
+        else
+        {
+            units[e->unit]->agitate(false);
+            return WaitingType();
+        }
     }
     else if (e->type == UNIT_CAPTURES_HEX)
     {

@@ -344,6 +344,11 @@ void GameWindow::showPlannedOrder(GameUnit *unit)
             hex(units[unit])->hideInformation();
             hex(units[unit])->showInformation(a.unitType, "UnitIsGoingToRecruit");
         }
+        else if (a.type == GameAction::AGITE)
+        {
+            WAY way = game->whereIs(a.target, units[unit]->where());
+            units[unit]->agitate(true, way);
+        }
     }
 }
 void GameWindow::deshowPlannedOrder(GameUnit *unit, bool several)
@@ -398,6 +403,10 @@ void GameWindow::deshowPlannedOrder(GameUnit *unit, bool several)
                 hex(units[unit])->showInformation("Not" + mainPlayerColor + "UnitHome", "NotUnitHome");
             }
         }
+        else if (a.type == GameAction::AGITE)
+        {
+            units[unit]->agitate(false);
+        }
     }
 }
 void GameWindow::finishPlannedOrder(GameUnit * unit)
@@ -421,6 +430,11 @@ void GameWindow::finishPlannedOrder(GameUnit * unit)
             foreach (Rocket * r, rockets[units[unit]])
                 r->disappear();
             rockets[units[unit]].clear();
+        }
+        else if (a.type == GameAction::AGITE)
+        {
+            // агитация отображается только в "текущем" состоянии
+            units[unit]->agitate(false);
         }
     }
 }
@@ -448,6 +462,12 @@ void GameWindow::definishPlannedOrder(GameUnit *unit)
             resizeRockets();
             rockets[units[unit]].last()->setStartPosition();
             rockets[units[unit]].last()->animate();
+        }
+        else if (a.type == GameAction::AGITE)
+        {
+            // возвращаем агитацию
+            WAY way = game->whereIs(a.target, units[unit]->where());
+            units[unit]->agitate(true, way);
         }
     }
 }

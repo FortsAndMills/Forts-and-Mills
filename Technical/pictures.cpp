@@ -259,7 +259,8 @@ void Images::InitPictures()
                  "Blast",
                  "DecorativeShield",
                  "OrdersFrame",
-                 "OrdersFrameRed"},
+                 "OrdersFrameRed",
+                 "Soundwaves"},
                  ".png");
     picture_rows["DayTimeSelection"] = 6;
     picture_columns["DayTimeSelection"] = 5;
@@ -279,6 +280,8 @@ void Images::InitPictures()
     picture_columns["OrdersFrame"] = 8;
     picture_rows["OrdersFrameRed"] = 2;
     picture_columns["OrdersFrameRed"] = 8;
+    picture_rows["Soundwaves"] = 7;
+    picture_columns["Soundwaves"] = 1;
 
     names << PictureNameFolder("ColoredDecorations",
                 {"BlueWay",

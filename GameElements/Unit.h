@@ -45,6 +45,9 @@ private:
     UnitPanel * ordersPanel;  // панель с приказами!
     UnitPanel * unitTypePanel;  // панель с типами юнитов
 
+    SpriteObject * soundwave = NULL; // агитация
+    qreal soundwave_angle;
+
 public:
     MainOrder * mainOrder;  // основной приказ юнита
     QList <Order *> orders_stack;
@@ -86,6 +89,7 @@ private:
     void resizeHealth();
     void resizeOrders();
     void resizeShields();
+    void resizeAgitation();
     void resizeChildren(qreal W, qreal H);
 
     QMap <Order *, QRectF> orderGeometry;
@@ -120,12 +124,15 @@ public:
     void select();  // подсветить юнит
     void deselect();
     void light(bool on = true);
+
     void showOrdersPanel(const QList<Game::PossibleChoice> &orders);  // панель приказов
     void hidePanel();
     void showUnitTypePanel(const QList<QString> &types);  // панель выбора типа юнитов
     void hideUnitTypePanel();
 
     void defenseTurn(int amount, bool on = true);
+
+    void agitate(bool on = true, WAY way = UP);
 
 public:
     void wheel(int delta) { emit wheeled(this->prototype, delta); }

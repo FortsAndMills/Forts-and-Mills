@@ -11,5 +11,6 @@
         <file>Content/Decorations/Logo.png</file>
         <file>Content/Decorations/OrdersFrame.png</file>
         <file>Content/Decorations/OrdersFrameRed.png</file>
+        <file>Content/Decorations/Soundwaves.png</file>
     </qresource>
 </RCC>

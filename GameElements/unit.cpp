@@ -107,6 +107,8 @@ void Unit::Delete()
         mainOrder->Delete();
     //if (brokenGlass != NULL)
     //    brokenGlass->Delete();
+    if (soundwave != NULL)
+        soundwave->Delete();
     foreach (Shield * s, shields)
         s->Delete();
 
@@ -210,6 +212,16 @@ void Unit::resizeHealth()
     }
 }
 
+void Unit::resizeAgitation()
+{
+    soundwave->setRotation(soundwave_angle - 90);
+
+    qreal angle = qDegreesToRadians(soundwave_angle);
+    qreal soundwaveH = 0.6;
+    soundwave->setGeometry(qSin(angle) * width(),
+                           height() / 2 - qCos(angle) * width() - height() * soundwaveH / 2,
+                           width(), height() * soundwaveH);
+}
 void Unit::resizeOrders()
 {
     recountOrderGeometry();
@@ -255,6 +267,10 @@ void Unit::resizeChildren(qreal W, qreal H)
     //{
     //    brokenGlass->setGeometry(0, 0, W, H);
     //}
+    if (soundwave != NULL)
+    {
+        resizeAgitation();
+    }
 
     // панель ресайзится по своим правилам!
     if (ordersPanel != NULL)
@@ -500,3 +516,21 @@ void Unit::defenseTurn(int amount, bool on)
     }
 }
 
+void Unit::agitate(bool on, WAY way)
+{
+    if (on)
+    {
+        soundwave = new SpriteObject(this, 0, "Soundwaves");
+        soundwave_angle = way * 60;
+        resizeAgitation();
+
+        soundwave->setOpacity(0);
+        soundwave->AnimationStart(OPACITY, 1, constants->defaultAnimationTime);
+    }
+    else if (soundwave != NULL)
+    {
+        soundwave->AnimationStart(OPACITY, 0, constants->defaultAnimationTime);
+        connect(soundwave, SIGNAL(movieFinished()), soundwave, SLOT(Delete()));
+        soundwave = NULL;
+    }
+}
