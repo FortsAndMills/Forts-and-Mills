@@ -11,7 +11,7 @@ private:
     const QString Host_Settings_File_Name = "Connection.connection";
 public:
     const QString Debug_File_Name = "log.log";
-    const qint32 version = 2100;
+    const qint32 version = 3100;
 
 public:
     // ОБЪЯВЛЕНИЕ ВСЕХ НАСТРОЕК----------------------------------------------------------
