@@ -131,7 +131,18 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
             WAY direction = game->whereIs(e->hex->coord, units[e->unit]->where());
             units[e->unit]->agitate(true, direction);
 
-            // TODO: new constant?
+            // если уже отображается рупор, отображаем иконку двух рупоров
+            if (hexes[e->hex]->agitation != NULL)
+            {
+                hexes[e->hex]->hideAgitation();
+                hexes[e->hex]->showAgitation("TwoSpeakers", "TwoSpeakers");
+            }
+            else
+            {
+                hexes[e->hex]->showAgitation(e->unit->color + "Speaker", "Speaker");
+            }
+
+            // TODO: 0 не срабатывает для промотки?
             return WaitingType(BUTTON, constants->rocketFlyTime, false);
         }
         else
@@ -185,6 +196,18 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
             return WaitingType();
         return WaitingType(BUTTON, constants->unitReconfigureTime);
     }
+    else if (e->type == PURSUE_TRIGGERED)
+    {
+        if (units.contains(e->unit2))
+        {
+            // TODO
+            units[e->unit2]->showLens(true);
+            units[e->unit2]->showLens(false);
+            return WaitingType();
+        }
+        else
+            return WaitingType();
+    }
     else if (e->type == PURSUE_NOT_TRIGGERED)
     {
         if (!units[e->unit]->isMainOrderOpenned())
@@ -192,7 +215,25 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
             units[e->unit]->openMainOrder();
             return WaitingType(BUTTON, constants->mainOrderOpenTime);
         }
-        return WaitingType();
+
+        if (units.contains(e->unit2))
+        {
+            if (Substate == 0)
+            {
+                ++Substate;
+                units[e->unit2]->showLens(true);
+
+                // TODO: 0 не срабатывает для промотки?
+                return WaitingType(BUTTON, constants->rocketFlyTime, false);
+            }
+            else
+            {
+                units[e->unit2]->showLens(false);
+                return WaitingType();
+            }
+        }
+        else
+            return WaitingType();
     }
     else if (e->type == UNIT_ENTERS)
     {
@@ -402,6 +443,7 @@ GameWindow::WaitingType GameWindow::RealizeEvent()
     }
     else if (e->type == AGITATION_ENDS)
     {
+        hexes[e->hex]->hideAgitation();
         return WaitingType();
     }
     else if (e->type == BURN_RESOURCE)

@@ -23,8 +23,15 @@ public:
 
     // при сигнале удаления этот объект удаляется при очередном исчезновении
     void DeleteOnMerging()
-    {
-        wantToDelete = true;
+    {        
+        if (stopMerging)
+        {
+            connect(AnimationStart(OPACITY, 0, constants->mergeTime), SIGNAL(finished()), this, SLOT(Delete()));
+        }
+        else
+        {
+            wantToDelete = true;
+        }
     }
     void StopMerging()
     {

@@ -342,6 +342,12 @@ void Images::InitPictures()
                  "GreenFortification",
                  "YellowFortification",
                  "CureIcon",
+                 "Lens",
+                 "BlueSpeaker",
+                 "RedSpeaker",
+                 "GreenSpeaker",
+                 "YellowSpeaker",
+                 "TwoSpeakers",
                  "Tombstone",
                  "NotConnected"},
                  ".png");

@@ -11,6 +11,8 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
         {
             QVector<QString> ans;
             ans << "<u>Захват</u> - захватывает клетку, в которой находится юнит.";
+            ans << "В конце каждого раунда игроки получают ресурсы с захваченных клеток, если в них нет вражеских юнитов.";
+            ans << "Захваченные форты без вражеских юнитов увеличивают лимит ресурсов одного типа на один.";
             ans << "В случае боя юнит получает штраф -1.";
             return ans;
         }
@@ -120,6 +122,11 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
                 << "Юнит с домом в этой клетке героически пал. Создавать юнитов здесь больше нельзя.";
         if (name == "NotConnected") return QVector<QString>()
                 << "Клетка не подсоединена к мельнице. Рекрутировать здесь пока нельзя.";
+        if (name == "Speaker") return QVector<QString>()
+                << "Эту клетку агитирует один из игроков. Остальные игроки не получат ресурсов с этой клетки и не могут рекрутировать в ней в этом раунде.";
+        if (name == "TwoSpeakers") return QVector<QString>()
+                << "Эту клетку агитируют несколько игроков. Никто не получит ресурсов с этой клетки и не может рекрутировать в ней в этом раунде.";
+
 
         if (name == "cantrecruit_already_provided") return QVector<QString>()
                 << "Юнит в этой клетке уже был создан. Больше рекрутировать здесь нельзя.";
@@ -177,6 +184,8 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
         {
             QVector<QString> ans;
             ans << "<u>Capture</u> - captures hex.";
+            ans << "At the end of each round players collect resources from captured hexes if enemy units do not stay on them.";
+            ans << "Each captured fort without enemy units increases the limit on resources of the same type by one.";
             ans << "Penalty in combat -1.";
             return ans;
         }
@@ -283,6 +292,11 @@ QVector <QString> HelpManager::HelpInfo(QString name, GameRules * rules)
                 << "Unit created in this hex has died. Players can't recruit new units here.";
         if (name == "NotConnected") return QVector<QString>()
                 << "This hex hasn't provided unit yet, but the owner has not connected it to his mill yet, so recruiting is yet unavailable.";
+        if (name == "Speaker") return QVector<QString>()
+                << "This hex is agitated by one of the players. Others can't get any resources from this hex and can't recruit here this round.";
+        if (name == "TwoSpeakers") return QVector<QString>()
+                << "This hex is agitated by several players. No one will get any resources from this hex this round; no one can recruit here this round.";
+
 
         if (name == "cantrecruit_already_provided") return QVector<QString>()
                 << "This hex has already provided a unit. Can't recruit again here.";
@@ -371,6 +385,8 @@ QString HelpManager::HelpPicture(QString name)
     if (name == "NotUnitHome") return "NotBlueUnitHome";
     if (name == "Tombstone") return "Tombstone";
     if (name == "NotConnected") return "NotConnected";
+    if (name == "Speaker") return "BlueSpeaker";
+    if (name == "TwoSpeakers") return "TwoSpeakers";
 
     //if (name == "cantrecruit_already_provided") return ;
     if (name == "cantrecruit_not_captured") return "Capture";

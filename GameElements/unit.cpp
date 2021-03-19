@@ -109,6 +109,8 @@ void Unit::Delete()
     //    brokenGlass->Delete();
     if (soundwave != NULL)
         soundwave->Delete();
+    if (lens != NULL)
+        lens->Delete();
     foreach (Shield * s, shields)
         s->Delete();
 
@@ -222,6 +224,12 @@ void Unit::resizeAgitation()
                            height() / 2 - qCos(angle) * width() - height() * soundwaveH / 2,
                            width(), height() * soundwaveH);
 }
+void Unit::resizeLens()
+{
+    lens->setGeometry(0, 0,
+                      width() * constants->lensWidthCoeff,
+                      height() * constants->lensHeightCoeff);
+}
 void Unit::resizeOrders()
 {
     recountOrderGeometry();
@@ -270,6 +278,10 @@ void Unit::resizeChildren(qreal W, qreal H)
     if (soundwave != NULL)
     {
         resizeAgitation();
+    }
+    if (lens != NULL)
+    {
+        resizeLens();
     }
 
     // панель ресайзится по своим правилам!
@@ -520,17 +532,37 @@ void Unit::agitate(bool on, WAY way)
 {
     if (on)
     {
-        soundwave = new SpriteObject(this, 0, "Soundwaves");
-        soundwave_angle = way * 60;
-        resizeAgitation();
+        if (soundwave == NULL)
+        {
+            soundwave = new SpriteObject(this, 0, "Soundwaves");
+            soundwave_angle = way * 60;
+            resizeAgitation();
 
-        soundwave->setOpacity(0);
-        soundwave->AnimationStart(OPACITY, 1, constants->defaultAnimationTime);
+            soundwave->setOpacity(0);
+            soundwave->AnimationStart(OPACITY, 1, constants->defaultAnimationTime);
+        }
     }
     else if (soundwave != NULL)
     {
         soundwave->AnimationStart(OPACITY, 0, constants->defaultAnimationTime);
         connect(soundwave, SIGNAL(movieFinished()), soundwave, SLOT(Delete()));
         soundwave = NULL;
+    }
+}
+void Unit::showLens(bool on)
+{
+    if (on)
+    {
+        if (lens == NULL)
+        {
+            lens = new MergingObject(this, "Lens");
+            lens->setZValue(constants->lensZPos);
+            resizeLens();
+        }
+    }
+    else if (lens != NULL)
+    {
+        lens->DeleteOnMerging();
+        lens = NULL;
     }
 }

@@ -42,6 +42,7 @@ Hex::Hex(GraphicObject *parent, Game *game, GameHex *prototype) :
     UnitHomePicture->setVisible(false);
 
     information = NULL;
+    agitation = NULL;
 }
 // создание копии-призрака для анимации сдвига поля
 Hex::Hex(Hex *another, GraphicObject * newParent) : Hex(newParent, another->game, another->prototype)
@@ -55,7 +56,9 @@ Hex::Hex(Hex *another, GraphicObject * newParent) : Hex(newParent, another->game
     }
 
     if (another->information != NULL)
-        this->information = new MergingObject(this, another->information->name, 0, true);
+        this->information = new Information(this, another->information->name, another->information->info_name);
+    if (another->agitation != NULL)
+        this->agitation = new Information(this, another->agitation->name, another->agitation->info_name);
 
     this->setState(another->cur_picture, true);
     this->resize(another->width(), another->height());
@@ -83,6 +86,8 @@ void Hex::Delete()
         pic->Delete();
     if (information != NULL)
         information->Delete();
+    if (agitation != NULL)
+        agitation->Delete();
     foreach (Shield * s, shields)
         s->Delete();
     foreach (MergingObject * mo, plannedCapturing)
@@ -185,6 +190,13 @@ void Hex::resizeChildren(qreal W, qreal H)
                                                      H * constants->informationPointY,
                                                      W * constants->informationWidth,
                                                      H * constants->informationHeight);
+    }
+    if (agitation != NULL)
+    {
+        agitation->setGeometry(W * constants->informationPointX,
+                               H * (1 - constants->informationPointY - constants->informationHeight),
+                               W * constants->informationWidth,
+                               H * constants->informationHeight);
     }
 
     QMap<WAY, QPointF> river_centers;
@@ -465,12 +477,55 @@ void Hex::showInformation(QString pic_name, QString name, bool merge)
     if (!merge)
         information->StopMerging();
 }
+//void Hex::showCurrentStatus()
+//{
+//    if (prototype->status == GameHex::NOT_CONNECTED)
+//        showInformation("NotConnected", "NotConnected");
+//    else if (prototype->status == GameHex::NOT_A_HOME)
+//        showInformation("Not" + prototype->color + "UnitHome", "NotUnitHome");
+//    else if (prototype->status == GameHex::TOMBSTONE)
+//        showInformation("Tombstone", "Tombstone", false);
+//}
 void Hex::hideInformation()
 {
     if (information != NULL)
     {
         information->DeleteOnMerging();
         information = NULL;
+    }
+}
+void Hex::showAgitation(QString pic_name, QString name)
+{
+    if (agitation != NULL)
+    {
+        debug << "PANIC! agitation on agitation!\n";
+
+        // может, лучше плавно заставить её исчезнуть?
+        // вроде эта "ошибка" встречается по разумным причинам!
+        agitation->Delete();
+    }
+
+    agitation = new Information(this, pic_name, name);
+    resizeChildren(width(), height());
+
+    foreach (ResourcePic * R, table)
+    {
+        R->AnimationStart(OPACITY, constants->agitatedResourceOpacity, constants->mergeTime);
+    }
+
+    agitation->StopMerging();
+}
+void Hex::hideAgitation()
+{
+    if (agitation != NULL)
+    {
+        agitation->DeleteOnMerging();
+        agitation = NULL;
+
+        foreach (ResourcePic * R, table)
+        {
+            R->AnimationStart(OPACITY, 1, constants->mergeTime);
+        }
     }
 }
 
@@ -511,7 +566,7 @@ void Hex::highlight(OrderType type, bool light)
         {
             table[i]->AnimationStart(X_POS, table_pos[i].x(), constants->hexResourcesShiftTime);
             table[i]->AnimationStart(Y_POS, table_pos[i].y(), constants->hexResourcesShiftTime);
-            table[i]->AnimationStart(OPACITY, 1, constants->hexResourcesShiftTime);
+            table[i]->AnimationStart(OPACITY, agitation == NULL ? 1 : constants->agitatedResourceOpacity, constants->hexResourcesShiftTime);
         }
 
         AnimationStart(OPACITY, 1, constants->hexResourcesShiftTime);

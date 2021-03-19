@@ -4,6 +4,7 @@
 #include "Technical/Headers.h"
 #include "Technical/HelpManager.h"
 #include "BasicElements/GraphicObject.h"
+#include "BasicElements/MergingObject.h"
 #include "GameElements/Order.h"
 
 // положение юнита характеризуется не только координатами гекса
@@ -48,6 +49,8 @@ private:
     SpriteObject * soundwave = NULL; // агитация
     qreal soundwave_angle;
 
+    MergingObject * lens = NULL; // лупа
+
 public:
     MainOrder * mainOrder;  // основной приказ юнита
     QList <Order *> orders_stack;
@@ -90,6 +93,7 @@ private:
     void resizeOrders();
     void resizeShields();
     void resizeAgitation();
+    void resizeLens();
     void resizeChildren(qreal W, qreal H);
 
     QMap <Order *, QRectF> orderGeometry;
@@ -133,6 +137,7 @@ public:
     void defenseTurn(int amount, bool on = true);
 
     void agitate(bool on = true, WAY way = UP);
+    void showLens(bool on = true);
 
 public:
     void wheel(int delta) { emit wheeled(this->prototype, delta); }

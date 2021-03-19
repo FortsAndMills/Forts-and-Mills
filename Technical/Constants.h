@@ -76,6 +76,7 @@ public:
 
     static qreal hexOpaqueState;  // прозрачность гексика
 
+    static qreal agitatedResourceOpacity;  // прозрачность агитированных ресурсов
     static qreal order_opacity_when_impossible;  // прозрачность невозможных приказов в панели выбора
 
     // РАСПОЛОЖЕНИЕ-----------------------------------------------------------------------------------------
@@ -91,6 +92,7 @@ public:
     static qreal orderZPos;
     static qreal fortificationZPos;
     static qreal cureIconZPos;
+    static qreal lensZPos;
 
 
     // ГЕОМЕЕЕЕТРИИИЯЯ!!!---------------------------------------------------------------------------------
@@ -394,6 +396,10 @@ public:
     static qreal cureIconTargetPointX;
     static qreal cureIconTargetPointWidth;
     static qreal cureIconTargetPointHeight;
+
+    // Лупа
+    static qreal lensWidthCoeff;
+    static qreal lensHeightCoeff;
 
     // Броня
     static qreal unitShieldsLineY;

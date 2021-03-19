@@ -69,6 +69,7 @@ int Constants::serverConnectionCheckTime = 10000;  // время перепод�
 
 qreal Constants::hexOpaqueState = 0.4;  // прозрачность гексика
 
+qreal Constants::agitatedResourceOpacity = 0.3;  // прозрачность гексика
 qreal Constants::order_opacity_when_impossible = 0.3;  // прозрачность невозможных приказов в панели выбора
 
 // РАСПОЛОЖЕНИЕ-----------------------------------------------------------------------------------------
@@ -84,6 +85,7 @@ qreal Constants::unitPanelZPos = 0.3;
 qreal Constants::orderZPos = 0.2;
 qreal Constants::fortificationZPos = 0.05;
 qreal Constants::cureIconZPos = 0.7;
+qreal Constants::lensZPos = 0.6;
 
 
 // ГЕОМЕЕЕЕТРИИИЯЯ!!!---------------------------------------------------------------------------------
@@ -374,6 +376,10 @@ qreal Constants::cureIconTargetPointY = -2;
 qreal Constants::cureIconTargetPointX = 2;
 qreal Constants::cureIconTargetPointWidth = 2;
 qreal Constants::cureIconTargetPointHeight = 2;
+
+// Лупа
+qreal Constants::lensWidthCoeff = 1.25;
+qreal Constants::lensHeightCoeff = 1.35;
 
 // Броня
 qreal Constants::unitShieldsLineY = 0.65;

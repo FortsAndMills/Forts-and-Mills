@@ -30,8 +30,8 @@ class Information : public MergingObject
 {
     Q_OBJECT
 
-    QString info_name;
 public:
+    QString info_name;
     Information(GraphicObject * parent, QString pic_name, QString name) :
         MergingObject(parent, pic_name, RIGHT_CLICKABLE, true)
     {
@@ -57,7 +57,9 @@ public:
     SpriteObject * Lighting;  // подсветка при выделении перед стартом
     Object * UnitHomePicture;  // домик, который отображается при наведении на соотв. юнита
 
-    MergingObject * information;  // мерцающая вверху информация (не является домом или рекрутирующийся юнит)
+    Information * information;  // мерцающая вверху информация (не является домом или рекрутирующийся юнит)
+    Information * agitation;  // мерцающая внизу на ресурсах информация об агитации
+
 
     // точки для юнитов и их атрибутов на гексе
     // всё настолько хитро, что вынесено в отдельный .cpp файл
@@ -158,7 +160,10 @@ public:
     void highlight(OrderType type, bool light = true);
 
     void showInformation(QString pic_name, QString name, bool merge = true);
+    //void showCurrentStatus();
     void hideInformation();
+    void showAgitation(QString pic_name, QString name);
+    void hideAgitation();
 
     // добавление и удаление объектов
     void addOrder(Order * order);

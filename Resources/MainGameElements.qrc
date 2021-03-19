@@ -28,5 +28,11 @@
         <file>Content/MainGameElements/Tombstone.png</file>
         <file>Content/MainGameElements/NotConnected.png</file>
         <file>Content/MainGameElements/Lake.png</file>
+        <file>Content/MainGameElements/Lens.png</file>
+        <file>Content/MainGameElements/BlueSpeaker.png</file>
+        <file>Content/MainGameElements/GreenSpeaker.png</file>
+        <file>Content/MainGameElements/RedSpeaker.png</file>
+        <file>Content/MainGameElements/TwoSpeakers.png</file>
+        <file>Content/MainGameElements/YellowSpeaker.png</file>
     </qresource>
 </RCC>

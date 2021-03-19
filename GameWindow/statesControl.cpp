@@ -348,6 +348,13 @@ void GameWindow::showPlannedOrder(GameUnit *unit)
         {
             WAY way = game->whereIs(a.target, units[unit]->where());
             units[unit]->agitate(true, way);
+
+            hex(a.target)->hideAgitation();
+            hex(a.target)->showAgitation(mainPlayerColor + "Speaker", "Speaker");
+        }
+        else if (a.type == GameAction::PURSUE)
+        {
+            units[a.unit]->showLens();
         }
     }
 }
@@ -406,6 +413,12 @@ void GameWindow::deshowPlannedOrder(GameUnit *unit, bool several)
         else if (a.type == GameAction::AGITE)
         {
             units[unit]->agitate(false);
+
+            hex(a.target)->hideAgitation();
+        }
+        else if (a.type == GameAction::PURSUE)
+        {
+            units[a.unit]->showLens(false);
         }
     }
 }
@@ -435,6 +448,11 @@ void GameWindow::finishPlannedOrder(GameUnit * unit)
         {
             // агитация отображается только в "текущем" состоянии
             units[unit]->agitate(false);
+        }
+        else if (a.type == GameAction::PURSUE)
+        {
+            // линза преследования тоже
+            units[a.unit]->showLens(false);
         }
     }
 }
@@ -468,6 +486,11 @@ void GameWindow::definishPlannedOrder(GameUnit *unit)
             // возвращаем агитацию
             WAY way = game->whereIs(a.target, units[unit]->where());
             units[unit]->agitate(true, way);
+        }
+        else if (a.type == GameAction::PURSUE)
+        {
+            // линзу тоже
+            units[a.unit]->showLens();
         }
     }
 }

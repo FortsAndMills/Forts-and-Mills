@@ -26,6 +26,7 @@ enum GameEventType
     UNIT_IS_GOING_TO_RECRUIT,
     RECRUIT_FAILS_BECAUSE_OF_AGITE,
     UNIT_LEAVES,
+    PURSUE_TRIGGERED,
     PURSUE_NOT_TRIGGERED,
     UNIT_ENTERS,
     UNITS_ARE_GOING_TO_FIGHT,
@@ -186,6 +187,12 @@ public:
         type = UNIT_LEAVES;
         this->hex = hex;
         this->unit = unit;
+    }
+    void PursueTriggered(GameUnit * unit, GameUnit * unit2)
+    {
+        type = PURSUE_TRIGGERED;
+        this->unit = unit;
+        this->unit2 = unit2;
     }
     void PursueNotTriggered(GameUnit * unit, GameUnit * unit2)
     {

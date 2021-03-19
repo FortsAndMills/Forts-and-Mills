@@ -86,6 +86,7 @@ void Game::Realize(QList<Action> act)
 
                 // выходим из клетки (аналогично LEAVE_HEX)
                 a.unit->going_to = target_pos;
+                AddEvent()->PursueTriggered(a.unit, a.action.unit);
                 AddEvent()->UnitLeaves(a.unit, hex(target_pos));
             }
             else
