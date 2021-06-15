@@ -45,6 +45,9 @@ public:
         this->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
         this->setCacheMode(QGraphicsView::CacheBackground);
 
+        QCursor c = QCursor(images->get("Cursor").scaled(35, 41), 0, 0);
+        setCursor(c);
+
         connect(client, SIGNAL(CreateGame(qint8, QList <qint32>)), SLOT(CreateGame(qint8, QList <qint32>)));
 
         scene = new QGraphicsScene(this);  // сцена

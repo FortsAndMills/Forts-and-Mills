@@ -52,7 +52,7 @@ private:
         drag_position = qme->screenPos();
         if (qme->scenePos().y() <= constants->controlPanelHeight)
         {
-            this->setCursor(Qt::ClosedHandCursor);
+            //this->setCursor(Qt::ClosedHandCursor);
             dragging = true;
         }
     }
@@ -67,7 +67,7 @@ private:
     }
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *)
     {
-        this->setCursor(Qt::ArrowCursor);
+        //this->setCursor(Qt::ArrowCursor);
         dragging = false;
     }
 

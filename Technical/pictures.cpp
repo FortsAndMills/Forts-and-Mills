@@ -61,7 +61,8 @@ void Images::InitPictures()
                  ".png");
 
     names << PictureNameFolder("InterfaceElements",
-               {"up",
+               {"Cursor",
+                "up",
                 "down",
                  "right",
                  "left",
