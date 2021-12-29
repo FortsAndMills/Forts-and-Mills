@@ -1,18 +1,19 @@
-**Status:** creating new version \
-**Server:** https://github.com/FortsAndMills/Forts-and-Mills-Server
-
 # Forts and Mills
-## [Ссылка для скачивания (Windows / Unix)](https://sourceforge.net/projects/fortsandmills/?source=directory)
-![Партия в разгаре](http://www.imageup.ru/img292/2685567/skrin1.png)
 
-Форты и Мельницы - это уникальная военная стратегия. В ней полностью отсутствует случайность, а игрокам доступна вся информация о текущей игровой ситуации, но главное - игроки делают ход одновременно. А значит, победа здесь зависит только от правильного прогнозирования действий противника и грамотного стратегического расчёта.
+### **Status:** fully playable!
+### **Server:** https://github.com/FortsAndMills/Forts-and-Mills-Server
+## [Download link (Windows)](https://github.com/FortsAndMills/Forts-and-Mills/releases/download/v.0.3.1/RELEASE.19.03.21.zip)
 
-![Что в это время видит противник](http://www.imageup.ru/img292/2685576/skrin2.png)
+![Middle Game](https://imageup.ru/img216/3862603/skrin.jpg)
 
-В игру встроено полное обучение, которое не займёт больше десять минут. Хотя полные правила игры достаточно просты, в игре всегда можно получить подсказку по любому игровому элементу.
+Forts and Mills is a wargame where players make turns simultaneously. Each player knows all information about game except what his opponent is going to do. Victory here is a result of anticipating other player's actions and strategic calculations.
 
-![Обучение](http://www.imageup.ru/img292/2685577/screenshot-learning.png)
+![Middle Game](https://imageup.ru/img34/3862633/skrin2.jpg)
 
-Принципы игры таковы, что игра с искусственным интеллектом лишена идеологического смысла. Так что вам понадобится подключение к сети и оппонент. Также поддерживаются игры втроём и вчетвером.
+You can learn how to play with in-game tutorial or use helping tooltips (right mouse click) during the game (ENG / RUS).
 
-![Main Menu](http://www.imageup.ru/img292/2685578/screenshot-menu.png)
+![Tutorial](https://imageup.ru/img134/3862602/screen2.jpg)
+
+The game can be played with two, three or four players. You'll need a [server](https://github.com/FortsAndMills/Forts-and-Mills-Server) to connect to each other! 
+
+![Main Menu](https://imageup.ru/img94/3862601/screen1.jpg)
